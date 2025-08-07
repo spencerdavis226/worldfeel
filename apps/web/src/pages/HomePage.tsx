@@ -91,10 +91,10 @@ export function HomePage() {
         <div></div>
 
         {/* Main content - centered */}
-        <div className="w-full max-w-lg text-center">
+        <div className="w-full max-w-xl mx-auto text-center px-2">
           {/* Main prompt */}
-          <div className="mb-16">
-            <h1 className="text-4xl md:text-5xl font-light text-gray-800 leading-tight md:whitespace-nowrap">
+          <div className="mb-8 md:mb-16">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-800 leading-tight md:whitespace-nowrap">
               How are you feeling today?
             </h1>
           </div>
@@ -108,7 +108,7 @@ export function HomePage() {
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="peaceful, excited, anxious..."
-                className="w-full px-6 py-4 text-xl text-center bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg"
+                className="w-full px-6 py-5 sm:py-4 text-lg sm:text-xl text-center bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg min-h-[56px]"
                 disabled={loading}
                 autoFocus
                 autoComplete="off"
@@ -120,7 +120,7 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={loading || !word.trim()}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 sm:w-10 sm:h-10 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-400/50"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -152,21 +152,21 @@ export function HomePage() {
         </div>
 
         {/* Footer - bottom of viewport */}
-        <div className="w-full text-center space-y-3 pb-4">
-          <p className="text-sm text-gray-500">
+        <div className="w-full text-center space-y-3 pb-6 px-4">
+          <p className="text-sm sm:text-sm text-gray-500">
             A global emotional snapshot of today
           </p>
-          <div className="flex items-center justify-center space-x-4 text-xs text-gray-400">
+          <div className="flex items-center justify-center space-x-6 text-sm sm:text-xs text-gray-400">
             <Link
               to="/about"
-              className="hover:text-gray-600 transition-colors underline"
+              className="hover:text-gray-600 transition-colors underline py-2"
             >
               About
             </Link>
             <span>•</span>
             <Link
               to="/results"
-              className="hover:text-gray-600 transition-colors underline"
+              className="hover:text-gray-600 transition-colors underline py-2"
             >
               View Results
             </Link>
