@@ -94,7 +94,7 @@ export function HomePage() {
         <div className="w-full max-w-xl mx-auto text-center px-2">
           {/* Main prompt */}
           <div className="mb-8 md:mb-16">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-800 leading-tight md:whitespace-nowrap">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-gray-800 leading-tight md:whitespace-nowrap">
               How are you feeling today?
             </h1>
           </div>
