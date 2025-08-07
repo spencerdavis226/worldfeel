@@ -13,22 +13,23 @@ interface GeoIPResponse {
   error?: string;
 }
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     // Check if IP fallback is enabled
     if (!env.ENABLE_IP_FALLBACK) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         error: 'Feature disabled',
         message: 'IP-based location detection is disabled'
       });
+      return;
     }
 
     const clientIp = getClientIp(req);
 
     // Don't try to geolocate local IPs
     if (clientIp === '127.0.0.1' || clientIp === '::1' || clientIp.startsWith('192.168.') || clientIp.startsWith('10.') || clientIp === '0.0.0.0') {
-      return res.json({
+      res.json({
         success: true,
         data: {
           country: 'Unknown',
@@ -38,6 +39,7 @@ router.get('/', async (req: Request, res: Response) => {
           longitude: 0
         } as GeoIPResponse
       });
+      return;
     }
 
     // Fetch from IP geolocation service
@@ -56,12 +58,15 @@ router.get('/', async (req: Request, res: Response) => {
     const data = await response.json();
 
     // Map the response to our format (assuming ipapi.co format)
+    const latitude = data.latitude ? parseFloat(data.latitude) : undefined;
+    const longitude = data.longitude ? parseFloat(data.longitude) : undefined;
+
     const geoData: GeoIPResponse = {
       country: data.country_name || data.country,
       region: data.region || data.region_name,
       city: data.city,
-      latitude: data.latitude ? parseFloat(data.latitude) : undefined,
-      longitude: data.longitude ? parseFloat(data.longitude) : undefined
+      ...(latitude !== undefined && { latitude }),
+      ...(longitude !== undefined && { longitude })
     };
 
     res.json({

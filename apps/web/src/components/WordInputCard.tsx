@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { wordSchema, lettersOnly } from '@worldfeel/shared';
+import { useState, useRef, useEffect } from 'react';
+import { lettersOnly } from '@worldfeel/shared';
 import type { SubmissionRequest } from '@worldfeel/shared';
 
 interface WordInputCardProps {

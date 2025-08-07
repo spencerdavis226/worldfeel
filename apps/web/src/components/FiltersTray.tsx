@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Country, State, City } from 'country-state-city';
 import type { StatsQuery } from '@worldfeel/shared';
 

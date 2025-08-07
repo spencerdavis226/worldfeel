@@ -3,7 +3,7 @@ import { Router, Request, Response } from 'express';
 const router = Router();
 
 // No-op flag endpoint for future moderation features
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (_req: Request, res: Response): Promise<void> => {
   try {
     // For now, just return success
     // In the future, this could handle content flagging for moderation

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { wordToColor } from '@worldfeel/shared';
 
 interface ColorBadgeProps {

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { submissionRequestSchema, wordToColor, generatePalette } from '@worldfeel/shared';
+import { submissionRequestSchema } from '@worldfeel/shared';
 import { Submission } from '../models/Submission.js';
 import { hashIp, getClientIp } from '../utils/crypto.js';
 import { containsProfanity } from '../utils/profanity.js';
@@ -20,16 +20,17 @@ interface SubmitRequest extends Request {
 
 const EDIT_WINDOW_MINUTES = 5;
 
-router.post('/', async (req: SubmitRequest, res: Response) => {
+router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
   try {
     // Validate request body
     const validationResult = submissionRequestSchema.safeParse(req.body);
     if (!validationResult.success) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Invalid input',
         message: validationResult.error.errors[0]?.message || 'Validation failed'
       });
+      return;
     }
 
     const { word, country, region, city } = validationResult.data;
@@ -37,11 +38,12 @@ router.post('/', async (req: SubmitRequest, res: Response) => {
 
     // Check for profanity
     if (containsProfanity(word)) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Inappropriate content',
         message: 'Please choose a different word'
       });
+      return;
     }
 
     // Generate device ID if not provided
@@ -79,37 +81,44 @@ router.post('/', async (req: SubmitRequest, res: Response) => {
       if (submissionAge <= EDIT_WINDOW_MINUTES) {
         // Update existing submission
         existingSubmission.word = word;
-        existingSubmission.country = country;
-        existingSubmission.region = region;
-        existingSubmission.city = city;
+        if (country !== undefined) existingSubmission.country = country;
+        if (region !== undefined) existingSubmission.region = region;
+        if (city !== undefined) existingSubmission.city = city;
         await existingSubmission.save();
 
-        // Get updated stats
-        const stats = await getStats({ country, region, city, yourWord: word });
+                // Get updated stats
+        const statsQuery: any = { yourWord: word };
+        if (country) statsQuery.country = country;
+        if (region) statsQuery.region = region;
+        if (city) statsQuery.city = city;
 
-        return res.json({
+        const stats = await getStats(statsQuery);
+
+        res.json({
           success: true,
           data: stats,
           message: 'Word updated successfully',
           canEdit: true,
           editWindowMinutes: EDIT_WINDOW_MINUTES
         });
+        return;
       } else {
         // Outside edit window, return current submission stats
-        const stats = await getStats({
-          country: existingSubmission.country,
-          region: existingSubmission.region,
-          city: existingSubmission.city,
-          yourWord: existingSubmission.word
-        });
+        const statsQuery: any = { yourWord: existingSubmission.word };
+        if (existingSubmission.country) statsQuery.country = existingSubmission.country;
+        if (existingSubmission.region) statsQuery.region = existingSubmission.region;
+        if (existingSubmission.city) statsQuery.city = existingSubmission.city;
 
-        return res.status(409).json({
+        const stats = await getStats(statsQuery);
+
+        res.status(409).json({
           success: false,
           error: 'Already submitted',
           message: `You've already shared your feeling today: "${existingSubmission.word}"`,
           data: stats,
           canEdit: false
         });
+        return;
       }
     }
 
@@ -127,8 +136,13 @@ router.post('/', async (req: SubmitRequest, res: Response) => {
 
     await submission.save();
 
-    // Get stats for response
-    const stats = await getStats({ country, region, city, yourWord: word });
+        // Get stats for response
+    const statsQuery: any = { yourWord: word };
+    if (country) statsQuery.country = country;
+    if (region) statsQuery.region = region;
+    if (city) statsQuery.city = city;
+
+    const stats = await getStats(statsQuery);
 
     res.status(201).json({
       success: true,

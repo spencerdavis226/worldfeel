@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { Stats } from '@worldfeel/shared';
 import { wordToColor } from '@worldfeel/shared';
 

@@ -27,7 +27,7 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
   if (city) matchFilter.city = city;
 
   // Main aggregation pipeline for word counts
-  const pipeline = [
+  const pipeline: any[] = [
     { $match: matchFilter },
     {
       $group: {
@@ -103,29 +103,42 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
   const colors = wordToColor(topWord);
   const palette = generatePalette(colors.hex, 5);
 
-  return {
+  const result: Stats = {
     total,
     top,
     top5,
-    yourWord,
     colorHex: colors.hex,
     topPalette: palette
   };
+
+  if (yourWord) {
+    result.yourWord = yourWord;
+  }
+
+  return result;
 }
 
-router.get('/', async (req: StatsRequest, res: Response) => {
+router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
   try {
     // Validate query parameters
     const validationResult = statsQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Invalid query parameters',
         message: validationResult.error.errors[0]?.message || 'Validation failed'
       });
+      return;
     }
 
-    const stats = await getStats(validationResult.data);
+    const queryData = validationResult.data;
+    const statsQuery: any = {};
+    if (queryData.country) statsQuery.country = queryData.country;
+    if (queryData.region) statsQuery.region = queryData.region;
+    if (queryData.city) statsQuery.city = queryData.city;
+    if (queryData.yourWord) statsQuery.yourWord = queryData.yourWord;
+
+    const stats = await getStats(statsQuery);
 
     res.json({
       success: true,

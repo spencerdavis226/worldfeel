@@ -9,16 +9,17 @@ interface ColorRequest extends Request {
   };
 }
 
-router.get('/', async (req: ColorRequest, res: Response) => {
+router.get('/', async (req: ColorRequest, res: Response): Promise<void> => {
   try {
     // Validate query parameters
     const validationResult = colorQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Invalid query parameters',
         message: validationResult.error.errors[0]?.message || 'Word is required'
       });
+      return;
     }
 
     const { word } = validationResult.data;

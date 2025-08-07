@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GlassyBackground } from '../components/GlassyBackground';
 import { WordInputCard } from '../components/WordInputCard';
 import { StatsPanel } from '../components/StatsPanel';
