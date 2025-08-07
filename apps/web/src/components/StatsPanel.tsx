@@ -1,4 +1,3 @@
-
 import type { Stats } from '@worldfeel/shared';
 import { wordToColor } from '@worldfeel/shared';
 
@@ -8,16 +7,22 @@ interface StatsPanelProps {
   error: string | null;
 }
 
-function WordBadge({ word, count, rank }: { word: string; count: number; rank?: number }) {
+function WordBadge({
+  word,
+  count,
+  rank,
+}: {
+  word: string;
+  count: number;
+  rank?: number;
+}) {
   const colors = wordToColor(word);
 
   return (
     <div className="flex items-center justify-between p-3 glass-panel">
       <div className="flex items-center space-x-3">
         {rank && (
-          <div className="text-sm font-bold text-gray-500 w-6">
-            #{rank}
-          </div>
+          <div className="text-sm font-bold text-gray-500 w-6">#{rank}</div>
         )}
         <div
           className="w-4 h-4 rounded-full border border-white/30"
@@ -30,47 +35,6 @@ function WordBadge({ word, count, rank }: { word: string; count: number; rank?: 
         <span className="text-xs text-gray-400">
           {count === 1 ? 'person' : 'people'}
         </span>
-      </div>
-    </div>
-  );
-}
-
-function YourWordStats({ yourWord }: { yourWord: NonNullable<Stats['yourWord']> }) {
-  const colors = wordToColor(yourWord.word);
-
-  return (
-    <div className="glass-card p-6 space-y-4">
-      <h3 className="font-semibold text-gray-800 text-center">Your Feeling</h3>
-
-      <div className="text-center space-y-2">
-        <div
-          className="inline-flex items-center space-x-3 px-4 py-2 rounded-full"
-          style={{
-            backgroundColor: `${colors.hex}20`,
-            border: `1px solid ${colors.hex}40`
-          }}
-        >
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: colors.hex }}
-          />
-          <span className="font-medium text-gray-800">"{yourWord.word}"</span>
-        </div>
-
-        <div className="text-sm text-gray-600">
-          Shared by <span className="font-semibold">{yourWord.count}</span> {yourWord.count === 1 ? 'person' : 'people'}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 text-center">
-        <div className="glass-panel p-3">
-          <div className="text-lg font-bold text-gray-800">#{yourWord.rank}</div>
-          <div className="text-xs text-gray-500">Rank</div>
-        </div>
-        <div className="glass-panel p-3">
-          <div className="text-lg font-bold text-gray-800">{yourWord.percentile}%</div>
-          <div className="text-xs text-gray-500">Top Percentile</div>
-        </div>
       </div>
     </div>
   );
@@ -116,7 +80,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     return null;
   }
 
-  const { total, top, top5, yourWord } = stats;
+  const { total, top, top5 } = stats;
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
@@ -126,17 +90,18 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
           <h2 className="text-lg font-semibold text-gray-800">
             Right now, the world feels
           </h2>
-          <div className="text-3xl font-bold" style={{ color: wordToColor(top.word).hex }}>
+          <div
+            className="text-3xl font-bold"
+            style={{ color: wordToColor(top.word).hex }}
+          >
             "{top.word}"
           </div>
           <p className="text-sm text-gray-600">
-            {total.toLocaleString()} {total === 1 ? 'person has' : 'people have'} shared today
+            {total.toLocaleString()}{' '}
+            {total === 1 ? 'person has' : 'people have'} shared today
           </p>
         </div>
       </div>
-
-      {/* Your word stats */}
-      {yourWord && <YourWordStats yourWord={yourWord} />}
 
       {/* Top 5 emotions */}
       <div className="glass-card p-6 space-y-4">
@@ -157,7 +122,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
 
       {/* Last updated */}
       <div className="text-center text-xs text-gray-400">
-        Updates every 10 seconds • Data expires after 24 hours
+        Updates every 5 seconds
       </div>
     </div>
   );

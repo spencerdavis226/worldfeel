@@ -20,7 +20,7 @@ A beautiful, real-time MERN application that collects one-word emotions from aro
 
 ## 🏗️ Architecture
 
-This is a monorepo built with pnpm workspaces:
+This is a monorepo built with npm workspaces:
 
 ```
 worldfeel/
@@ -37,7 +37,7 @@ worldfeel/
 ### Prerequisites
 
 - **Node.js 20+** - [Download here](https://nodejs.org/)
-- **pnpm 8+** - Install with `npm install -g pnpm`
+- **npm 9+** - Comes with Node.js 20+
 - **MongoDB** - [Local install](https://docs.mongodb.com/manual/installation/) or [MongoDB Atlas](https://www.mongodb.com/atlas)
 
 ### Installation
@@ -47,7 +47,7 @@ worldfeel/
    ```bash
    git clone <your-repo-url> worldfeel
    cd worldfeel
-   pnpm install
+   npm install
    ```
 
 2. **Set up environment variables:**
@@ -63,7 +63,7 @@ worldfeel/
 3. **Start development servers:**
 
    ```bash
-   pnpm dev
+   npm run dev
    ```
 
    This runs both the API server (`:8080`) and web app (`:3000`) concurrently.
@@ -304,8 +304,8 @@ The app uses a **Liquid Glass** design language with:
 1. **Deploy Server:**
    - Connect your GitHub repo
    - Choose "Web Service"
-   - Build command: `pnpm build --filter server`
-   - Start command: `pnpm --filter server start`
+   - Build command: `npm run build --workspace=apps/server`
+   - Start command: `npm run start --workspace=apps/server`
    - Add environment variables from above
 
 2. **Deploy Database:**
@@ -327,7 +327,7 @@ The app uses a **Liquid Glass** design language with:
    ```
 
 2. **Configure Build:**
-   - Build command: `pnpm build`
+   - Build command: `npm run build`
    - Output directory: `dist`
    - Add `VITE_API_BASE` environment variable
 
@@ -341,10 +341,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY apps/server ./apps/server
 COPY packages/shared ./packages/shared
-RUN npm install -g pnpm && pnpm install
-RUN pnpm build
+RUN npm install
+RUN npm run build
 EXPOSE 8080
-CMD ["pnpm", "--filter", "server", "start"]
+CMD ["npm", "run", "start", "--workspace=apps/server"]
 ```
 
 ## 🛠️ Development
@@ -353,22 +353,22 @@ CMD ["pnpm", "--filter", "server", "start"]
 
 **Root:**
 
-- `pnpm dev` - Start both server and web in development
-- `pnpm build` - Build all packages for production
-- `pnpm lint` - Lint all packages
-- `pnpm typecheck` - TypeScript checking across all packages
+- `npm run dev` - Start both server and web in development
+- `npm run build` - Build all packages for production
+- `npm run lint` - Lint all packages
+- `npm run typecheck` - TypeScript checking across all packages
 
 **Server:**
 
-- `pnpm --filter server dev` - Development server with hot reload
-- `pnpm --filter server build` - Build TypeScript to JavaScript
-- `pnpm --filter server start` - Start production server
+- `npm run dev --workspace=apps/server` - Development server with hot reload
+- `npm run build --workspace=apps/server` - Build TypeScript to JavaScript
+- `npm run start --workspace=apps/server` - Start production server
 
 **Web:**
 
-- `pnpm --filter web dev` - Development server with HMR
-- `pnpm --filter web build` - Build for production
-- `pnpm --filter web preview` - Preview production build
+- `npm run dev --workspace=apps/web` - Development server with HMR
+- `npm run build --workspace=apps/web` - Build for production
+- `npm run preview --workspace=apps/web` - Preview production build
 
 ### Code Quality
 
@@ -384,7 +384,7 @@ Basic test setup included:
 **Server Tests:**
 
 ```bash
-pnpm --filter server test
+npm run test --workspace=apps/server
 ```
 
 **Test Structure:**
@@ -398,8 +398,8 @@ pnpm --filter server test
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
 3. Make changes and add tests
-4. Run linting: `pnpm lint`
-5. Run type checking: `pnpm typecheck`
+4. Run linting: `npm run lint`
+5. Run type checking: `npm run typecheck`
 6. Commit with conventional commits
 7. Push and create a pull request
 

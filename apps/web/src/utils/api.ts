@@ -5,7 +5,6 @@ import type {
   Stats,
   StatsQuery,
   ColorResult,
-  GeoLocation
 } from '@worldfeel/shared';
 import { env } from '../config/env.js';
 
@@ -72,11 +71,10 @@ class ApiClient {
     return this.request<ColorResult>(`/color?${searchParams}`);
   }
 
-  async getGeoLocation(): Promise<ApiResponse<GeoLocation>> {
-    return this.request<GeoLocation>('/geoip');
-  }
-
-  async flagContent(data: { word?: string; reason?: string }): Promise<ApiResponse<void>> {
+  async flagContent(data: {
+    word?: string;
+    reason?: string;
+  }): Promise<ApiResponse<void>> {
     return this.request<void>('/flag', {
       method: 'POST',
       body: JSON.stringify(data),

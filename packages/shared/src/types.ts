@@ -1,9 +1,6 @@
 export interface Submission {
   _id?: string;
   word: string;
-  country?: string;
-  region?: string;
-  city?: string;
   ipHash: string;
   deviceId?: string;
   createdAt: Date;
@@ -31,30 +28,16 @@ export interface Stats {
 
 export interface SubmissionRequest {
   word: string;
-  country?: string;
-  region?: string;
-  city?: string;
   deviceId?: string;
 }
 
 export interface StatsQuery {
-  country?: string;
-  region?: string;
-  city?: string;
   yourWord?: string;
 }
 
 export interface ColorResult {
   hex: string;
   shadeHex: string;
-}
-
-export interface GeoLocation {
-  country?: string;
-  region?: string;
-  city?: string;
-  latitude?: number;
-  longitude?: number;
 }
 
 export interface ApiResponse<T = any> {

@@ -21,10 +21,8 @@ export function useStats(
   initialFilters: StatsQuery = {},
   options: UseStatsOptions = {}
 ): UseStatsReturn {
-  const {
-    autoRefresh = true,
-    refreshInterval = DEFAULT_REFRESH_INTERVAL
-  } = options;
+  const { autoRefresh = true, refreshInterval = DEFAULT_REFRESH_INTERVAL } =
+    options;
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +43,6 @@ export function useStats(
     } catch (err) {
       if (mountedRef.current) {
         setError(err instanceof Error ? err.message : 'Failed to fetch stats');
-        console.error('Stats fetch error:', err);
       }
     } finally {
       if (mountedRef.current) {
@@ -69,7 +66,9 @@ export function useStats(
     fetchStats();
 
     if (autoRefresh) {
-      intervalRef.current = setInterval(fetchStats, refreshInterval);
+      intervalRef.current = setInterval(() => {
+        fetchStats();
+      }, refreshInterval);
     }
 
     return () => {
@@ -82,6 +81,7 @@ export function useStats(
 
   // Cleanup on unmount
   useEffect(() => {
+    mountedRef.current = true; // Ensure it's set to true on mount
     return () => {
       mountedRef.current = false;
       if (intervalRef.current) {

@@ -63,7 +63,8 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
-    // Check for existing submission
+        // TEMPORARILY DISABLED FOR TESTING - Check for existing submission
+    /*
     const existingSubmission = await Submission.findOne({
       $or: [
         { ipHash },
@@ -86,7 +87,7 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
         if (city !== undefined) existingSubmission.city = city;
         await existingSubmission.save();
 
-                // Get updated stats
+        // Get updated stats
         const statsQuery: any = { yourWord: word };
         if (country) statsQuery.country = country;
         if (region) statsQuery.region = region;
@@ -121,6 +122,9 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
         return;
       }
     }
+    */
+
+    const now = new Date();
 
     // Create new submission
     const submission = new Submission({

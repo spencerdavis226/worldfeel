@@ -7,11 +7,6 @@ interface WordInputCardProps {
   loading: boolean;
   canEdit: boolean;
   currentWord?: string;
-  location?: {
-    country?: string;
-    region?: string;
-    city?: string;
-  };
 }
 
 export function WordInputCard({
@@ -19,7 +14,6 @@ export function WordInputCard({
   loading,
   canEdit,
   currentWord,
-  location
 }: WordInputCardProps) {
   const [word, setWord] = useState(currentWord || '');
   const [error, setError] = useState<string>('');
@@ -42,7 +36,7 @@ export function WordInputCard({
 
   const validateWord = (value: string): string => {
     if (!value.trim()) {
-      return 'Please share how you\'re feeling';
+      return "Please share how you're feeling";
     }
 
     if (!lettersOnly(value)) {
@@ -81,9 +75,6 @@ export function WordInputCard({
       setError('');
       await onSubmit({
         word: trimmedWord,
-        country: location?.country,
-        region: location?.region,
-        city: location?.city,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -100,7 +91,9 @@ export function WordInputCard({
             How is the world feeling?
           </h1>
           <p className="text-gray-600">
-            {canEdit ? 'Share your emotion in one word' : 'You\'ve already shared today'}
+            {canEdit
+              ? 'Share your emotion in one word'
+              : "You've already shared today"}
           </p>
         </div>
 
@@ -145,9 +138,10 @@ export function WordInputCard({
                 w-full py-4 px-6 text-lg font-medium
                 glass-button focus-visible-ring
                 disabled:opacity-50 disabled:cursor-not-allowed
-                ${isValid && !loading
-                  ? 'hover:shadow-lg transform hover:scale-[1.02]'
-                  : ''
+                ${
+                  isValid && !loading
+                    ? 'hover:shadow-lg transform hover:scale-[1.02]'
+                    : ''
                 }
                 transition-all duration-200
               `}
@@ -166,7 +160,10 @@ export function WordInputCard({
           {!canEdit && currentWord && (
             <div className="text-center p-4 glass-panel">
               <p className="text-gray-600 text-sm">
-                Your feeling today: <span className="font-semibold text-gray-800">"{currentWord}"</span>
+                Your feeling today:{' '}
+                <span className="font-semibold text-gray-800">
+                  "{currentWord}"
+                </span>
               </p>
               <p className="text-xs text-gray-500 mt-2">
                 You can update this for a few more minutes
@@ -174,13 +171,6 @@ export function WordInputCard({
             </div>
           )}
         </div>
-
-        {location && (location.country || location.city) && (
-          <div className="text-center text-sm text-gray-500">
-            <span>📍 </span>
-            {[location.city, location.region, location.country].filter(Boolean).join(', ')}
-          </div>
-        )}
       </form>
     </div>
   );
