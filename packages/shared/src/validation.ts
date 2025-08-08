@@ -37,6 +37,7 @@ export const submissionRequestSchema = z.object({
 
 export const statsQuerySchema = z.object({
   yourWord: wordSchema.optional(),
+  deviceId: deviceIdSchema,
 });
 
 export const colorQuerySchema = z.object({

@@ -4,11 +4,17 @@ import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 /**
  * Hook to dynamically update the page background based on the dominant emotion
  */
-export function useBackgroundColor(word: string | undefined) {
+export function useBackgroundColor(
+  topWord: string | undefined,
+  personalWord?: string | undefined
+) {
   useEffect(() => {
-    if (!word) return;
+    if (!topWord) return;
 
-    const hex = getEmotionColor(word) || '#6DCFF6';
+    const hex = getEmotionColor(topWord) || '#6DCFF6';
+    const personalHex = personalWord
+      ? getEmotionColor(personalWord) || '#6DCFF6'
+      : undefined;
 
     // Convert hex to RGB for CSS variables
     const r = parseInt(hex.slice(1, 3), 16);
@@ -65,15 +71,35 @@ export function useBackgroundColor(word: string | undefined) {
     );
 
     // Update body background with gradient
+    // Center uses top emotion color; edges blend toward personal color if available
+    const p = personalHex
+      ? {
+          pr: parseInt(personalHex.slice(1, 3), 16),
+          pg: parseInt(personalHex.slice(3, 5), 16),
+          pb: parseInt(personalHex.slice(5, 7), 16),
+        }
+      : null;
+    const edge1 = p
+      ? `rgba(${p.pr}, ${p.pg}, ${p.pb}, 0.12)`
+      : `rgba(255,255,255,0.12)`;
+    const edge2 = p
+      ? `rgba(${p.pr}, ${p.pg}, ${p.pb}, 0.12)`
+      : `rgba(0,0,0,0.10)`;
     const lightColor = `rgba(${lightR}, ${lightG}, ${lightB}, 0.1)`;
-    const mainColor = `rgba(${r}, ${g}, ${b}, 0.05)`;
+    const mainColor = `rgba(${r}, ${g}, ${b}, 0.06)`;
     const darkColor = `rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.1)`;
 
     document.body.style.background = `
+      radial-gradient( 60% 60% at 50% 40%,
+        ${mainColor} 0%,
+        ${lightColor} 45%,
+        ${darkColor} 70%,
+        ${edge1} 100%
+      ),
       linear-gradient(135deg,
         ${lightColor} 0%,
         ${mainColor} 50%,
-        ${darkColor} 100%
+        ${edge2} 100%
       )
     `;
     document.body.style.minHeight = '100vh';
@@ -92,5 +118,5 @@ export function useBackgroundColor(word: string | undefined) {
       document.documentElement.style.removeProperty('--emotion-dark-g');
       document.documentElement.style.removeProperty('--emotion-dark-b');
     };
-  }, [word]);
+  }, [topWord, personalWord]);
 }

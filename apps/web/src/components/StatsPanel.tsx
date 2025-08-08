@@ -92,6 +92,12 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   }
 
   const top5 = stats?.top5 || [];
+  const your = stats?.yourWord;
+  const total = stats?.total || 0;
+  const yourPercent =
+    your && total > 0 ? Math.round((your.count / total) * 100) : undefined;
+  const yourHex = your ? getEmotionColor(your.word) || '#6DCFF6' : undefined;
+  const [showRankHint, setShowRankHint] = useState(false);
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -137,6 +143,52 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
               W
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Your contribution chip (centered, glassy, lighter than hero/list) */}
+      <div className="mt-2 mb-6">
+        <div className="w-full flex justify-center px-0">
+          {your ? (
+            <div className="relative group w-full sm:w-full md:max-w-md lg:max-w-md">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRankHint(true);
+                  window.setTimeout(() => setShowRankHint(false), 1400);
+                }}
+                className="w-full bg-white/25 hover:bg-white/35 backdrop-blur-md border border-white/35 rounded-2xl shadow-glass-lg px-4 py-3 flex items-center gap-3 transition-colors"
+                aria-label={`You feel ${your.word}. Rank #${your.rank}. ${yourPercent}% match. Color ${yourHex}`}
+              >
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: yourHex }}
+                />
+                <span className="text-sm text-gray-800 truncate">
+                  You feel <span className="font-medium">{your.word}</span>
+                </span>
+                <span className="h-4 w-px bg-white/50" />
+                <span className="text-sm text-gray-700 tabular-nums">
+                  {yourPercent}% match
+                </span>
+                <span className="ml-auto text-[11px] font-mono tracking-wide text-gray-600">
+                  {(yourHex || '').toUpperCase()}
+                </span>
+              </button>
+              <div
+                className={[
+                  'pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 text-[11px] text-gray-700 bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/50 transition-opacity duration-200',
+                  showRankHint ? 'opacity-100' : 'opacity-0',
+                ].join(' ')}
+              >
+                Your rank: #{your.rank}
+              </div>
+            </div>
+          ) : (
+            <div className="w-full sm:w-full md:max-w-md lg:max-w-md bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-glass-lg px-4 py-3 text-sm text-gray-700 text-center">
+              Share one word to see your color today.
+            </div>
+          )}
         </div>
       </div>
 

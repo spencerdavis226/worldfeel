@@ -128,6 +128,10 @@ export function HomePage() {
       });
 
       if (response.success) {
+        // Persist your word locally for stats personalization
+        try {
+          localStorage.setItem('wf.yourWord', word.trim().toLowerCase());
+        } catch {}
         // Navigate to results page
         navigateWithViewTransition('/results', navigate);
       } else {

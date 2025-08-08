@@ -1,23 +1,43 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
+import { getDeviceId } from '../utils/device';
 import { StatsPanel } from '../components/StatsPanel';
 import { useStats } from '../hooks/useStats';
 import { useBackgroundColor } from '../hooks/useBackgroundColor';
 
 export function ResultsPage() {
   const navigate = useNavigate();
-  // Memoize the empty filters object to prevent recreations
-  const emptyFilters = useMemo(() => ({}), []);
+  // Memoize the empty filters object to prevent recreations (removed; we build filters dynamically)
 
   // Get global stats (no filters for MVP)
-  const { stats, loading, error } = useStats(emptyFilters, {
-    autoRefresh: true,
-    refreshInterval: 15000,
-  });
+  // Load your word from local storage if available
+  const yourWord = useMemo(() => {
+    try {
+      return localStorage.getItem('wf.yourWord') || undefined;
+    } catch {
+      return undefined;
+    }
+  }, []);
 
-  // Update background color based on top emotion
-  useBackgroundColor(stats?.top?.word);
+  const deviceId = useMemo(() => {
+    try {
+      return getDeviceId();
+    } catch {
+      return undefined as unknown as string;
+    }
+  }, []);
+
+  const { stats, loading, error } = useStats(
+    { ...(yourWord ? { yourWord } : {}), ...(deviceId ? { deviceId } : {}) },
+    {
+      autoRefresh: true,
+      refreshInterval: 15000,
+    }
+  );
+
+  // Update background color: center = top emotion, edges = personal (if any)
+  useBackgroundColor(stats?.top?.word, stats?.yourWord?.word);
 
   // Hide the main content container until child animations are ready to avoid any flash
   const [showContainer, setShowContainer] = useState(false);

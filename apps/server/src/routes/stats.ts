@@ -13,6 +13,7 @@ const router = Router();
 interface StatsRequest extends Request {
   query: {
     yourWord?: string;
+    deviceId?: string;
   };
 }
 
@@ -43,7 +44,8 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     return cached.value;
   }
 
-  const { yourWord: yourWordQuery } = query;
+  let { yourWord: yourWordQuery } = query;
+  const deviceId = (query as any).deviceId as string | undefined;
 
   // Build match filter for location
   const matchFilter: any = {
@@ -76,6 +78,19 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
   }));
 
   const top: WordCount = top5[0] || { word: 'peaceful', count: 0 };
+
+  // If deviceId provided, find most recent submission for that device to determine yourWord
+  if (!yourWordQuery && deviceId) {
+    const latest = await Submission.findOne({
+      ...matchFilter,
+      deviceId,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+    if (latest && latest.word) {
+      yourWordQuery = latest.word;
+    }
+  }
 
   // Handle your word stats
   let yourWord: YourWordStats | undefined;
@@ -129,9 +144,8 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     }
   }
 
-  // Generate colors
-  const topWord = yourWord?.word || top.word;
-  const hex = getEmotionColor(topWord) || '#6DCFF6';
+  // Generate colors: background should match the hero (top word), not personal
+  const hex = getEmotionColor(top.word) || '#6DCFF6';
   const palette = [hex];
 
   const result: Stats = {

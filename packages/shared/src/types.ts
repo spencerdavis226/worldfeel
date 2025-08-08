@@ -33,6 +33,7 @@ export interface SubmissionRequest {
 
 export interface StatsQuery {
   yourWord?: string;
+  deviceId?: string;
 }
 
 export interface ColorResult {
