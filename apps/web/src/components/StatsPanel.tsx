@@ -183,7 +183,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
           {your ? (
             <div className="w-full sm:w-full md:max-w-md lg:max-w-md">
               <div
-                className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-4 py-3 flex items-center gap-3 transition-colors transform-gpu hover:scale-[1.01] duration-200 ease-out"
+                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-4 py-3 flex items-center gap-3"
                 aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
               >
                 <span className="text-sm text-gray-800 truncate">
