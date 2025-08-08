@@ -489,14 +489,14 @@ export function HomePage() {
         </div>
 
         {/* Footer - bottom of viewport */}
-        <div className="w-full text-center space-y-3 pb-6 px-4">
-          <p className="text-sm text-gray-500">
+        <div className="w-full text-center pb-6 px-4">
+          <p className="text-sm text-gray-500 mb-2">
             A global emotional snapshot of today
           </p>
-          <div className="flex items-center justify-center space-x-6 text-xs sm:text-xs text-gray-400">
+          <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
             <Link
               to="/about"
-              className="hover:text-gray-600 transition-colors underline py-2"
+              className="hover:text-gray-600 transition-colors py-2 focus-visible-ring rounded"
             >
               About
             </Link>
@@ -504,7 +504,7 @@ export function HomePage() {
             <button
               type="button"
               onClick={() => navigateWithViewTransition('/results', navigate)}
-              className="hover:text-gray-600 transition-colors underline py-2"
+              className="hover:text-gray-600 transition-colors py-2 focus-visible-ring rounded"
             >
               View Results
             </button>

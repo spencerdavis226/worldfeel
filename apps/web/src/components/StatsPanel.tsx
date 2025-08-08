@@ -245,7 +245,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     type="button"
                     onClick={handleCopyHex}
                     title="Copy HEX"
-                    className="hidden sm:inline-flex glass-token items-center gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-xl px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
+                    className="hidden sm:inline-flex glass-token items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
                   >
                     <span
                       className="inline-block w-2 h-2 rounded-[3px]"
@@ -253,7 +253,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                       aria-hidden
                     />
                     <span
-                      className="inline-block w-[8ch] text-left"
+                      className="inline-block w-[8ch] text-left leading-none"
                       aria-live="polite"
                     >
                       {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
@@ -266,7 +266,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     type="button"
                     onClick={handleCopyHex}
                     title="Copy HEX"
-                    className="glass-token inline-flex items-center gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-xl px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
+                    className="glass-token inline-flex items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
                   >
                     <span
                       className="inline-block w-2 h-2 rounded-[3px]"
@@ -274,7 +274,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                       aria-hidden
                     />
                     <span
-                      className="inline-block w-[8ch] text-left"
+                      className="inline-block w-[8ch] text-left leading-none"
                       aria-live="polite"
                     >
                       {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
