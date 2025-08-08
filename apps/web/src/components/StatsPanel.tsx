@@ -97,7 +97,36 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   const yourPercent =
     your && total > 0 ? Math.round((your.count / total) * 100) : undefined;
   const yourHex = your ? getEmotionColor(your.word) || '#6DCFF6' : undefined;
-  const [showRankHint, setShowRankHint] = useState(false);
+  const [hexCopied, setHexCopied] = useState(false);
+  const hexCopyTimerRef = useRef<number | null>(null);
+
+  async function handleCopyHex(): Promise<void> {
+    if (!yourHex) return;
+    const value = (yourHex || '').toUpperCase();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setHexCopied(true);
+      if (hexCopyTimerRef.current) window.clearTimeout(hexCopyTimerRef.current);
+      hexCopyTimerRef.current = window.setTimeout(
+        () => setHexCopied(false),
+        1200
+      );
+    } catch {
+      // noop
+    }
+  }
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -146,46 +175,39 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
         </div>
       </div>
 
-      {/* Your contribution chip (centered, glassy, lighter than hero/list) */}
+      {/* Your contribution chip (centered, glassy) */}
       <div className="mt-2 mb-6">
         <div className="w-full flex justify-center px-0">
           {your ? (
-            <div className="relative group w-full sm:w-full md:max-w-md lg:max-w-md">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowRankHint(true);
-                  window.setTimeout(() => setShowRankHint(false), 1400);
-                }}
-                className="w-full bg-white/25 hover:bg-white/35 backdrop-blur-md border border-white/35 rounded-2xl shadow-glass-lg px-4 py-3 flex items-center gap-3 transition-colors"
-                aria-label={`You feel ${your.word}. Rank #${your.rank}. ${yourPercent}% match. Color ${yourHex}`}
+            <div className="w-full sm:w-full md:max-w-md lg:max-w-md">
+              <div
+                className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-4 py-3 flex items-center gap-3 transition-colors transform-gpu hover:scale-[1.01] duration-200 ease-out"
+                aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
               >
-                <span
-                  className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: yourHex }}
-                />
                 <span className="text-sm text-gray-800 truncate">
-                  You feel <span className="font-medium">{your.word}</span>
+                  You feel <span className="font-semibold">{your.word}</span>
                 </span>
-                <span className="h-4 w-px bg-white/50" />
+                <span className="h-4 w-[1px] bg-white/50" />
                 <span className="text-sm text-gray-700 tabular-nums">
                   {yourPercent}% match
                 </span>
-                <span className="ml-auto text-[11px] font-mono tracking-wide text-gray-600">
-                  {(yourHex || '').toUpperCase()}
-                </span>
-              </button>
-              <div
-                className={[
-                  'pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 text-[11px] text-gray-700 bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/50 transition-opacity duration-200',
-                  showRankHint ? 'opacity-100' : 'opacity-0',
-                ].join(' ')}
-              >
-                Your rank: #{your.rank}
+                <button
+                  type="button"
+                  onClick={handleCopyHex}
+                  title="Copy HEX"
+                  className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-mono tracking-wide text-gray-700 bg-white/40 backdrop-blur-sm border border-white/60 rounded-md px-1.5 py-0.5 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                >
+                  <span
+                    className="inline-block w-2 h-2 rounded-[3px]"
+                    style={{ backgroundColor: yourHex }}
+                    aria-hidden
+                  />
+                  {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
+                </button>
               </div>
             </div>
           ) : (
-            <div className="w-full sm:w-full md:max-w-md lg:max-w-md bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-glass-lg px-4 py-3 text-sm text-gray-700 text-center">
+            <div className="w-full sm:w-full md:max-w-md lg:max-w-md bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-4 py-3 text-sm text-gray-700 text-center">
               Share one word to see your color today.
             </div>
           )}
