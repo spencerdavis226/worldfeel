@@ -42,6 +42,7 @@ export default {
         float: 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
+        'fade-in-up': 'fade-in-up 900ms cubic-bezier(0.22, 1, 0.36, 1) both',
       },
       keyframes: {
         float: {
@@ -53,6 +54,10 @@ export default {
           '25%': { transform: 'translate(-25%, -25%) scale(1.1)' },
           '50%': { transform: 'translate(25%, -25%) scale(0.9)' },
           '75%': { transform: 'translate(-25%, 25%) scale(1.05)' },
+        },
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(24px) scale(0.98)' },
+          to: { opacity: '1', transform: 'translateY(0) scale(1)' },
         },
       },
       borderRadius: {
