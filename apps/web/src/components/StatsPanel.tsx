@@ -179,7 +179,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             {/* Current word */}
             <span
               className={[
-                'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl font-semibold transition-opacity duration-500 ease-out',
+                'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
                 currentVisible ? 'opacity-100' : 'opacity-0',
               ].join(' ')}
               style={{
@@ -192,7 +192,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             {prevWord && (
               <span
                 className={[
-                  'block absolute left-1/2 -translate-x-1/2 text-6xl md:text-7xl font-semibold transition-opacity duration-500 ease-out',
+                  'block absolute left-1/2 -translate-x-1/2 text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
                   currentVisible ? 'opacity-0' : 'opacity-100',
                 ].join(' ')}
                 style={{
