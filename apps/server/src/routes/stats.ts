@@ -76,6 +76,10 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     word: item._id,
     count: item.count,
   }));
+  const top10: WordCount[] = wordCounts.slice(0, 10).map((item) => ({
+    word: item._id,
+    count: item.count,
+  }));
 
   const top: WordCount = top5[0] || { word: 'peaceful', count: 0 };
 
@@ -152,6 +156,7 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     total,
     top,
     top5,
+    top10,
     colorHex: hex,
     topPalette: palette,
   };

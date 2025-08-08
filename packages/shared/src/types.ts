@@ -21,6 +21,7 @@ export interface Stats {
   total: number;
   top: WordCount;
   top5: WordCount[];
+  top10?: WordCount[];
   yourWord?: YourWordStats;
   colorHex: string;
   topPalette: string[];

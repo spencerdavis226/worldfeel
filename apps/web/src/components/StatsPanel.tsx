@@ -20,7 +20,7 @@ function WordBadge({
   const hex = getEmotionColor(word) || '#6DCFF6';
 
   return (
-    <div className="flex items-center justify-between py-3 md:py-3.5 px-1">
+    <div className="flex items-center justify-between py-2.5 md:py-3 px-1">
       <div className="flex items-center space-x-3">
         <div className="text-[11px] font-medium text-gray-500 w-6">#{rank}</div>
         <div
@@ -29,9 +29,7 @@ function WordBadge({
         />
         <span className="text-[13px] font-medium text-gray-800">{word}</span>
       </div>
-      <div className="text-[11px] text-gray-600">
-        {count} {count === 1 ? 'person' : 'people'}
-      </div>
+      <div className="text-[11px] text-gray-700 tabular-nums">{count}</div>
     </div>
   );
 }
@@ -91,7 +89,39 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     );
   }
 
-  const top5 = stats?.top5 || [];
+  const top10 = stats?.top10 ?? stats?.top5 ?? [];
+  const [expanded, setExpanded] = useState(false);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const [collapsedHeight, setCollapsedHeight] = useState<number>(0);
+  const [fullHeight, setFullHeight] = useState<number>(0);
+
+  useEffect(() => {
+    function measureHeights() {
+      const el = listRef.current;
+      if (!el) return;
+      // Full height of up to 10 items
+      setFullHeight(el.scrollHeight);
+      // Collapsed height: first 3 items (or fewer)
+      const children = Array.from(el.children) as HTMLElement[];
+      if (children.length === 0) {
+        setCollapsedHeight(0);
+        return;
+      }
+      const first = children[0];
+      const lastIdx = Math.min(2, children.length - 1);
+      const last = children[lastIdx];
+      const top = first.offsetTop;
+      const bottom = last.offsetTop + last.offsetHeight;
+      const height = bottom - top;
+      setCollapsedHeight(height + 8); // add tiny breathing room
+    }
+    const id = requestAnimationFrame(measureHeights);
+    window.addEventListener('resize', measureHeights);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('resize', measureHeights);
+    };
+  }, [top10.length]);
   const your = stats?.yourWord;
   const total = stats?.total || 0;
   const yourPercent =
@@ -214,19 +244,42 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
         </div>
       </div>
 
-      {/* Top emotions list - secondary */}
-      {top5.length > 0 && (
-        <div className="p-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg">
-          <div className="space-y-1">
-            {top5.map((item, index) => (
-              <WordBadge
-                key={item.word}
-                word={item.word}
-                count={item.count}
-                rank={index + 1}
-              />
-            ))}
+      {/* Top emotions list - compact with expand */}
+      {top10.length > 0 && (
+        <div className="p-5 md:p-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg">
+          <div
+            className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
+            style={{
+              maxHeight: expanded ? `${fullHeight}px` : `${collapsedHeight}px`,
+            }}
+          >
+            <div id="top-list" ref={listRef} className="space-y-1">
+              {top10.slice(0, 10).map((item, index) => (
+                <WordBadge
+                  key={item.word}
+                  word={item.word}
+                  count={item.count}
+                  rank={index + 1}
+                />
+              ))}
+            </div>
           </div>
+          {top10.length > 3 && (
+            <div className="pt-2 relative h-4">
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-10 sm:w-28 sm:h-9 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                aria-expanded={expanded}
+                aria-controls="top-list"
+              >
+                <span className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-1.5 rounded-full bg-white/50 border border-white/60 backdrop-blur-sm shadow-sm transition-all duration-200 ease-out group-hover:scale-105 group-hover:bg-white/60" />
+                <span className="sr-only">
+                  {expanded ? 'Show less' : 'Show all'}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
