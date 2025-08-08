@@ -106,6 +106,24 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   const top10 = stats?.top10 ?? stats?.top5 ?? [];
   // Expansion and scrolling removed to keep the stats as a simple snapshot (top 3 only)
 
+  // Dynamically compact the "You feel" label to "You:" only if the text would clip
+  const youTextRef = useRef<HTMLSpanElement | null>(null);
+  const [compactYouLabel, setCompactYouLabel] = useState(false);
+  useEffect(() => {
+    const checkOverflow = () => {
+      const el = youTextRef.current;
+      if (!el) return;
+      // If the rendered text exceeds available width, enable compact label
+      setCompactYouLabel(el.scrollWidth > el.clientWidth + 1);
+    };
+    const id = requestAnimationFrame(checkOverflow);
+    window.addEventListener('resize', checkOverflow);
+    return () => {
+      window.removeEventListener('resize', checkOverflow);
+      cancelAnimationFrame(id);
+    };
+  }, [your?.word]);
+
   async function handleCopyHex(): Promise<void> {
     if (!yourHex) return;
     const value = (yourHex || '').toUpperCase();
@@ -189,11 +207,14 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
           {your ? (
             <div className="w-full">
               <div
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex items-center justify-between min-w-0"
+                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 min-w-0"
                 aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
               >
-                <span className="text-sm text-gray-800 truncate min-w-0">
-                  You feel{' '}
+                <span
+                  ref={youTextRef}
+                  className="text-sm text-gray-800 truncate min-w-0 sm:flex-1 text-center sm:text-left"
+                >
+                  {compactYouLabel ? 'You: ' : 'You feel '}
                   <span
                     className="font-semibold"
                     style={{ color: yourHex || undefined }}
@@ -201,11 +222,10 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     {your.word}
                   </span>
                 </span>
-                <div className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0">
-                  <span className="h-4 w-px bg-white/50" />
+                <div className="mt-0.5 sm:mt-0 w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 sm:gap-3 md:gap-4 shrink-0">
+                  <span className="h-4 w-px bg-white/50 hidden sm:inline-block" />
                   <span className="text-sm text-gray-700 tabular-nums whitespace-nowrap">
-                    {yourPercent}%
-                    <span className="hidden sm:inline"> match</span>
+                    {yourPercent}% match
                   </span>
                   <button
                     type="button"
