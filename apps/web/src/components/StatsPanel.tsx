@@ -183,31 +183,40 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
           {your ? (
             <div className="w-full sm:w-full md:max-w-md lg:max-w-md">
               <div
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-3 py-2 sm:px-4 sm:py-3 flex items-center gap-2 sm:gap-3 min-w-0"
+                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-6 py-3 md:py-4 flex items-center justify-between min-w-0"
                 aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
               >
-                <span className="text-sm text-gray-800 truncate flex-1 min-w-0">
-                  You feel <span className="font-semibold">{your.word}</span>
-                </span>
-                <span className="h-4 w-[1px] bg-white/50 hidden sm:inline-block" />
-                <span className="text-sm text-gray-700 tabular-nums whitespace-nowrap shrink-0">
-                  {yourPercent}%<span className="hidden sm:inline"> match</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyHex}
-                  title="Copy HEX"
-                  className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-mono tracking-wide text-gray-700 bg-white/40 backdrop-blur-sm border border-white/60 rounded-md px-1.5 py-0.5 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 shrink-0"
-                >
+                <span className="text-sm text-gray-800 truncate min-w-0">
+                  You feel{' '}
                   <span
-                    className="inline-block w-2 h-2 rounded-[3px]"
-                    style={{ backgroundColor: yourHex }}
-                    aria-hidden
-                  />
-                  <span className="hidden sm:inline">
-                    {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
+                    className="font-semibold"
+                    style={{ color: yourHex || undefined }}
+                  >
+                    {your.word}
                   </span>
-                </button>
+                </span>
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                  <span className="h-4 w-px bg-white/50 hidden sm:inline-block" />
+                  <span className="text-sm text-gray-700 tabular-nums whitespace-nowrap">
+                    {yourPercent}%
+                    <span className="hidden sm:inline"> match</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyHex}
+                    title="Copy HEX"
+                    className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-wide text-gray-700 bg-white/40 backdrop-blur-sm border border-white/60 rounded-md px-1.5 py-0.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  >
+                    <span
+                      className="inline-block w-2 h-2 rounded-[3px]"
+                      style={{ backgroundColor: yourHex }}
+                      aria-hidden
+                    />
+                    <span className="hidden sm:inline">
+                      {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
