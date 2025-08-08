@@ -162,7 +162,7 @@ export function HomePage() {
         // fade in
         setPlaceholderVisible(true);
       }, 220);
-    }, 2000);
+    }, 3000);
     return () => {
       if (rotateRef.current) {
         window.clearInterval(rotateRef.current);
@@ -278,38 +278,30 @@ export function HomePage() {
                 </div>
               )}
 
-              {/* Submit button: only visible when a dropdown selection has been made */}
-              {selectedKey && (
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-cta text-white rounded-xl flex items-center justify-center focus-visible-ring"
-                  style={{
-                    ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
-                    ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
-                    ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
-                  }}
-                  aria-label="Submit emotion"
+              {/* Submit button: always rendered; fades in/out based on validity */}
+              <button
+                type="submit"
+                disabled={!selectedKey || loading}
+                aria-hidden={!selectedKey}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-cta-blue rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
+                  selectedKey ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
+                aria-label="Submit emotion"
+              >
+                <svg
+                  className="w-5 h-5 drop-shadow text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {loading ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <svg
-                      className="w-5 h-5 drop-shadow"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  )}
-                </button>
-              )}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </button>
 
               {/* Suggestions dropdown */}
               {showSuggestions && suggestions.length > 0 && (

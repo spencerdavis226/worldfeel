@@ -213,6 +213,64 @@
       );
   }
 
+  /* Static frosted blue CTA (no animations or transforms) */
+  .glass-cta-blue {
+    @apply backdrop-blur-md backdrop-saturate-150 border text-white;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.34) 100%
+      ),
+      rgba(10, 132, 255, 0.62);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.35),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
+      0 10px 26px rgba(10, 132, 255, 0.42);
+    position: relative;
+  }
+  .glass-cta-blue::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.7),
+      transparent
+    );
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .glass-cta-blue:hover {
+    /* Keep hover static (no transform/transition). Slightly adjust fill instantly. */
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.3) 100%
+      ),
+      rgba(10, 132, 255, 0.66);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.4),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+      0 12px 30px rgba(10, 132, 255, 0.48);
+  }
+  .glass-cta-blue:active {
+    /* No scale; keep a subtle pressed state by darkening slightly */
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.28) 100%
+      ),
+      rgba(10, 132, 255, 0.6);
+  }
+
   /* Animated Background */
   .liquid-bg {
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
