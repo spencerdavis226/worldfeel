@@ -196,7 +196,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                   </span>
                 </span>
                 <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                  <span className="h-4 w-px bg-white/50 hidden sm:inline-block" />
+                  <span className="h-4 w-px bg-white/50" />
                   <span className="text-sm text-gray-700 tabular-nums whitespace-nowrap">
                     {yourPercent}%
                     <span className="hidden sm:inline"> match</span>
@@ -205,14 +205,17 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     type="button"
                     onClick={handleCopyHex}
                     title="Copy HEX"
-                    className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-wide text-gray-700 bg-white/40 backdrop-blur-sm border border-white/60 rounded-md px-1.5 py-0.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                    className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 bg-white/40 backdrop-blur-sm border border-white/60 rounded-md px-1.5 py-0.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
                   >
                     <span
                       className="inline-block w-2 h-2 rounded-[3px]"
                       style={{ backgroundColor: yourHex }}
                       aria-hidden
                     />
-                    <span className="hidden sm:inline">
+                    <span
+                      className="inline-block w-[8ch] text-left"
+                      aria-live="polite"
+                    >
                       {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
                     </span>
                   </button>
