@@ -8,16 +8,27 @@ interface StatsPanelProps {
   error: string | null;
 }
 
+function formatPercent(count: number, total: number): string {
+  if (!Number.isFinite(total) || total <= 0) return '0%';
+  if (!Number.isFinite(count) || count <= 0) return '0%';
+  const pct = (count / total) * 100;
+  if (pct > 0 && pct < 1) return '<1%';
+  return `${Math.round(pct)}%`;
+}
+
 function WordBadge({
   word,
   count,
+  total,
   rank,
 }: {
   word: string;
   count: number;
+  total: number;
   rank?: number;
 }) {
   const hex = getEmotionColor(word) || '#6DCFF6';
+  const percentText = formatPercent(count, total);
 
   return (
     <div className="flex items-center justify-between py-2 md:py-2.5 px-1">
@@ -34,7 +45,7 @@ function WordBadge({
         </span>
       </div>
       <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
-        {count}
+        {percentText}
       </div>
     </div>
   );
@@ -98,8 +109,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   // Removed duplicate early declarations; see unified section below
   const your = stats?.yourWord;
   const total = stats?.total || 0;
-  const yourPercent =
-    your && total > 0 ? Math.round((your.count / total) * 100) : undefined;
+  const yourPercentText = your ? formatPercent(your.count, total) : undefined;
   const yourHex = your ? getEmotionColor(your.word) || '#6DCFF6' : undefined;
   const [hexCopied, setHexCopied] = useState(false);
   const hexCopyTimerRef = useRef<number | null>(null);
@@ -208,7 +218,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             <div className="w-full">
               <div
                 className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 min-w-0"
-                aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
+                aria-label={`You feel ${your.word}. ${yourPercentText} match. Color ${yourHex}`}
               >
                 <div className="w-full flex items-center justify-center sm:justify-between gap-2 sm:gap-3 min-w-0">
                   {/* Left cluster: label + divider + percent (single line) */}
@@ -227,7 +237,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     </span>
                     <span className="h-4 w-px bg-white/50" />
                     <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
-                      {yourPercent}% match
+                      {yourPercentText} match
                     </span>
                   </div>
                   {/* HEX token on desktop/tablet (right side) */}
@@ -290,6 +300,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                 key={item.word}
                 word={item.word}
                 count={item.count}
+                total={total}
                 rank={index + 1}
               />
             ))}
