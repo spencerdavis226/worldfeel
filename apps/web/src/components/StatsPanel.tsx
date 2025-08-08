@@ -210,23 +210,48 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                 className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 min-w-0"
                 aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
               >
-                <span
-                  ref={youTextRef}
-                  className="text-sm text-gray-800 truncate min-w-0 sm:flex-1 text-center sm:text-left"
-                >
-                  {compactYouLabel ? 'You: ' : 'You feel '}
-                  <span
-                    className="font-semibold"
-                    style={{ color: yourHex || undefined }}
+                <div className="w-full flex items-center justify-center sm:justify-between gap-2 sm:gap-3 min-w-0">
+                  {/* Left cluster: label + divider + percent (single line) */}
+                  <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 min-w-0 sm:flex-1">
+                    <span
+                      ref={youTextRef}
+                      className="text-sm text-gray-800 truncate min-w-0 text-center sm:text-left"
+                    >
+                      {compactYouLabel ? 'You: ' : 'You feel '}
+                      <span
+                        className="font-semibold"
+                        style={{ color: yourHex || undefined }}
+                      >
+                        {your.word}
+                      </span>
+                    </span>
+                    <span className="h-4 w-px bg-white/50" />
+                    <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
+                      {yourPercent}% match
+                    </span>
+                  </div>
+                  {/* HEX token on desktop/tablet (right side) */}
+                  <button
+                    type="button"
+                    onClick={handleCopyHex}
+                    title="Copy HEX"
+                    className="hidden sm:inline-flex glass-token items-center gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-xl px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
                   >
-                    {your.word}
-                  </span>
-                </span>
-                <div className="mt-0.5 sm:mt-0 w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 sm:gap-3 md:gap-4 shrink-0">
-                  <span className="h-4 w-px bg-white/50 hidden sm:inline-block" />
-                  <span className="text-sm text-gray-700 tabular-nums whitespace-nowrap">
-                    {yourPercent}% match
-                  </span>
+                    <span
+                      className="inline-block w-2 h-2 rounded-[3px]"
+                      style={{ backgroundColor: yourHex }}
+                      aria-hidden
+                    />
+                    <span
+                      className="inline-block w-[8ch] text-left"
+                      aria-live="polite"
+                    >
+                      {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
+                    </span>
+                  </button>
+                </div>
+                {/* HEX token on mobile (second row) */}
+                <div className="mt-1 sm:hidden w-full flex items-center justify-center">
                   <button
                     type="button"
                     onClick={handleCopyHex}
