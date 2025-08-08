@@ -5,7 +5,10 @@ import { getDeviceId } from '../utils/device';
 import { apiClient } from '../utils/api';
 import { lettersOnly } from '@worldfeel/shared';
 import { navigateWithViewTransition } from '../utils/navigation';
-import { resolveEmotionKey } from '@worldfeel/shared/emotion-color-map';
+import {
+  resolveEmotionKey,
+  getEmotionColor,
+} from '@worldfeel/shared/emotion-color-map';
 
 export function HomePage() {
   const [word, setWord] = useState('');
@@ -211,13 +214,19 @@ export function HomePage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-lg"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-cta text-white rounded-xl flex items-center justify-center focus-visible-ring"
+                  style={{
+                    ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
+                    ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
+                    ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
+                  }}
+                  aria-label="Submit emotion"
                 >
                   {loading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <svg
-                      className="w-5 h-5"
+                      className="w-5 h-5 drop-shadow"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -238,46 +247,60 @@ export function HomePage() {
                 <div
                   id="emotion-suggestions"
                   role="listbox"
-                  className="absolute left-0 right-0 top-full mt-2 z-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-2xl shadow-2xl overflow-hidden animate-fade-in"
+                  className="absolute left-0 right-0 top-full mt-2 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-glass-lg animate-pop-in origin-top"
                 >
-                  <div className="max-h-72 overflow-auto divide-y divide-black/5">
-                    {suggestions.map((s, idx) => (
-                      <button
-                        type="button"
-                        key={`${s}-${idx}`}
-                        role="option"
-                        aria-selected={idx === highlightIndex}
-                        onMouseDown={(ev) => ev.preventDefault()}
-                        onClick={() => {
-                          const resolved = resolveEmotionKey(s);
-                          if (!resolved) return;
-                          setWord(s);
-                          setSelectedKey(resolved);
-                          setShowSuggestions(false);
-                          setSuggestions([]);
-                        }}
-                        className={`w-full text-left px-5 py-3 transition-colors ${
-                          idx === highlightIndex ? 'bg-white' : 'hover:bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-800 text-base">{s}</span>
-                          {idx === highlightIndex && (
-                            <svg
-                              className="w-4 h-4 text-gray-500"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-7.364 7.364a1 1 0 01-1.414 0L3.293 9.536a1 1 0 011.414-1.414l3.222 3.222 6.657-6.657a1 1 0 011.414 0z"
-                                clipRule="evenodd"
+                  <div className="max-h-72 overflow-auto custom-scrollbar space-y-1 p-0.5">
+                    {suggestions.map((s, idx) => {
+                      const hex = getEmotionColor(s) || '#6DCFF6';
+                      const isActive = idx === highlightIndex;
+                      return (
+                        <button
+                          type="button"
+                          key={`${s}-${idx}`}
+                          role="option"
+                          aria-selected={isActive}
+                          onMouseDown={(ev) => ev.preventDefault()}
+                          onClick={() => {
+                            const resolved = resolveEmotionKey(s);
+                            if (!resolved) return;
+                            setWord(s);
+                            setSelectedKey(resolved);
+                            setShowSuggestions(false);
+                            setSuggestions([]);
+                          }}
+                          className={`w-full text-left px-4 sm:px-5 py-3 rounded-xl border transition-all focus-visible-ring shadow-inner-highlight backdrop-blur-sm ${
+                            isActive
+                              ? 'bg-white/60 border-white/40'
+                              : 'bg-white/35 hover:bg-white/45 active:bg-white/55 border-white/30'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span
+                                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: hex }}
                               />
-                            </svg>
-                          )}
-                        </div>
-                      </button>
-                    ))}
+                              <span className="text-gray-800 text-base truncate">
+                                {s}
+                              </span>
+                            </div>
+                            {isActive && (
+                              <svg
+                                className="w-4 h-4 text-gray-600 flex-shrink-0"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-7.364 7.364a1 1 0 01-1.414 0L3.293 9.536a1 1 0 011.414-1.414l3.222 3.222 6.657-6.657a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}

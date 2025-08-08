@@ -186,24 +186,28 @@ export function WordInputCard({
           )}
 
           {canEdit && showSuggestions && suggestions.length > 0 && (
-            <div className="glass-panel max-h-56 overflow-auto rounded-lg divide-y">
-              {suggestions.map((s, idx) => (
-                <button
-                  type="button"
-                  key={`${s}-${idx}`}
-                  onClick={() => {
-                    setWord(s);
-                    setShowSuggestions(false);
-                    setSuggestions([]);
-                    setError('');
-                  }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
-                    idx === highlightIndex ? 'bg-gray-50' : ''
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="glass-panel no-top-line max-h-56 overflow-auto rounded-2xl p-1 animate-pop-in origin-top">
+              <div className="space-y-1 p-0.5">
+                {suggestions.map((s, idx) => (
+                  <button
+                    type="button"
+                    key={`${s}-${idx}`}
+                    onClick={() => {
+                      setWord(s);
+                      setShowSuggestions(false);
+                      setSuggestions([]);
+                      setError('');
+                    }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl border transition-all focus-visible-ring shadow-inner-highlight ${
+                      idx === highlightIndex
+                        ? 'bg-white/60 border-white/40'
+                        : 'bg-white/35 hover:bg-white/45 active:bg-white/55 border-white/30'
+                    }`}
+                  >
+                    <span className="text-gray-800 text-base">{s}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

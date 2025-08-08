@@ -128,6 +128,89 @@
     display: none;
   }
 
+  /* Compact glass call-to-action (tinted by --accent-r/g/b) */
+  .glass-cta {
+    @apply backdrop-blur-md border shadow-glass-lg transition-all duration-200 ease-out;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.38) 0%,
+        rgba(255, 255, 255, 0.28) 100%
+      ),
+      rgba(
+        var(--accent-r, 109),
+        var(--accent-g, 207),
+        var(--accent-b, 246),
+        0.42
+      );
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
+      0 8px 24px
+        rgba(
+          var(--accent-r, 109),
+          var(--accent-g, 207),
+          var(--accent-b, 246),
+          0.35
+        );
+    position: relative;
+  }
+  .glass-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.7),
+      transparent
+    );
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .glass-cta:hover {
+    transform: translateY(-1px);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.44) 0%,
+        rgba(255, 255, 255, 0.3) 100%
+      ),
+      rgba(
+        var(--accent-r, 109),
+        var(--accent-g, 207),
+        var(--accent-b, 246),
+        0.48
+      );
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.38),
+      0 10px 28px
+        rgba(
+          var(--accent-r, 109),
+          var(--accent-g, 207),
+          var(--accent-b, 246),
+          0.38
+        );
+  }
+  .glass-cta:active {
+    transform: translateY(0) scale(0.98);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        rgba(255, 255, 255, 0.26) 100%
+      ),
+      rgba(
+        var(--accent-r, 109),
+        var(--accent-g, 207),
+        var(--accent-b, 246),
+        0.46
+      );
+  }
+
   /* Animated Background */
   .liquid-bg {
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
@@ -215,6 +298,21 @@
   }
   .animate-fade-in {
     animation: wf-fade-in 1500ms ease-out both;
+  }
+
+  /* Pop-in for dropdowns */
+  @keyframes wf-pop-in {
+    0% {
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .animate-pop-in {
+    animation: wf-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   /* Dramatic delayed word entrance */
