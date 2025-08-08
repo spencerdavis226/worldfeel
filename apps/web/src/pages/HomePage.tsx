@@ -257,7 +257,7 @@ export function HomePage() {
                 id="feeling"
                 name="feeling"
                 placeholder=""
-                className="w-full pl-20 pr-20 sm:pl-14 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
+                className="w-full pl-20 pr-20 sm:pl-14 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/30 transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
                 disabled={loading}
                 autoFocus
                 autoComplete="off"
@@ -283,9 +283,14 @@ export function HomePage() {
                 type="submit"
                 disabled={!selectedKey || loading}
                 aria-hidden={!selectedKey}
-                className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-cta-blue rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
+                className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 cta-glass rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
                   selectedKey ? 'opacity-100' : 'opacity-0 pointer-events-none'
                 }`}
+                style={{
+                  ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
+                  ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
+                  ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
+                }}
                 aria-label="Submit emotion"
               >
                 <svg

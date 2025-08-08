@@ -156,21 +156,9 @@
         );
     position: relative;
   }
+  /* Remove decorative top line for simpler look */
   .glass-cta::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.7),
-      transparent
-    );
-    border-radius: inherit;
-    pointer-events: none;
+    display: none;
   }
   .glass-cta:hover {
     transform: translateY(-1px);
@@ -231,20 +219,7 @@
     position: relative;
   }
   .glass-cta-blue::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.7),
-      transparent
-    );
-    border-radius: inherit;
-    pointer-events: none;
+    display: none;
   }
   .glass-cta-blue:hover {
     /* Keep hover static (no transform/transition). Slightly adjust fill instantly. */
@@ -269,6 +244,71 @@
         rgba(255, 255, 255, 0.28) 100%
       ),
       rgba(10, 132, 255, 0.6);
+  }
+
+  /* Simplified, tintable glass CTA used on Home submit */
+  .cta-glass {
+    @apply backdrop-blur-md backdrop-saturate-150 text-white;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(255, 255, 255, 0.26) 100%
+      ),
+      rgba(
+        var(--accent-r, 109),
+        var(--accent-g, 207),
+        var(--accent-b, 246),
+        0.48
+      );
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      0 10px 26px
+        rgba(
+          var(--accent-r, 109),
+          var(--accent-g, 207),
+          var(--accent-b, 246),
+          0.38
+        ),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+  }
+  .cta-glass:hover {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.3) 100%
+      ),
+      rgba(
+        var(--accent-r, 109),
+        var(--accent-g, 207),
+        var(--accent-b, 246),
+        0.56
+      );
+    box-shadow:
+      0 12px 30px
+        rgba(
+          var(--accent-r, 109),
+          var(--accent-g, 207),
+          var(--accent-b, 246),
+          0.44
+        ),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  }
+  .cta-glass:active {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.36) 0%,
+        rgba(255, 255, 255, 0.22) 100%
+      ),
+      rgba(
+        var(--accent-r, 109),
+        var(--accent-g, 207),
+        var(--accent-b, 246),
+        0.52
+      );
   }
 
   /* Animated Background */
