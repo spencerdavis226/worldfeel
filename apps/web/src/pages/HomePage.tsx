@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
 import { getDeviceId } from '../utils/device';
@@ -8,6 +8,7 @@ import { navigateWithViewTransition } from '../utils/navigation';
 import {
   resolveEmotionKey,
   getEmotionColor,
+  EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
 
 export function HomePage() {
@@ -19,6 +20,17 @@ export function HomePage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
+  // Accent/background control
+  const [accentHex, setAccentHex] = useState<string>('#6DCFF6');
+  // Placeholder rotation
+  const emotionKeys = useMemo(() => Array.from(EmotionColorMap.keys()), []);
+  const [placeholderWord, setPlaceholderWord] = useState<string>(() => {
+    const initial =
+      emotionKeys[Math.floor(Math.random() * emotionKeys.length)] || 'peace';
+    return initial;
+  });
+  const [placeholderVisible, setPlaceholderVisible] = useState<boolean>(true);
+  const rotateRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
   const navigate = useNavigate();
@@ -110,6 +122,55 @@ export function HomePage() {
     };
   }, [word, fetchSuggestions]);
 
+  // When the visible word perfectly matches a known emotion key, tint the background immediately.
+  useEffect(() => {
+    const resolved = resolveEmotionKey(word);
+    const hex = resolved ? getEmotionColor(word) : undefined;
+    if (hex) {
+      setAccentHex(hex);
+    }
+  }, [word]);
+
+  // Rotate placeholder every 2s when input is empty; also drive background from placeholder color
+  useEffect(() => {
+    // If user has typed anything, stop rotating; background only changes for valid input now
+    if (word.trim() !== '') {
+      if (rotateRef.current) {
+        window.clearInterval(rotateRef.current);
+        rotateRef.current = null;
+      }
+      return;
+    }
+    // Start rotation
+    if (rotateRef.current) {
+      window.clearInterval(rotateRef.current);
+      rotateRef.current = null;
+    }
+    // Immediately sync background to current placeholder
+    const currentHex = getEmotionColor(placeholderWord);
+    if (currentHex) setAccentHex(currentHex);
+    rotateRef.current = window.setInterval(() => {
+      // fade out
+      setPlaceholderVisible(false);
+      window.setTimeout(() => {
+        const next =
+          emotionKeys[Math.floor(Math.random() * emotionKeys.length)] ||
+          'peace';
+        setPlaceholderWord(next);
+        const hex = getEmotionColor(next);
+        if (hex) setAccentHex(hex);
+        // fade in
+        setPlaceholderVisible(true);
+      }, 220);
+    }, 2000);
+    return () => {
+      if (rotateRef.current) {
+        window.clearInterval(rotateRef.current);
+        rotateRef.current = null;
+      }
+    };
+  }, [word, emotionKeys, placeholderWord]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSuggestions || suggestions.length === 0) return;
     if (e.key === 'ArrowDown') {
@@ -130,6 +191,9 @@ export function HomePage() {
           setSelectedKey(resolved);
           setShowSuggestions(false);
           setSuggestions([]);
+          // Lock background to the selected emotion color
+          const hex = getEmotionColor(pick) || '#6DCFF6';
+          setAccentHex(hex);
         }
       } else {
         // Prevent free-enter submission unless a selection was made
@@ -153,17 +217,12 @@ export function HomePage() {
     return () => document.removeEventListener('mousedown', onDocClick);
   }, []);
 
-  // Randomize hue start each load for subtle variation (must be before any early returns)
-  const hueStartDeg = useMemo(() => Math.floor(Math.random() * 360), []);
+  // No hue cycling; background color driven by placeholder or valid input
 
   // Show loading state while checking for existing submissions
   if (checkingExisting) {
     return (
-      <GlassyBackground
-        hueCycle
-        hueStartDeg={hueStartDeg}
-        hueDurationMs={20000}
-      >
+      <GlassyBackground colorHex={accentHex} hueCycle={false}>
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
         </div>
@@ -172,7 +231,7 @@ export function HomePage() {
   }
 
   return (
-    <GlassyBackground hueCycle hueStartDeg={hueStartDeg} hueDurationMs={20000}>
+    <GlassyBackground colorHex={accentHex} hueCycle={false}>
       <div className="min-h-screen flex flex-col items-center justify-between p-4">
         {/* Top spacer */}
         <div></div>
@@ -197,7 +256,7 @@ export function HomePage() {
                 onKeyDown={handleKeyDown}
                 id="feeling"
                 name="feeling"
-                placeholder="peaceful, excited..."
+                placeholder=""
                 className="w-full pl-6 pr-20 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
                 disabled={loading}
                 autoFocus
@@ -208,6 +267,16 @@ export function HomePage() {
                 aria-expanded={showSuggestions}
                 aria-controls="emotion-suggestions"
               />
+              {/* Rotating placeholder overlay (only when input is empty) */}
+              {word.trim() === '' && (
+                <div
+                  className={`pointer-events-none absolute inset-0 flex items-center justify-center text-gray-500 select-none transition-opacity duration-300 ${
+                    placeholderVisible ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  {placeholderWord}
+                </div>
+              )}
 
               {/* Submit button: only visible when a dropdown selection has been made */}
               {selectedKey && (
