@@ -11,9 +11,6 @@ const router = Router();
 interface SubmitRequest extends Request {
   body: {
     word: string;
-    country?: string;
-    region?: string;
-    city?: string;
     deviceId?: string;
   };
 }
@@ -34,7 +31,7 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       return;
     }
 
-    const { word, country, region, city } = validationResult.data;
+    const { word } = validationResult.data;
     let { deviceId } = validationResult.data;
 
     // Check for profanity
@@ -64,75 +61,13 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
-    // TEMPORARILY DISABLED FOR TESTING - Check for existing submission
-    /*
-    const existingSubmission = await Submission.findOne({
-      $or: [
-        { ipHash },
-        ...(deviceId ? [{ deviceId }] : [])
-      ],
-      expiresAt: { $gt: new Date() } // Still active
-    }).sort({ createdAt: -1 });
-
-    const now = new Date();
-
-    if (existingSubmission) {
-      // Check if within edit window
-      const submissionAge = (now.getTime() - existingSubmission.createdAt.getTime()) / (1000 * 60); // minutes
-
-      if (submissionAge <= EDIT_WINDOW_MINUTES) {
-        // Update existing submission
-        existingSubmission.word = word;
-        if (country !== undefined) existingSubmission.country = country;
-        if (region !== undefined) existingSubmission.region = region;
-        if (city !== undefined) existingSubmission.city = city;
-        await existingSubmission.save();
-
-        // Get updated stats
-        const statsQuery: any = { yourWord: word };
-        if (country) statsQuery.country = country;
-        if (region) statsQuery.region = region;
-        if (city) statsQuery.city = city;
-
-        const stats = await getStats(statsQuery);
-
-        res.json({
-          success: true,
-          data: stats,
-          message: 'Word updated successfully',
-          canEdit: true,
-          editWindowMinutes: EDIT_WINDOW_MINUTES
-        });
-        return;
-      } else {
-        // Outside edit window, return current submission stats
-        const statsQuery: any = { yourWord: existingSubmission.word };
-        if (existingSubmission.country) statsQuery.country = existingSubmission.country;
-        if (existingSubmission.region) statsQuery.region = existingSubmission.region;
-        if (existingSubmission.city) statsQuery.city = existingSubmission.city;
-
-        const stats = await getStats(statsQuery);
-
-        res.status(409).json({
-          success: false,
-          error: 'Already submitted',
-          message: `You've already shared your feeling today: "${existingSubmission.word}"`,
-          data: stats,
-          canEdit: false
-        });
-        return;
-      }
-    }
-    */
+    // Existing-submission edit flow is currently disabled (simplified global model)
 
     const now = new Date();
 
     // Create new submission
     const submission = new Submission({
       word,
-      country,
-      region,
-      city,
       ipHash,
       deviceId,
       createdAt: now,
@@ -146,9 +81,6 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
 
     // Get stats for response
     const statsQuery: any = { yourWord: word };
-    if (country) statsQuery.country = country;
-    if (region) statsQuery.region = region;
-    if (city) statsQuery.city = city;
 
     const stats = await getStats(statsQuery);
 

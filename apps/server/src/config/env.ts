@@ -11,8 +11,6 @@ const envSchema = z.object({
   DB_NAME: z.string().default('worldfeeling'),
   WEB_ORIGIN: z.string().url('Invalid web origin URL'),
   DAY_SALT_SECRET: z.string().min(32, 'Day salt secret must be at least 32 characters'),
-  ENABLE_IP_FALLBACK: z.coerce.boolean().default(false),
-  IP_FALLBACK_URL: z.string().url().default('https://ipapi.co/json/'),
 });
 
 export type Environment = z.infer<typeof envSchema>;
@@ -40,5 +38,4 @@ if (env.NODE_ENV === 'development') {
   console.log(`  - Port: ${env.PORT}`);
   console.log(`  - Database: ${env.DB_NAME}`);
   console.log(`  - Web Origin: ${env.WEB_ORIGIN}`);
-  console.log(`  - IP Fallback: ${env.ENABLE_IP_FALLBACK ? 'Enabled' : 'Disabled'}`);
 }

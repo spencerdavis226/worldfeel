@@ -3,9 +3,6 @@ export interface Submission {
   word: string;
   ipHash: string;
   deviceId?: string;
-  country?: string;
-  region?: string;
-  city?: string;
   createdAt: Date;
   expiresAt: Date;
 }
@@ -36,9 +33,6 @@ export interface SubmissionRequest {
 
 export interface StatsQuery {
   yourWord?: string;
-  country?: string;
-  region?: string;
-  city?: string;
 }
 
 export interface ColorResult {

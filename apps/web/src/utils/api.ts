@@ -55,9 +55,6 @@ class ApiClient {
   async getStats(params: StatsQuery = {}): Promise<ApiResponse<Stats>> {
     const searchParams = new URLSearchParams();
 
-    if (params.country) searchParams.set('country', params.country);
-    if (params.region) searchParams.set('region', params.region);
-    if (params.city) searchParams.set('city', params.city);
     if (params.yourWord) searchParams.set('yourWord', params.yourWord);
 
     const query = searchParams.toString();

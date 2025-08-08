@@ -17,9 +17,6 @@ const router = Router();
 
 interface StatsRequest extends Request {
   query: {
-    country?: string;
-    region?: string;
-    city?: string;
     yourWord?: string;
   };
 }
@@ -35,9 +32,6 @@ const statsCache = new Map<string, CacheEntry>();
 
 function buildCacheKey(query: StatsQuery = {}): string {
   const parts = [
-    query.country || '',
-    query.region || '',
-    query.city || '',
     query.yourWord || '',
   ];
   return parts.join('|');
@@ -56,16 +50,12 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     return cached.value;
   }
 
-  const { country, region, city, yourWord: yourWordQuery } = query;
+  const { yourWord: yourWordQuery } = query;
 
   // Build match filter for location
   const matchFilter: any = {
     expiresAt: { $gt: new Date() }, // Only active submissions
   };
-
-  if (country) matchFilter.country = country;
-  if (region) matchFilter.region = region;
-  if (city) matchFilter.city = city;
 
   // Main aggregation pipeline for word counts
   const pipeline: any[] = [
@@ -203,9 +193,6 @@ router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
 
     const queryData = validationResult.data;
     const statsQuery: any = {};
-    if (queryData.country) statsQuery.country = queryData.country;
-    if (queryData.region) statsQuery.region = queryData.region;
-    if (queryData.city) statsQuery.city = queryData.city;
     if (queryData.yourWord) statsQuery.yourWord = queryData.yourWord;
 
     const stats = await getStats(statsQuery);

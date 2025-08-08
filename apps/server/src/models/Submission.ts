@@ -15,24 +15,6 @@ const submissionSchema = new Schema<SubmissionDocument>({
       message: 'Word must contain only letters and be 1-20 characters long'
     }
   },
-  country: {
-    type: String,
-    trim: true,
-    maxlength: 100,
-    default: undefined
-  },
-  region: {
-    type: String,
-    trim: true,
-    maxlength: 100,
-    default: undefined
-  },
-  city: {
-    type: String,
-    trim: true,
-    maxlength: 100,
-    default: undefined
-  },
   ipHash: {
     type: String,
     required: true,
@@ -65,7 +47,6 @@ submissionSchema.index({ ipHash: 1, deviceId: 1 }, { sparse: true });
 
 // Query optimization indexes
 submissionSchema.index({ word: 1 });
-submissionSchema.index({ country: 1, region: 1, city: 1 });
 submissionSchema.index({ createdAt: 1 });
 
 // Ensure indexes are created

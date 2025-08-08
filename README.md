@@ -12,7 +12,7 @@ A beautiful, real-time MERN application that collects one-word emotions from aro
 - **One word per person per day** - Simple, focused emotional expression
 - **Real-time global stats** - See how the world feels right now
 - **Liquid Glass UI** - Modern, beautiful interface with frosted glass effects
-- **Location filtering** - Filter emotions by country, region, and city
+- (Legacy) Location filtering removed
 - **Auto-expiring data** - MongoDB TTL ensures data freshens every 24 hours
 - **Privacy-first** - No IP storage, only hashed identifiers
 - **Emotion-based colors** - Dynamic backgrounds based on dominant feelings
@@ -121,9 +121,6 @@ Submit a daily emotion word.
 ```json
 {
   "word": "happy",
-  "country": "United States",
-  "region": "California",
-  "city": "San Francisco",
   "deviceId": "uuid-v4-string"
 }
 ```
@@ -161,9 +158,6 @@ Get current global emotion statistics.
 
 **Query Parameters:**
 
-- `country` (optional) - Filter by country name
-- `region` (optional) - Filter by state/region
-- `city` (optional) - Filter by city
 - `yourWord` (optional) - Get rank info for specific word
 
 **Response:** Same as POST /submit data field
@@ -188,24 +182,7 @@ Get color mapping for any emotion word.
 }
 ```
 
-#### `GET /geoip`
-
-Get location from IP address (if enabled).
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "country": "United States",
-    "region": "California",
-    "city": "San Francisco",
-    "latitude": 37.7749,
-    "longitude": -122.4194
-  }
-}
-```
+// GeoIP endpoint (legacy) removed
 
 #### `POST /flag`
 
@@ -248,9 +225,6 @@ The app uses a **Liquid Glass** design language with:
 {
   _id: ObjectId,
   word: String,           // lowercase, letters-only, max 20 chars
-  country: String,        // optional, max 100 chars
-  region: String,         // optional, max 100 chars
-  city: String,           // optional, max 100 chars
   ipHash: String,         // sha256(ip + daySalt), 64 chars
   deviceId: String,       // uuid v4, optional
   createdAt: Date,        // auto-generated
@@ -263,7 +237,7 @@ The app uses a **Liquid Glass** design language with:
 - `{ expiresAt: 1 }` - TTL index with `expireAfterSeconds: 0`
 - `{ ipHash: 1, deviceId: 1 }` - Compound index for deduplication (sparse)
 - `{ word: 1 }` - Query optimization
-- `{ country: 1, region: 1, city: 1 }` - Location filtering
+// Location index removed (legacy)
 
 ## 🔒 Security & Privacy
 
@@ -272,7 +246,7 @@ The app uses a **Liquid Glass** design language with:
 - **No IP Storage** - Only SHA256 hashes with daily salt rotation
 - **Device ID Cookies** - Client-side UUID for duplicate prevention
 - **Data Expiry** - Automatic cleanup after 24 hours via MongoDB TTL
-- **Optional Geolocation** - User controls location sharing
+// Optional Geolocation (legacy) removed
 
 ### Security Features
 
@@ -286,7 +260,7 @@ The app uses a **Liquid Glass** design language with:
 
 - **5-minute edit window** after initial submission
 - **Same-day limit** - One emotion per person per day
-- **Update capability** - Modify word and location within edit window
+- **Update capability** - Modify word within edit window
 
 ## 📱 Deployment
 
@@ -409,7 +383,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **Country State City** - Location data for filtering
+// Country State City (legacy) removed
 - **MongoDB** - TTL collections for auto-expiring data
 - **TailwindCSS** - Utility-first CSS framework
 - **Zod** - TypeScript-first schema validation

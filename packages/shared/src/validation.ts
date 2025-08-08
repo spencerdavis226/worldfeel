@@ -13,12 +13,6 @@ export const wordSchema = z
   )
   .transform((word) => word.toLowerCase().trim());
 
-export const locationSchema = z
-  .string()
-  .max(100, 'Location name too long')
-  .transform((str) => str.trim())
-  .optional();
-
 export const deviceIdSchema = z
   .string()
   .uuid('Invalid device ID format')
@@ -26,16 +20,10 @@ export const deviceIdSchema = z
 
 export const submissionRequestSchema = z.object({
   word: wordSchema,
-  country: locationSchema,
-  region: locationSchema,
-  city: locationSchema,
   deviceId: deviceIdSchema,
 });
 
 export const statsQuerySchema = z.object({
-  country: locationSchema,
-  region: locationSchema,
-  city: locationSchema,
   yourWord: wordSchema.optional(),
 });
 
