@@ -19,16 +19,16 @@ function WordBadge({
   const colors = wordToColor(word);
 
   return (
-    <div className="flex items-center justify-between py-3 px-1">
+    <div className="flex items-center justify-between py-3 md:py-3.5 px-1">
       <div className="flex items-center space-x-3">
-        <div className="text-sm font-medium text-gray-500 w-6">#{rank}</div>
+        <div className="text-[11px] font-medium text-gray-500 w-6">#{rank}</div>
         <div
           className="w-3 h-3 rounded-full"
           style={{ backgroundColor: colors.hex }}
         />
-        <span className="font-medium text-gray-800">{word}</span>
+        <span className="text-[13px] font-medium text-gray-800">{word}</span>
       </div>
-      <div className="text-sm text-gray-600">
+      <div className="text-[11px] text-gray-600">
         {count} {count === 1 ? 'person' : 'people'}
       </div>
     </div>
@@ -50,7 +50,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
         </div>
 
         {/* Stats loading - secondary */}
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+        <div className="glass-panel p-6">
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-gray-200/50 rounded w-1/2 mx-auto mb-4"></div>
             <div className="space-y-2">
@@ -91,7 +91,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     <div className="w-full max-w-xl mx-auto">
       {/* Main emotion - hero section */}
       <div className="mb-12 md:mb-16">
-        <div className="text-center space-y-8">
+        <div className="text-center space-y-6 md:space-y-8">
           <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
             The world feels
           </h1>
@@ -105,9 +105,9 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       </div>
 
       {/* Top emotions list - secondary */}
-      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-        <h3 className="font-medium text-gray-800 text-center mb-4">
-          Most Common Feelings
+      <div className="glass-panel no-top-line p-6">
+        <h3 className="text-sm font-medium text-gray-700 text-center mb-3 md:mb-4">
+          Top feelings today
         </h3>
         <div className="space-y-1">
           {top5.map((item, index) => (
