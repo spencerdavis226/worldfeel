@@ -45,14 +45,14 @@ export function GlassyBackground({
     >
       {/* Animated gradient background */}
       <div
-        className="absolute inset-0 opacity-60"
+        className="absolute inset-0 opacity-70"
         style={{
           // Base background composition
           background: `
-            radial-gradient(circle at 20% 80%, rgba(${r}, ${g}, ${b}, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(${Math.min(255, r + 30)}, ${Math.min(255, g + 30)}, ${Math.min(255, b + 30)}, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(${Math.max(0, r - 30)}, ${Math.max(0, g - 30)}, ${Math.max(0, b - 30)}, 0.2) 0%, transparent 50%),
-            linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)
+            radial-gradient(circle at 20% 80%, rgba(${r}, ${g}, ${b}, 0.4) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(${Math.min(255, r + 30)}, ${Math.min(255, g + 30)}, ${Math.min(255, b + 30)}, 0.35) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(${Math.max(0, r - 30)}, ${Math.max(0, g - 30)}, ${Math.max(0, b - 30)}, 0.25) 0%, transparent 50%),
+            linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)
           `,
           // Combine gradient drift with optional hue cycle in one animation declaration
           animation: `gradient-shift 20s ease-in-out infinite${
@@ -68,7 +68,7 @@ export function GlassyBackground({
           ...(hueCycle
             ? {
                 ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
-                filter: 'hue-rotate(var(--wf-hue-start))',
+                filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
                 willChange: 'filter',
               }
             : {}),
