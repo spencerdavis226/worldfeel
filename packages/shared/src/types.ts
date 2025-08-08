@@ -3,6 +3,9 @@ export interface Submission {
   word: string;
   ipHash: string;
   deviceId?: string;
+  country?: string;
+  region?: string;
+  city?: string;
   createdAt: Date;
   expiresAt: Date;
 }
@@ -33,11 +36,16 @@ export interface SubmissionRequest {
 
 export interface StatsQuery {
   yourWord?: string;
+  country?: string;
+  region?: string;
+  city?: string;
 }
 
 export interface ColorResult {
   hex: string;
   shadeHex: string;
+  name: string;
+  matched: boolean; // true if emotion matched from map, false if random fallback
 }
 
 export interface ApiResponse<T = any> {

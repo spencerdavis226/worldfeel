@@ -4,6 +4,7 @@ import {
   wordToColor,
   generatePalette,
 } from '@worldfeel/shared';
+import { UnknownEmotion } from '../models/UnknownEmotion.js';
 import type {
   Stats,
   StatsQuery,
@@ -148,6 +149,21 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
   // Generate colors
   const topWord = yourWord?.word || top.word;
   const colors = wordToColor(topWord);
+  if (!colors.matched) {
+    try {
+      await UnknownEmotion.updateOne(
+        { word: topWord.toLowerCase().trim() },
+        {
+          $inc: { count: 1 },
+          $set: { lastSeenAt: new Date() },
+          $setOnInsert: { firstSeenAt: new Date() },
+        },
+        { upsert: true }
+      );
+    } catch (e) {
+      console.warn('UnknownEmotion upsert failed (stats topWord):', e);
+    }
+  }
   const palette = generatePalette(colors.hex, 5);
 
   const result: Stats = {

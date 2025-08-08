@@ -187,23 +187,56 @@ export const EMOTION_COLORS: Record<string, string> = {
   broken: '#8D6E63',
 };
 
-// Generate HSL color from string hash
-function hashStringToHSL(str: string): { h: number; s: number; l: number } {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    hash = hash & hash; // Convert to 32bit integer
-  }
+// A larger bank of named colors we can sample from when we need a fallback.
+// Names mostly follow common design/system naming; feel free to expand.
+export const NAMED_COLORS: Array<{ name: string; hex: string }> = [
+  { name: 'Blurple', hex: '#5B6CFF' },
+  { name: 'Sunflower', hex: '#FFC300' },
+  { name: 'Honey', hex: '#FFD166' },
+  { name: 'Tangerine', hex: '#FF8C42' },
+  { name: 'Apricot', hex: '#FFB84D' },
+  { name: 'Coral', hex: '#FF7043' },
+  { name: 'Flamingo', hex: '#FF6B6B' },
+  { name: 'Rose', hex: '#F48FB1' },
+  { name: 'Bubblegum', hex: '#F78DA7' },
+  { name: 'Lavender', hex: '#A78BFA' },
+  { name: 'Amethyst', hex: '#9B59B6' },
+  { name: 'Iris', hex: '#6366F1' },
+  { name: 'Sky', hex: '#87CEEB' },
+  { name: 'Aqua', hex: '#00BCD4' },
+  { name: 'Teal', hex: '#26A69A' },
+  { name: 'Mint', hex: '#A8E6CF' },
+  { name: 'Jade', hex: '#00C896' },
+  { name: 'Emerald', hex: '#4CAF50' },
+  { name: 'Lime', hex: '#8BC34A' },
+  { name: 'Olive', hex: '#95D5B2' },
+  { name: 'Sand', hex: '#FFF3E0' },
+  { name: 'Mushroom', hex: '#BDBDBD' },
+  { name: 'Slate', hex: '#607D8B' },
+  { name: 'Graphite', hex: '#455A64' },
+  { name: 'Charcoal', hex: '#37474F' },
+  { name: 'Midnight', hex: '#0D47A1' },
+  { name: 'Crimson', hex: '#D32F2F' },
+  { name: 'Scarlet', hex: '#FF1744' },
+  { name: 'Amber', hex: '#FFB74D' },
+  { name: 'Saffron', hex: '#FEC84B' },
+  { name: 'Copper', hex: '#BF360C' },
+  { name: 'Mocha', hex: '#8D6E63' },
+  { name: 'Lilac', hex: '#CE93D8' },
+  { name: 'Periwinkle', hex: '#8B5CF6' },
+  { name: 'Plum', hex: '#6B46C1' },
+  { name: 'Cobalt', hex: '#1E88E5' },
+  { name: 'Cerulean', hex: '#42A5F5' },
+  { name: 'Seafoam', hex: '#80CBC4' },
+  { name: 'Pistachio', hex: '#B8E6B8' },
+  { name: 'Moss', hex: '#689F38' },
+  { name: 'Pine', hex: '#388E3C' },
+  { name: 'Steel', hex: '#9FA8DA' },
+  { name: 'Fog', hex: '#E0E0E0' },
+  { name: 'Snow', hex: '#F5F5F5' },
+];
 
-  // Generate hue from hash (0-360)
-  const h = Math.abs(hash) % 360;
-
-  // Pleasant saturation and lightness ranges
-  const s = 40 + (Math.abs(hash >> 8) % 40); // 40-80%
-  const l = 45 + (Math.abs(hash >> 16) % 25); // 45-70%
-
-  return { h, s, l };
-}
+// hslToHex below relies on numeric HSL values; hash-to-HSL utility removed
 
 // Convert HSL to hex
 function hslToHex(h: number, s: number, l: number): string {
@@ -308,7 +341,8 @@ export function wordToColor(word: string): ColorResult {
   if (EMOTION_COLORS[normalizedWord]) {
     const hex = EMOTION_COLORS[normalizedWord];
     const shadeHex = darkenColor(hex);
-    return { hex, shadeHex };
+    const name = findColorName(hex) ?? 'Custom';
+    return { hex, shadeHex, name, matched: true };
   }
 
   // Check for plural forms
@@ -318,19 +352,73 @@ export function wordToColor(word: string): ColorResult {
   if (EMOTION_COLORS[singularWord]) {
     const hex = EMOTION_COLORS[singularWord];
     const shadeHex = darkenColor(hex);
-    return { hex, shadeHex };
+    const name = findColorName(hex) ?? 'Custom';
+    return { hex, shadeHex, name, matched: true };
   }
 
-  // Generate color from hash
-  const { h, s, l } = hashStringToHSL(normalizedWord);
-  const hex = hslToHex(h, s, l);
+  // Fallback: select a pseudo-random named color from our bank using a stable hash
+  const index = Math.abs(stableHash(normalizedWord)) % NAMED_COLORS.length;
+  const pick = NAMED_COLORS[index]!;
+  const hex = pick.hex;
   const shadeHex = darkenColor(hex);
+  return { hex, shadeHex, name: pick.name, matched: false };
+}
 
-  return { hex, shadeHex };
+// Try to find a friendly name for a hex if it exists in our bank
+function findColorName(hex: string): string | undefined {
+  const normalized = hex.toUpperCase();
+  const exact = NAMED_COLORS.find((c) => c.hex.toUpperCase() === normalized);
+  if (exact) return exact.name;
+  const nearest = nearestNamedColor(normalized);
+  return nearest.name;
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+function nearestNamedColor(hex: string): { name: string; hex: string } {
+  const target = hexToRgb(hex);
+  let best = NAMED_COLORS[0]!;
+  let bestDist = Number.POSITIVE_INFINITY;
+  for (const c of NAMED_COLORS) {
+    const rgb = hexToRgb(c.hex);
+    const dr = rgb.r - target.r;
+    const dg = rgb.g - target.g;
+    const db = rgb.b - target.b;
+    const dist = dr * dr + dg * dg + db * db;
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = c;
+    }
+  }
+  return best;
+}
+
+// Public helper to translate a hex color to our closest known color name
+export function colorHexToName(hex: string): string {
+  return findColorName(hex) ?? 'Custom';
+}
+
+// Small stable hash for indexing into banks without crypto cost
+function stableHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
 }
 
 // Generate a palette of related colors
-export function generatePalette(baseColor: string, count: number = 5): string[] {
+export function generatePalette(
+  baseColor: string,
+  count: number = 5
+): string[] {
   const palette: string[] = [baseColor];
 
   // Extract HSL from base color
@@ -388,7 +476,9 @@ export function getContrastRatio(color1: string, color2: string): number {
       c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
     );
 
-    return 0.2126 * linearRgb[0]! + 0.7152 * linearRgb[1]! + 0.0722 * linearRgb[2]!;
+    return (
+      0.2126 * linearRgb[0]! + 0.7152 * linearRgb[1]! + 0.0722 * linearRgb[2]!
+    );
   };
 
   const lum1 = getLuminance(color1);

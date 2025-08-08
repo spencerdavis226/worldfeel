@@ -1,4 +1,3 @@
-
 import { wordToColor } from '@worldfeel/shared';
 
 interface ColorBadgeProps {
@@ -7,8 +6,18 @@ interface ColorBadgeProps {
   className?: string;
 }
 
-export function ColorBadge({ word, colorHex, className = '' }: ColorBadgeProps) {
-  const colors = word ? wordToColor(word) : { hex: colorHex || '#6DCFF6', shadeHex: '#4A9EBF' };
+export function ColorBadge({
+  word,
+  colorHex,
+  className = '',
+}: ColorBadgeProps) {
+  const fallback = {
+    hex: colorHex || '#6DCFF6',
+    shadeHex: '#4A9EBF',
+    name: 'Aqua',
+    matched: false,
+  };
+  const colors = word ? wordToColor(word) : fallback;
 
   return (
     <div
@@ -29,12 +38,15 @@ export function ColorBadge({ word, colorHex, className = '' }: ColorBadgeProps) 
           className="w-6 h-6 rounded-full border-2 border-white/30 shadow-inner"
           style={{ backgroundColor: colors.hex }}
         />
-        <span
-          className="text-sm font-mono font-medium tracking-wider"
-          style={{ color: colors.shadeHex }}
-        >
-          {colors.hex.toUpperCase()}
-        </span>
+        <div className="flex flex-col leading-tight">
+          <span
+            className="text-sm font-mono font-medium tracking-wider"
+            style={{ color: colors.shadeHex }}
+          >
+            {colors.hex.toUpperCase()}
+          </span>
+          <span className="text-[10px] text-gray-500">{colors.name}</span>
+        </div>
       </div>
     </div>
   );

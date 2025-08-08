@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { colorQuerySchema, wordToColor } from '@worldfeel/shared';
+import { UnknownEmotion } from '../models/UnknownEmotion.js';
 
 const router = Router();
 
@@ -17,7 +18,8 @@ router.get('/', async (req: ColorRequest, res: Response): Promise<void> => {
       res.status(400).json({
         success: false,
         error: 'Invalid query parameters',
-        message: validationResult.error.errors[0]?.message || 'Word is required'
+        message:
+          validationResult.error.errors[0]?.message || 'Word is required',
       });
       return;
     }
@@ -25,17 +27,34 @@ router.get('/', async (req: ColorRequest, res: Response): Promise<void> => {
     const { word } = validationResult.data;
     const colors = wordToColor(word);
 
+    // Log unknown emotions so developers can review and map later
+    if (!colors.matched) {
+      try {
+        await UnknownEmotion.updateOne(
+          { word: word.toLowerCase().trim() },
+          {
+            $inc: { count: 1 },
+            $set: { lastSeenAt: new Date() },
+            $setOnInsert: { firstSeenAt: new Date() },
+          },
+          { upsert: true }
+        );
+      } catch (e) {
+        // Non-blocking
+        console.warn('UnknownEmotion upsert failed:', e);
+      }
+    }
+
     res.json({
       success: true,
-      data: colors
+      data: colors,
     });
-
   } catch (error) {
     console.error('Color error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
-      message: 'Unable to generate color'
+      message: 'Unable to generate color',
     });
   }
 });

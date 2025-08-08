@@ -45,6 +45,9 @@ export function ResultsPage() {
               <span className="font-mono tracking-wider">
                 {wordToColor(stats.top.word).hex.toUpperCase()}
               </span>
+              <span className="text-gray-500">
+                - {(wordToColor(stats.top.word) as any).name ?? 'Custom'}
+              </span>
             </div>
           )}
           <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
