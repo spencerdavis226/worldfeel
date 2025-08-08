@@ -31,9 +31,7 @@ const STATS_CACHE_TTL_MS = 5000; // 5 seconds
 const statsCache = new Map<string, CacheEntry>();
 
 function buildCacheKey(query: StatsQuery = {}): string {
-  const parts = [
-    query.yourWord || '',
-  ];
+  const parts = [query.yourWord || ''];
   return parts.join('|');
 }
 
@@ -197,11 +195,8 @@ router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
 
     const stats = await getStats(statsQuery);
 
-    // Encourage CDN/shared cache for 5s while keeping browser cache at 0s
-    res.set(
-      'Cache-Control',
-      'public, max-age=0, s-maxage=5, stale-while-revalidate=30'
-    );
+    // Disable network caching to ensure users see fresh stats after submitting
+    res.set('Cache-Control', 'no-store');
 
     res.json({
       success: true,
