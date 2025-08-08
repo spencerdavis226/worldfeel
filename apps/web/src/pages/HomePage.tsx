@@ -257,7 +257,7 @@ export function HomePage() {
                 id="feeling"
                 name="feeling"
                 placeholder=""
-                className="w-full pl-6 pr-20 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
+                className="w-full pl-20 pr-20 sm:pl-14 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
                 disabled={loading}
                 autoFocus
                 autoComplete="off"
