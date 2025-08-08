@@ -4,7 +4,6 @@ import { GlassyBackground } from '../components/GlassyBackground';
 import { StatsPanel } from '../components/StatsPanel';
 import { useStats } from '../hooks/useStats';
 import { useBackgroundColor } from '../hooks/useBackgroundColor';
-import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 
 export function ResultsPage() {
   const navigate = useNavigate();
@@ -13,7 +12,8 @@ export function ResultsPage() {
 
   // Get global stats (no filters for MVP)
   const { stats, loading, error } = useStats(emptyFilters, {
-    autoRefresh: false,
+    autoRefresh: true,
+    refreshInterval: 15000,
   });
 
   // Update background color based on top emotion
@@ -51,21 +51,6 @@ export function ResultsPage() {
           <p className="text-sm text-gray-500">
             {stats?.total?.toLocaleString() || '0'} feelings shared today
           </p>
-          {/* Color information */}
-          {stats?.top && (
-            <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
-              <span>Today's emotional color</span>
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: getEmotionColor(stats.top.word) || '#6DCFF6',
-                }}
-              />
-              <span className="font-mono tracking-wider">
-                {(getEmotionColor(stats.top.word) || '#6DCFF6').toUpperCase()}
-              </span>
-            </div>
-          )}
           <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
             <Link
               to="/about"
