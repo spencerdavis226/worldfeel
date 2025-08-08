@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
 import { StatsPanel } from '../components/StatsPanel';
@@ -18,23 +18,9 @@ export function ResultsPage() {
   // Update background color based on top emotion
   useBackgroundColor(stats?.top?.word);
 
-  // Trigger a subtle, mount-only fade-and-lift animation (motion-safe only)
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    const rafId = requestAnimationFrame(() => setIsMounted(true));
-    return () => cancelAnimationFrame(rafId);
-  }, []);
-
   return (
     <GlassyBackground colorHex={stats?.colorHex}>
-      <div
-        className={[
-          'min-h-screen flex flex-col items-center justify-between p-4',
-          isMounted && 'animate-fade-in-up',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
+      <div className="min-h-screen flex flex-col items-center justify-between p-4">
         {/* Top spacer */}
         <div></div>
 

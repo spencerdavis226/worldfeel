@@ -90,8 +90,8 @@ export function HomePage() {
         {/* Top spacer */}
         <div></div>
 
-        {/* Main content - centered */}
-        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2">
+        {/* Main content - centered (animate only content, keep footer static) */}
+        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in">
           {/* Main prompt */}
           <div className="mb-12 md:mb-16">
             <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">

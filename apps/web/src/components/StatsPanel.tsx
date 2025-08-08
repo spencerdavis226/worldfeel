@@ -92,11 +92,11 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       {/* Main emotion - hero section */}
       <div className="mb-12 md:mb-16">
         <div className="text-center space-y-6 md:space-y-8">
-          <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+          <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap animate-fade-in-up anim-delay-0">
             The world feels
           </h1>
           <div
-            className="text-6xl md:text-7xl font-medium"
+            className="text-6xl md:text-7xl font-medium animate-fade-in-up anim-delay-600"
             style={{ color: wordToColor(top.word).hex }}
           >
             {top.word}
@@ -105,7 +105,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       </div>
 
       {/* Top emotions list - secondary */}
-      <div className="glass-panel no-top-line p-6">
+      <div className="glass-panel no-top-line p-6 animate-fade-in-up anim-delay-1100">
         <h3 className="text-sm font-medium text-gray-700 text-center mb-3 md:mb-4">
           Top feelings today
         </h3>
