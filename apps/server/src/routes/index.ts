@@ -2,6 +2,7 @@ import { Router } from 'express';
 import submitRouter from './submit.js';
 import statsRouter from './stats.js';
 import colorRouter from './color.js';
+import emotionsRouter from './emotions.js';
 import flagRouter from './flag.js';
 import { UnknownEmotion } from '../models/UnknownEmotion.js';
 
@@ -11,6 +12,7 @@ const router = Router();
 router.use('/submit', submitRouter);
 router.use('/stats', statsRouter);
 router.use('/color', colorRouter);
+router.use('/emotions', emotionsRouter);
 router.use('/flag', flagRouter);
 
 // Health check endpoint

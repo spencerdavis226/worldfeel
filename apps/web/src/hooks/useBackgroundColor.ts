@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { wordToColor } from '@worldfeel/shared';
+import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 
 /**
  * Hook to dynamically update the page background based on the dominant emotion
@@ -8,8 +8,7 @@ export function useBackgroundColor(word: string | undefined) {
   useEffect(() => {
     if (!word) return;
 
-    const colors = wordToColor(word);
-    const { hex } = colors;
+    const hex = getEmotionColor(word) || '#6DCFF6';
 
     // Convert hex to RGB for CSS variables
     const r = parseInt(hex.slice(1, 3), 16);
@@ -26,17 +25,44 @@ export function useBackgroundColor(word: string | undefined) {
     const darkerB = Math.max(0, b - 20);
 
     // Update CSS custom properties for smooth transitions
-    document.documentElement.style.setProperty('--emotion-color-r', r.toString());
-    document.documentElement.style.setProperty('--emotion-color-g', g.toString());
-    document.documentElement.style.setProperty('--emotion-color-b', b.toString());
+    document.documentElement.style.setProperty(
+      '--emotion-color-r',
+      r.toString()
+    );
+    document.documentElement.style.setProperty(
+      '--emotion-color-g',
+      g.toString()
+    );
+    document.documentElement.style.setProperty(
+      '--emotion-color-b',
+      b.toString()
+    );
 
-    document.documentElement.style.setProperty('--emotion-light-r', lightR.toString());
-    document.documentElement.style.setProperty('--emotion-light-g', lightG.toString());
-    document.documentElement.style.setProperty('--emotion-light-b', lightB.toString());
+    document.documentElement.style.setProperty(
+      '--emotion-light-r',
+      lightR.toString()
+    );
+    document.documentElement.style.setProperty(
+      '--emotion-light-g',
+      lightG.toString()
+    );
+    document.documentElement.style.setProperty(
+      '--emotion-light-b',
+      lightB.toString()
+    );
 
-    document.documentElement.style.setProperty('--emotion-dark-r', darkerR.toString());
-    document.documentElement.style.setProperty('--emotion-dark-g', darkerG.toString());
-    document.documentElement.style.setProperty('--emotion-dark-b', darkerB.toString());
+    document.documentElement.style.setProperty(
+      '--emotion-dark-r',
+      darkerR.toString()
+    );
+    document.documentElement.style.setProperty(
+      '--emotion-dark-g',
+      darkerG.toString()
+    );
+    document.documentElement.style.setProperty(
+      '--emotion-dark-b',
+      darkerB.toString()
+    );
 
     // Update body background with gradient
     const lightColor = `rgba(${lightR}, ${lightG}, ${lightB}, 0.1)`;

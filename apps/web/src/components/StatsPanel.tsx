@@ -1,5 +1,5 @@
 import type { Stats } from '@worldfeel/shared';
-import { wordToColor } from '@worldfeel/shared';
+import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import { useEffect, useState } from 'react';
 
 interface StatsPanelProps {
@@ -17,7 +17,7 @@ function WordBadge({
   count: number;
   rank?: number;
 }) {
-  const colors = wordToColor(word);
+  const hex = getEmotionColor(word) || '#6DCFF6';
 
   return (
     <div className="flex items-center justify-between py-3 md:py-3.5 px-1">
@@ -25,7 +25,7 @@ function WordBadge({
         <div className="text-[11px] font-medium text-gray-500 w-6">#{rank}</div>
         <div
           className="w-3 h-3 rounded-full"
-          style={{ backgroundColor: colors.hex }}
+          style={{ backgroundColor: hex }}
         />
         <span className="text-[13px] font-medium text-gray-800">{word}</span>
       </div>
@@ -135,7 +135,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
               'text-6xl md:text-7xl font-medium',
               animateNow ? 'animate-fade-in-up anim-delay-900' : 'hidden',
             ].join(' ')}
-            style={{ color: wordToColor(top.word).hex }}
+            style={{ color: getEmotionColor(top.word) || '#6DCFF6' }}
           >
             {top.word}
           </div>

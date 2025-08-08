@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { lettersOnly } from '@worldfeel/shared';
+import { resolveEmotionKey } from '@worldfeel/shared/emotion-color-map';
 import type { SubmissionRequest } from '@worldfeel/shared';
+import { apiClient } from '../utils/api.js';
 
 interface WordInputCardProps {
   onSubmit: (submission: SubmissionRequest) => Promise<void>;
@@ -18,7 +20,11 @@ export function WordInputCard({
   const [word, setWord] = useState(currentWord || '');
   const [error, setError] = useState<string>('');
   const [touched, setTouched] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<number | null>(null);
 
   // Focus input on mount
   useEffect(() => {
@@ -46,17 +52,67 @@ export function WordInputCard({
     if (value.length > 20) {
       return 'Maximum 20 characters';
     }
-
+    if (!resolveEmotionKey(value)) {
+      return 'Please select a valid emotion from the list';
+    }
     return '';
   };
+
+  const fetchSuggestions = useCallback(async (q: string) => {
+    if (!q.trim()) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const resp = await apiClient.searchEmotions(q, 20);
+      if (resp.success && Array.isArray(resp.data)) {
+        setSuggestions(resp.data);
+      }
+    } catch {
+      // ignore network errors for suggestions
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setWord(value);
     setTouched(true);
+    setShowSuggestions(true);
+    setHighlightIndex(-1);
 
     const validationError = validateWord(value);
     setError(validationError);
+
+    if (debounceRef.current) {
+      window.clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = window.setTimeout(() => {
+      fetchSuggestions(value);
+    }, 150);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightIndex((idx) => (idx + 1) % suggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightIndex(
+        (idx) => (idx - 1 + suggestions.length) % suggestions.length
+      );
+    } else if (e.key === 'Enter') {
+      if (highlightIndex >= 0) {
+        e.preventDefault();
+        const pick = suggestions[highlightIndex]!;
+        setWord(pick);
+        setShowSuggestions(false);
+        setSuggestions([]);
+        setError('');
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,8 +137,6 @@ export function WordInputCard({
     }
   };
 
-  const isValid = !error && word.trim().length > 0;
-
   return (
     <div className="w-full max-w-lg mx-auto">
       <form onSubmit={handleSubmit} className="glass-card p-8 space-y-6">
@@ -104,6 +158,7 @@ export function WordInputCard({
               type="text"
               value={word}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               placeholder="happy, calm, excited, tired..."
               disabled={!canEdit || loading}
               className={`
@@ -130,16 +185,38 @@ export function WordInputCard({
             </div>
           )}
 
+          {canEdit && showSuggestions && suggestions.length > 0 && (
+            <div className="glass-panel max-h-56 overflow-auto rounded-lg divide-y">
+              {suggestions.map((s, idx) => (
+                <button
+                  type="button"
+                  key={`${s}-${idx}`}
+                  onClick={() => {
+                    setWord(s);
+                    setShowSuggestions(false);
+                    setSuggestions([]);
+                    setError('');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                    idx === highlightIndex ? 'bg-gray-50' : ''
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+
           {canEdit && (
             <button
               type="submit"
-              disabled={!isValid || loading}
+              disabled={!resolveEmotionKey(word) || loading}
               className={`
                 w-full py-4 px-6 text-lg font-medium
                 glass-button focus-visible-ring
                 disabled:opacity-50 disabled:cursor-not-allowed
                 ${
-                  isValid && !loading
+                  resolveEmotionKey(word) && !loading
                     ? 'hover:shadow-lg transform hover:scale-[1.02]'
                     : ''
                 }

@@ -4,7 +4,7 @@ import { GlassyBackground } from '../components/GlassyBackground';
 import { StatsPanel } from '../components/StatsPanel';
 import { useStats } from '../hooks/useStats';
 import { useBackgroundColor } from '../hooks/useBackgroundColor';
-import { wordToColor } from '@worldfeel/shared';
+import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 
 export function ResultsPage() {
   const navigate = useNavigate();
@@ -57,13 +57,12 @@ export function ResultsPage() {
               <span>Today's emotional color</span>
               <div
                 className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: wordToColor(stats.top.word).hex }}
+                style={{
+                  backgroundColor: getEmotionColor(stats.top.word) || '#6DCFF6',
+                }}
               />
               <span className="font-mono tracking-wider">
-                {wordToColor(stats.top.word).hex.toUpperCase()}
-              </span>
-              <span className="text-gray-500">
-                - {(wordToColor(stats.top.word) as any).name ?? 'Custom'}
+                {(getEmotionColor(stats.top.word) || '#6DCFF6').toUpperCase()}
               </span>
             </div>
           )}

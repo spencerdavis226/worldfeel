@@ -68,6 +68,16 @@ class ApiClient {
     return this.request<ColorResult>(`/color?${searchParams}`);
   }
 
+  async searchEmotions(
+    query: string,
+    limit: number = 20
+  ): Promise<ApiResponse<string[]>> {
+    const params = new URLSearchParams();
+    params.set('q', query);
+    if (limit) params.set('limit', String(limit));
+    return this.request<string[]>(`/emotions/search?${params.toString()}`);
+  }
+
   async flagContent(data: {
     word?: string;
     reason?: string;

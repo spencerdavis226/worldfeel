@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { colorQuerySchema, wordToColor } from '@worldfeel/shared';
-import { UnknownEmotion } from '../models/UnknownEmotion.js';
+import { colorQuerySchema, getEmotionColor } from '@worldfeel/shared';
 
 const router = Router();
 
@@ -25,30 +24,13 @@ router.get('/', async (req: ColorRequest, res: Response): Promise<void> => {
     }
 
     const { word } = validationResult.data;
-    const colors = wordToColor(word);
-
-    // Log unknown emotions so developers can review and map later
-    if (!colors.matched) {
-      try {
-        await UnknownEmotion.updateOne(
-          { word: word.toLowerCase().trim() },
-          {
-            $inc: { count: 1 },
-            $set: { lastSeenAt: new Date() },
-            $setOnInsert: { firstSeenAt: new Date() },
-          },
-          { upsert: true }
-        );
-      } catch (e) {
-        // Non-blocking
-        console.warn('UnknownEmotion upsert failed:', e);
-      }
+    const hex = getEmotionColor(word);
+    if (!hex) {
+      // Should not happen if validation enforced list, but guard anyway
+      res.status(404).json({ success: false, error: 'Unknown emotion' });
+      return;
     }
-
-    res.json({
-      success: true,
-      data: colors,
-    });
+    res.json({ success: true, data: { hex } });
   } catch (error) {
     console.error('Color error:', error);
     res.status(500).json({

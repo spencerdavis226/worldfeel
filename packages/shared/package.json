@@ -6,9 +6,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
-    "./colors": "./dist/colors.js",
     "./validation": "./dist/validation.js",
-    "./types": "./dist/types.js"
+    "./types": "./dist/types.js",
+    "./emotion-color-map": "./dist/emotion-color-map.js"
   },
   "scripts": {
     "build": "tsc",

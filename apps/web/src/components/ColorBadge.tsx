@@ -1,4 +1,4 @@
-import { wordToColor } from '@worldfeel/shared';
+import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 
 interface ColorBadgeProps {
   word?: string;
@@ -11,13 +11,8 @@ export function ColorBadge({
   colorHex,
   className = '',
 }: ColorBadgeProps) {
-  const fallback = {
-    hex: colorHex || '#6DCFF6',
-    shadeHex: '#4A9EBF',
-    name: 'Aqua',
-    matched: false,
-  };
-  const colors = word ? wordToColor(word) : fallback;
+  const hex = word ? getEmotionColor(word) : colorHex || '#6DCFF6';
+  const resolved = hex || colorHex || '#6DCFF6';
 
   return (
     <div
@@ -29,23 +24,20 @@ export function ColorBadge({
         ${className}
       `}
       style={{
-        backgroundColor: `${colors.hex}20`, // 20% opacity
-        borderColor: `${colors.hex}40`,
+        backgroundColor: `${resolved}20`,
+        borderColor: `${resolved}40`,
       }}
     >
       <div className="flex items-center space-x-3">
         <div
           className="w-6 h-6 rounded-full border-2 border-white/30 shadow-inner"
-          style={{ backgroundColor: colors.hex }}
+          style={{ backgroundColor: resolved }}
         />
         <div className="flex flex-col leading-tight">
-          <span
-            className="text-sm font-mono font-medium tracking-wider"
-            style={{ color: colors.shadeHex }}
-          >
-            {colors.hex.toUpperCase()}
+          <span className="text-sm font-mono font-medium tracking-wider">
+            {resolved.toUpperCase()}
           </span>
-          <span className="text-[10px] text-gray-500">{colors.name}</span>
+          <span className="text-[10px] text-gray-500">Emotion</span>
         </div>
       </div>
     </div>
