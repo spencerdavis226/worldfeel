@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
 import { StatsPanel } from '../components/StatsPanel';
 import { useStats } from '../hooks/useStats';
@@ -7,6 +7,7 @@ import { useBackgroundColor } from '../hooks/useBackgroundColor';
 import { wordToColor } from '@worldfeel/shared';
 
 export function ResultsPage() {
+  const navigate = useNavigate();
   // Memoize the empty filters object to prevent recreations
   const emptyFilters = useMemo(() => ({}), []);
 
@@ -18,9 +19,25 @@ export function ResultsPage() {
   // Update background color based on top emotion
   useBackgroundColor(stats?.top?.word);
 
+  // Hide the main content container until child animations are ready to avoid any flash
+  const [showContainer, setShowContainer] = useState(false);
+  useEffect(() => {
+    // Show container only after stats have loaded or errored to avoid empty shell flash
+    if (!loading) {
+      const id = requestAnimationFrame(() => setShowContainer(true));
+      return () => cancelAnimationFrame(id);
+    }
+    setShowContainer(false);
+  }, [loading]);
+
   return (
     <GlassyBackground colorHex={stats?.colorHex}>
-      <div className="min-h-screen flex flex-col items-center justify-between p-4">
+      <div
+        className={[
+          'min-h-screen flex flex-col items-center justify-between p-4',
+          showContainer ? '' : 'invisible',
+        ].join(' ')}
+      >
         {/* Top spacer */}
         <div></div>
 
@@ -58,12 +75,22 @@ export function ResultsPage() {
               About
             </Link>
             <span>•</span>
-            <Link
-              to="/"
+            <button
+              type="button"
+              onClick={() => {
+                // Prefer view transition when going back to home
+                // @ts-ignore
+                if (document && (document as any).startViewTransition) {
+                  // @ts-ignore
+                  (document as any).startViewTransition(() => navigate('/'));
+                } else {
+                  navigate('/');
+                }
+              }}
               className="hover:text-gray-600 transition-colors underline py-2"
             >
               Home
-            </Link>
+            </button>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { GlassyBackground } from '../components/GlassyBackground';
 import { getDeviceId } from '../utils/device';
 import { apiClient } from '../utils/api';
 import { lettersOnly } from '@worldfeel/shared';
+import { navigateWithViewTransition } from '../utils/navigation';
 
 export function HomePage() {
   const [word, setWord] = useState('');
@@ -35,7 +36,7 @@ export function HomePage() {
 
       if (response.success) {
         // Navigate to results page
-        navigate('/results');
+        navigateWithViewTransition('/results', navigate);
       } else {
         setError(response.error || 'Something went wrong');
       }
@@ -173,12 +174,13 @@ export function HomePage() {
               About
             </Link>
             <span>•</span>
-            <Link
-              to="/results"
+            <button
+              type="button"
+              onClick={() => navigateWithViewTransition('/results', navigate)}
               className="hover:text-gray-600 transition-colors underline py-2"
             >
               View Results
-            </Link>
+            </button>
           </div>
         </div>
       </div>
