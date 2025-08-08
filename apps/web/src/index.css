@@ -123,6 +123,14 @@
     border-radius: 20px 20px 0 0;
   }
 
+  /* Compact frosted token chip (match stats card recipe) */
+  .glass-token {
+    @apply backdrop-blur-sm bg-white/20 border border-white/30 shadow-lg rounded-xl text-gray-800;
+  }
+  .glass-token:active {
+    @apply bg-white/25;
+  }
+
   /* Variant: glass-panel without the decorative top line */
   .no-top-line::before {
     display: none;

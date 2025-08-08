@@ -205,7 +205,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     type="button"
                     onClick={handleCopyHex}
                     title="Copy HEX"
-                    className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 bg-white/40 backdrop-blur-sm border border-white/60 rounded-md px-1.5 py-0.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
+                    className="glass-token inline-flex items-center gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-xl px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
                   >
                     <span
                       className="inline-block w-2 h-2 rounded-[3px]"
