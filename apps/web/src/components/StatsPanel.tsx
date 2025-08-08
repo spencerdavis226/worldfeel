@@ -105,7 +105,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       </div>
 
       {/* Top emotions list - secondary */}
-      <div className="glass-panel no-top-line p-6 animate-fade-in-up anim-delay-1100">
+      <div className="p-6 animate-fade-in-up anim-delay-1100 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg">
         <h3 className="text-sm font-medium text-gray-700 text-center mb-3 md:mb-4">
           Top feelings today
         </h3>
