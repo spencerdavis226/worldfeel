@@ -19,22 +19,17 @@ function WordBadge({
   const colors = wordToColor(word);
 
   return (
-    <div className="flex items-center justify-between p-3 glass-panel">
+    <div className="flex items-center justify-between py-3 px-1">
       <div className="flex items-center space-x-3">
-        {rank && (
-          <div className="text-sm font-bold text-gray-500 w-6">#{rank}</div>
-        )}
+        <div className="text-sm font-medium text-gray-500 w-6">#{rank}</div>
         <div
-          className="w-4 h-4 rounded-full border border-white/30"
+          className="w-3 h-3 rounded-full"
           style={{ backgroundColor: colors.hex }}
         />
         <span className="font-medium text-gray-800">{word}</span>
       </div>
-      <div className="flex items-center space-x-2">
-        <span className="text-sm text-gray-600">{count}</span>
-        <span className="text-xs text-gray-400">
-          {count === 1 ? 'person' : 'people'}
-        </span>
+      <div className="text-sm text-gray-600">
+        {count} {count === 1 ? 'person' : 'people'}
       </div>
     </div>
   );
@@ -43,14 +38,24 @@ function WordBadge({
 export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   if (loading) {
     return (
-      <div className="w-full max-w-md mx-auto space-y-6">
-        <div className="glass-card p-6">
+      <div className="w-full max-w-xl mx-auto">
+        {/* Main emotion loading - hero section */}
+        <div className="mb-12 md:mb-16">
+          <div className="text-center space-y-8">
+            <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+              The world feels
+            </h1>
+            <div className="animate-pulse h-20 bg-gray-200/50 rounded w-48 mx-auto"></div>
+          </div>
+        </div>
+
+        {/* Stats loading - secondary */}
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200/50 rounded w-3/4 mx-auto"></div>
-            <div className="h-8 bg-gray-200/50 rounded w-1/2 mx-auto"></div>
+            <div className="h-4 bg-gray-200/50 rounded w-1/2 mx-auto mb-4"></div>
             <div className="space-y-2">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-12 bg-gray-200/50 rounded"></div>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-8 bg-gray-200/50 rounded"></div>
               ))}
             </div>
           </div>
@@ -61,8 +66,8 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
 
   if (error) {
     return (
-      <div className="w-full max-w-md mx-auto">
-        <div className="glass-card p-6 text-center">
+      <div className="w-full max-w-xl mx-auto">
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center">
           <div className="text-red-500 mb-2">⚠️</div>
           <p className="text-red-600 text-sm">{error}</p>
           <button
@@ -80,35 +85,31 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     return null;
   }
 
-  const { total, top, top5 } = stats;
+  const { top, top5 } = stats;
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      {/* Global stats */}
-      <div className="glass-card p-6 space-y-4">
-        <div className="text-center space-y-2">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Right now, the world feels
-          </h2>
+    <div className="w-full max-w-xl mx-auto">
+      {/* Main emotion - hero section */}
+      <div className="mb-12 md:mb-16">
+        <div className="text-center space-y-8">
+          <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+            The world feels
+          </h1>
           <div
-            className="text-3xl font-bold"
+            className="text-6xl md:text-7xl font-medium"
             style={{ color: wordToColor(top.word).hex }}
           >
-            "{top.word}"
+            {top.word}
           </div>
-          <p className="text-sm text-gray-600">
-            {total.toLocaleString()}{' '}
-            {total === 1 ? 'person has' : 'people have'} shared today
-          </p>
         </div>
       </div>
 
-      {/* Top 5 emotions */}
-      <div className="glass-card p-6 space-y-4">
-        <h3 className="font-semibold text-gray-800 text-center">
+      {/* Top emotions list - secondary */}
+      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+        <h3 className="font-medium text-gray-800 text-center mb-4">
           Most Common Feelings
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {top5.map((item, index) => (
             <WordBadge
               key={item.word}
@@ -118,11 +119,6 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             />
           ))}
         </div>
-      </div>
-
-      {/* Last updated */}
-      <div className="text-center text-xs text-gray-400">
-        Updates every 5 seconds
       </div>
     </div>
   );

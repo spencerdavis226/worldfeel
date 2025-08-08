@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
 import { StatsPanel } from '../components/StatsPanel';
-import { ColorBadge } from '../components/ColorBadge';
 import { useStats } from '../hooks/useStats';
 import { useBackgroundColor } from '../hooks/useBackgroundColor';
+import { wordToColor } from '@worldfeel/shared';
 
 export function ResultsPage() {
   // Memoize the empty filters object to prevent recreations
@@ -21,57 +21,49 @@ export function ResultsPage() {
 
   return (
     <GlassyBackground colorHex={stats?.colorHex}>
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-3">
-          <h1 className="text-3xl md:text-4xl font-light text-gray-800">
-            The world is feeling
-          </h1>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-between p-4">
+        {/* Top spacer */}
+        <div></div>
 
-        {/* Stats Display */}
-        <div className="w-full max-w-lg">
+        {/* Main content - centered */}
+        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2">
           <StatsPanel stats={stats} loading={loading} error={error} />
         </div>
 
-        {/* Actions */}
-        <div className="space-y-4 text-center">
-          <Link
-            to="/"
-            className="inline-block px-8 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-xl text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/50"
-          >
-            Share again tomorrow
-          </Link>
-
-          <p className="text-sm text-gray-500">
-            You can update your word for the next 5 minutes
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center space-y-2 pt-8">
+        {/* Footer - bottom of viewport */}
+        <div className="w-full text-center space-y-3 pb-6 px-4">
           <p className="text-sm text-gray-500">
             {stats?.total?.toLocaleString() || '0'} feelings shared today
           </p>
-          <div className="flex items-center justify-center space-x-4 text-xs text-gray-400">
+          {/* Color information */}
+          {stats?.top && (
+            <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
+              <span>Today's emotional color</span>
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: wordToColor(stats.top.word).hex }}
+              />
+              <span className="font-mono tracking-wider">
+                {wordToColor(stats.top.word).hex.toUpperCase()}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
             <Link
               to="/about"
-              className="hover:text-gray-600 transition-colors underline"
+              className="hover:text-gray-600 transition-colors underline py-2"
             >
               About
             </Link>
             <span>•</span>
             <Link
               to="/"
-              className="hover:text-gray-600 transition-colors underline"
+              className="hover:text-gray-600 transition-colors underline py-2"
             >
               Home
             </Link>
           </div>
         </div>
-
-        {/* Color badge */}
-        <ColorBadge word={stats?.top?.word} colorHex={stats?.colorHex} />
       </div>
     </GlassyBackground>
   );
