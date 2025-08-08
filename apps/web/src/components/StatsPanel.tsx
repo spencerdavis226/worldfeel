@@ -98,60 +98,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   const [hexCopied, setHexCopied] = useState(false);
   const hexCopyTimerRef = useRef<number | null>(null);
   const top10 = stats?.top10 ?? stats?.top5 ?? [];
-  const [expanded, setExpanded] = useState(false);
-  const [allowExpand, setAllowExpand] = useState(true);
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const [collapsedHeight, setCollapsedHeight] = useState<number>(0);
-  const [listMaxHeight, setListMaxHeight] = useState<number>(0);
-  const [listOverflowing, setListOverflowing] = useState<boolean>(false);
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
-
-  useEffect(() => {
-    function measureHeights() {
-      const listEl = listRef.current;
-      setAllowExpand(window.innerHeight >= 650);
-      if (!listEl) return;
-      const totalHeight = listEl.scrollHeight;
-      // Collapsed height based on first 3 rows
-      const children = Array.from(listEl.children) as HTMLElement[];
-      if (children.length === 0) {
-        setCollapsedHeight(0);
-        setListMaxHeight(0);
-        setListOverflowing(false);
-        return;
-      }
-      const first = children[0];
-      const lastIdx = Math.min(2, children.length - 1);
-      const last = children[lastIdx];
-      const top = first.offsetTop;
-      const bottom = last.offsetTop + last.offsetHeight;
-      const collapsed = bottom - top + 8;
-      setCollapsedHeight(collapsed);
-
-      // Available viewport height from list top, reserving space for footer
-      const listTop = listEl.getBoundingClientRect().top;
-      const reservedBottom = 96; // leave room for footer/spacing
-      const available = Math.max(
-        120,
-        Math.floor(window.innerHeight - listTop - reservedBottom)
-      );
-      const maxForList = Math.min(totalHeight, available);
-      setListMaxHeight(maxForList);
-      setListOverflowing(totalHeight > available);
-    }
-    const id = requestAnimationFrame(measureHeights);
-    window.addEventListener('resize', measureHeights);
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener('resize', measureHeights);
-    };
-  }, [top10.length, expanded]);
-
-  useEffect(() => {
-    setIsAnimating(true);
-    const t = window.setTimeout(() => setIsAnimating(false), 520);
-    return () => window.clearTimeout(t);
-  }, [expanded]);
+  // Expansion and scrolling removed to keep the stats as a simple snapshot (top 3 only)
 
   async function handleCopyHex(): Promise<void> {
     if (!yourHex) return;
@@ -269,61 +216,19 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
         </div>
       </div>
 
-      {/* Top emotions list - compact with expand */}
+      {/* Top emotions list - snapshot only (top 3), no scroll, no expansion */}
       {top10.length > 0 && (
-        <div className="p-4 md:p-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-3 md:mb-4">
-          <div
-            className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
-            style={{
-              maxHeight:
-                allowExpand && expanded
-                  ? `${listMaxHeight}px`
-                  : `${collapsedHeight}px`,
-            }}
-          >
-            <div
-              id="top-list"
-              ref={listRef}
-              className={[
-                'space-y-1',
-                listOverflowing && (expanded || isAnimating)
-                  ? 'custom-scrollbar overflow-y-auto pr-1'
-                  : '',
-              ].join(' ')}
-              style={{
-                maxHeight:
-                  allowExpand && expanded ? `${listMaxHeight}px` : undefined,
-              }}
-            >
-              {(allowExpand && expanded
-                ? top10.slice(0, 10)
-                : top10.slice(0, 3)
-              ).map((item, index) => (
-                <WordBadge
-                  key={item.word}
-                  word={item.word}
-                  count={item.count}
-                  rank={index + 1}
-                />
-              ))}
-            </div>
+        <div className="px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-4">
+          <div className="space-y-1.5">
+            {top10.slice(0, 3).map((item, index) => (
+              <WordBadge
+                key={item.word}
+                word={item.word}
+                count={item.count}
+                rank={index + 1}
+              />
+            ))}
           </div>
-          {allowExpand && top10.length > 3 && (
-            <div className="pt-2 relative h-4">
-              <button
-                type="button"
-                onClick={() => setExpanded((v) => !v)}
-                className="group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-10 sm:w-28 sm:h-9 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                aria-expanded={expanded}
-                aria-controls="top-list"
-              >
-                <span className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-1.5 rounded-full bg-white/50 border border-white/60 backdrop-blur-sm shadow-sm transition-all duration-200 ease-out group-hover:scale-105 group-hover:bg-white/60" />
-                <span className="sr-only">
-                  {expanded ? 'Show less' : 'Show all'}
-                </span>
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
