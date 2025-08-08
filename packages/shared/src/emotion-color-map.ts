@@ -215,6 +215,7 @@ export const EMOTIONS = {
   abandonment: '#334155',
   neglect: '#334155',
   hurt: '#2563EB',
+  depressed: '#143C8A',
   shame: '#7E22CE',
   guilt: '#8B3A3A',
   remorse: '#7C2D12',
@@ -430,6 +431,7 @@ export function assertUniqueColors(): void {
 export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   // —— Positive
   happy: 'happiness',
+  glad: 'happiness',
   joyful: 'joy',
   delighted: 'delight',
   gleeful: 'glee',
@@ -529,6 +531,7 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
 
   // —— Anger
   angry: 'anger',
+  mad: 'anger',
   annoyed: 'annoyance',
   irritated: 'irritation',
   aggravated: 'aggravation',
@@ -650,6 +653,7 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   complacent: 'complacency',
   fatigued: 'fatigue',
   tired: 'fatigue',
+  sleepy: 'fatigue',
   jaded: 'apathy',
   meh: 'apathy',
 
@@ -671,6 +675,11 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   patient: 'patience',
   grounded: 'groundedness',
   resilient: 'resilience',
+  chill: 'relaxation',
+  fine: 'contentment',
+  ok: 'contentment',
+  okay: 'contentment',
+  alright: 'contentment',
 
   // —— Social / Other
   loyal: 'respect',
@@ -684,6 +693,9 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   wow: 'surprise',
   yikes: 'alarm',
   ugh: 'disgust',
+  gross: 'disgust',
+  pumped: 'excitement',
+  stoked: 'excitement',
 };
 
 /** Normalize and look up a color. */
