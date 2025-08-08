@@ -181,9 +181,9 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       <div className="mt-1.5 mb-4">
         <div className="w-full flex justify-center px-0">
           {your ? (
-            <div className="w-full sm:w-full md:max-w-md lg:max-w-md">
+            <div className="w-full">
               <div
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-6 py-3 md:py-4 flex items-center justify-between min-w-0"
+                className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex items-center justify-between min-w-0"
                 aria-label={`You feel ${your.word}. ${yourPercent}% match. Color ${yourHex}`}
               >
                 <span className="text-sm text-gray-800 truncate min-w-0">
@@ -195,7 +195,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                     {your.word}
                   </span>
                 </span>
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <div className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0">
                   <span className="h-4 w-px bg-white/50" />
                   <span className="text-sm text-gray-700 tabular-nums whitespace-nowrap">
                     {yourPercent}%
