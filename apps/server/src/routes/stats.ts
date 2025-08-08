@@ -1,6 +1,15 @@
 import { Router, Request, Response } from 'express';
-import { statsQuerySchema, wordToColor, generatePalette } from '@worldfeel/shared';
-import type { Stats, StatsQuery, WordCount, YourWordStats } from '@worldfeel/shared';
+import {
+  statsQuerySchema,
+  wordToColor,
+  generatePalette,
+} from '@worldfeel/shared';
+import type {
+  Stats,
+  StatsQuery,
+  WordCount,
+  YourWordStats,
+} from '@worldfeel/shared';
 import { Submission } from '../models/Submission.js';
 
 const router = Router();
@@ -14,12 +23,43 @@ interface StatsRequest extends Request {
   };
 }
 
+// Simple in-memory cache for stats results
+interface CacheEntry {
+  value: Stats;
+  expiresAt: number;
+}
+
+const STATS_CACHE_TTL_MS = 5000; // 5 seconds
+const statsCache = new Map<string, CacheEntry>();
+
+function buildCacheKey(query: StatsQuery = {}): string {
+  const parts = [
+    query.country || '',
+    query.region || '',
+    query.city || '',
+    query.yourWord || '',
+  ];
+  return parts.join('|');
+}
+
+export function invalidateStatsCache(): void {
+  statsCache.clear();
+}
+
 export async function getStats(query: StatsQuery = {}): Promise<Stats> {
+  // Attempt to serve from cache
+  const cacheKey = buildCacheKey(query);
+  const cached = statsCache.get(cacheKey);
+  const now = Date.now();
+  if (cached && cached.expiresAt > now) {
+    return cached.value;
+  }
+
   const { country, region, city, yourWord: yourWordQuery } = query;
 
   // Build match filter for location
   const matchFilter: any = {
-    expiresAt: { $gt: new Date() } // Only active submissions
+    expiresAt: { $gt: new Date() }, // Only active submissions
   };
 
   if (country) matchFilter.country = country;
@@ -32,23 +72,23 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     {
       $group: {
         _id: '$word',
-        count: { $sum: 1 }
-      }
+        count: { $sum: 1 },
+      },
     },
     { $sort: { count: -1, _id: 1 } },
-    { $limit: 100 } // Enough for ranking and UI
+    { $limit: 100 }, // Enough for ranking and UI
   ];
 
   const [wordCounts, totalResult] = await Promise.all([
     Submission.aggregate(pipeline),
-    Submission.countDocuments(matchFilter)
+    Submission.countDocuments(matchFilter),
   ]);
 
   // Process results
   const total = totalResult;
-  const top5: WordCount[] = wordCounts.slice(0, 5).map(item => ({
+  const top5: WordCount[] = wordCounts.slice(0, 5).map((item) => ({
     word: item._id,
-    count: item.count
+    count: item.count,
   }));
 
   const top: WordCount = top5[0] || { word: 'peaceful', count: 0 };
@@ -56,23 +96,27 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
   // Handle your word stats
   let yourWord: YourWordStats | undefined;
   if (yourWordQuery) {
-    const wordIndex = wordCounts.findIndex(item => item._id === yourWordQuery);
+    const wordIndex = wordCounts.findIndex(
+      (item) => item._id === yourWordQuery
+    );
     if (wordIndex !== -1) {
       const wordData = wordCounts[wordIndex];
       const rank = wordIndex + 1;
-      const percentile = Math.round(((wordCounts.length - wordIndex) / wordCounts.length) * 100);
+      const percentile = Math.round(
+        ((wordCounts.length - wordIndex) / wordCounts.length) * 100
+      );
 
       yourWord = {
         word: wordData._id,
         count: wordData.count,
         rank,
-        percentile
+        percentile,
       };
     } else {
       // Word not found in top 100, but might exist
       const wordCount = await Submission.countDocuments({
         ...matchFilter,
-        word: yourWordQuery
+        word: yourWordQuery,
       });
 
       if (wordCount > 0) {
@@ -81,18 +125,21 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
           { $match: matchFilter },
           { $group: { _id: '$word', count: { $sum: 1 } } },
           { $match: { count: { $gt: wordCount } } },
-          { $count: 'higherWords' }
+          { $count: 'higherWords' },
         ]);
 
         const higherWords = higherCountsResult[0]?.higherWords || 0;
         const rank = higherWords + 1;
-        const percentile = Math.max(1, Math.round(((total - rank + 1) / total) * 100));
+        const percentile = Math.max(
+          1,
+          Math.round(((total - rank + 1) / total) * 100)
+        );
 
         yourWord = {
           word: yourWordQuery,
           count: wordCount,
           rank,
-          percentile
+          percentile,
         };
       }
     }
@@ -108,12 +155,18 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     top,
     top5,
     colorHex: colors.hex,
-    topPalette: palette
+    topPalette: palette,
   };
 
   if (yourWord) {
     result.yourWord = yourWord;
   }
+
+  // Update cache
+  statsCache.set(cacheKey, {
+    value: result,
+    expiresAt: now + STATS_CACHE_TTL_MS,
+  });
 
   return result;
 }
@@ -126,7 +179,8 @@ router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
       res.status(400).json({
         success: false,
         error: 'Invalid query parameters',
-        message: validationResult.error.errors[0]?.message || 'Validation failed'
+        message:
+          validationResult.error.errors[0]?.message || 'Validation failed',
       });
       return;
     }
@@ -140,17 +194,22 @@ router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
 
     const stats = await getStats(statsQuery);
 
+    // Encourage CDN/shared cache for 5s while keeping browser cache at 0s
+    res.set(
+      'Cache-Control',
+      'public, max-age=0, s-maxage=5, stale-while-revalidate=30'
+    );
+
     res.json({
       success: true,
-      data: stats
+      data: stats,
     });
-
   } catch (error) {
     console.error('Stats error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
-      message: 'Unable to fetch statistics'
+      message: 'Unable to fetch statistics',
     });
   }
 });

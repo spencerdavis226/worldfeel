@@ -12,8 +12,7 @@ export function ResultsPage() {
 
   // Get global stats (no filters for MVP)
   const { stats, loading, error } = useStats(emptyFilters, {
-    autoRefresh: true,
-    refreshInterval: 5000, // Refresh every 5 seconds
+    autoRefresh: false,
   });
 
   // Update background color based on top emotion

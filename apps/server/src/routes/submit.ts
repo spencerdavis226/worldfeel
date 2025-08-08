@@ -4,7 +4,7 @@ import { submissionRequestSchema } from '@worldfeel/shared';
 import { Submission } from '../models/Submission.js';
 import { hashIp, getClientIp } from '../utils/crypto.js';
 import { containsProfanity } from '../utils/profanity.js';
-import { getStats } from './stats.js';
+import { getStats, invalidateStatsCache } from './stats.js';
 
 const router = Router();
 
@@ -28,7 +28,8 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       res.status(400).json({
         success: false,
         error: 'Invalid input',
-        message: validationResult.error.errors[0]?.message || 'Validation failed'
+        message:
+          validationResult.error.errors[0]?.message || 'Validation failed',
       });
       return;
     }
@@ -41,7 +42,7 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       res.status(400).json({
         success: false,
         error: 'Inappropriate content',
-        message: 'Please choose a different word'
+        message: 'Please choose a different word',
       });
       return;
     }
@@ -56,14 +57,14 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
-        path: '/'
+        path: '/',
       });
     }
 
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
-        // TEMPORARILY DISABLED FOR TESTING - Check for existing submission
+    // TEMPORARILY DISABLED FOR TESTING - Check for existing submission
     /*
     const existingSubmission = await Submission.findOne({
       $or: [
@@ -135,12 +136,15 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       ipHash,
       deviceId,
       createdAt: now,
-      expiresAt: new Date(now.getTime() + 24 * 60 * 60 * 1000) // 24 hours
+      expiresAt: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 24 hours
     });
 
     await submission.save();
 
-        // Get stats for response
+    // Invalidate stats cache so subsequent GET /stats reflects the new submission
+    invalidateStatsCache();
+
+    // Get stats for response
     const statsQuery: any = { yourWord: word };
     if (country) statsQuery.country = country;
     if (region) statsQuery.region = region;
@@ -153,15 +157,14 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       data: stats,
       message: 'Thank you for sharing how you feel!',
       canEdit: true,
-      editWindowMinutes: EDIT_WINDOW_MINUTES
+      editWindowMinutes: EDIT_WINDOW_MINUTES,
     });
-
   } catch (error) {
     console.error('Submit error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
-      message: 'Something went wrong. Please try again.'
+      message: 'Something went wrong. Please try again.',
     });
   }
 });
