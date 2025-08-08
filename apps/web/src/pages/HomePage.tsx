@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
 import { getDeviceId } from '../utils/device';
@@ -73,10 +73,17 @@ export function HomePage() {
     }
   };
 
+  // Randomize hue start each load for subtle variation (must be before any early returns)
+  const hueStartDeg = useMemo(() => Math.floor(Math.random() * 360), []);
+
   // Show loading state while checking for existing submissions
   if (checkingExisting) {
     return (
-      <GlassyBackground>
+      <GlassyBackground
+        hueCycle
+        hueStartDeg={hueStartDeg}
+        hueDurationMs={20000}
+      >
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
         </div>
@@ -85,7 +92,7 @@ export function HomePage() {
   }
 
   return (
-    <GlassyBackground>
+    <GlassyBackground hueCycle hueStartDeg={hueStartDeg} hueDurationMs={20000}>
       <div className="min-h-screen flex flex-col items-center justify-between p-4">
         {/* Top spacer */}
         <div></div>
@@ -107,6 +114,8 @@ export function HomePage() {
                 value={word}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
+                id="feeling"
+                name="feeling"
                 placeholder="peaceful, excited..."
                 className="w-full pl-6 pr-20 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
                 disabled={loading}

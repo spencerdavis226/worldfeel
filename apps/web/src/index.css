@@ -231,4 +231,14 @@
   .anim-delay-1100 {
     animation-delay: 1100ms;
   }
+
+  /* Very slow hue rotation cycle */
+  @keyframes wf-hue-rotate {
+    from {
+      filter: hue-rotate(var(--wf-hue-start));
+    }
+    to {
+      filter: hue-rotate(calc(var(--wf-hue-start) + 1turn));
+    }
+  }
 }
