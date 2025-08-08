@@ -5,6 +5,7 @@ import type {
   Stats,
   StatsQuery,
   ColorResult,
+  SubmitStatus,
 } from '@worldfeel/shared';
 import { env } from '../config/env.js';
 
@@ -50,6 +51,17 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  async getSubmitStatus(
+    params: {
+      deviceId?: string;
+    } = {}
+  ): Promise<ApiResponse<SubmitStatus>> {
+    const sp = new URLSearchParams();
+    if (params.deviceId) sp.set('deviceId', params.deviceId);
+    const qs = sp.toString();
+    return this.request(`/submit/status${qs ? `?${qs}` : ''}`);
   }
 
   async getStats(params: StatsQuery = {}): Promise<ApiResponse<Stats>> {

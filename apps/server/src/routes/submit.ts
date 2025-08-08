@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { submissionRequestSchema } from '@worldfeel/shared';
-import { Submission } from '../models/Submission.js';
+import { Submission, type SubmissionDocument } from '../models/Submission.js';
 import { hashIp, getClientIp } from '../utils/crypto.js';
 import { containsProfanity } from '../utils/profanity.js';
 import { getStats, invalidateStatsCache } from './stats.js';
+import { env } from '../config/env.js';
 
 const router = Router();
 
@@ -16,6 +17,23 @@ interface SubmitRequest extends Request {
 }
 
 const EDIT_WINDOW_MINUTES = 5;
+
+function getCooldownRemainingSeconds(lastCreatedAt?: Date): number {
+  if (!lastCreatedAt) return 0;
+  const elapsedMs = Date.now() - new Date(lastCreatedAt).getTime();
+  const remainingMs = env.SUBMIT_COOLDOWN_SECONDS * 1000 - elapsedMs;
+  return Math.max(0, Math.ceil(remainingMs / 1000));
+}
+
+async function findLatestSubmission(
+  ipHash: string,
+  deviceId?: string
+): Promise<SubmissionDocument | null> {
+  const filter: any = deviceId
+    ? { $or: [{ deviceId }, { ipHash }] }
+    : { ipHash };
+  return Submission.findOne(filter).sort({ createdAt: -1 }).exec();
+}
 
 router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
   try {
@@ -61,6 +79,20 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
+    // Enforce cooldown: check latest submission by deviceId or ipHash
+    const latest = await findLatestSubmission(ipHash, deviceId);
+    const remaining = getCooldownRemainingSeconds(latest?.createdAt as any);
+    if (remaining > 0) {
+      res.status(429).json({
+        success: false,
+        error: 'Cooldown active',
+        message: `You can submit again in ${remaining} seconds`,
+        remainingSeconds: remaining,
+        nextSubmitAt: new Date(Date.now() + remaining * 1000).toISOString(),
+      });
+      return;
+    }
+
     // Existing-submission edit flow is currently disabled (simplified global model)
 
     const now = new Date();
@@ -97,6 +129,44 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       success: false,
       error: 'Internal server error',
       message: 'Something went wrong. Please try again.',
+    });
+  }
+});
+
+// Status endpoint to check if user can submit based on cooldown
+router.get('/status', async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Prefer explicit deviceId query; fallback to cookie
+    const deviceIdQuery =
+      (req.query.deviceId as string | undefined) || undefined;
+    const deviceIdCookie = (req as any).cookies?.['hwf.sid'] as
+      | string
+      | undefined;
+    const deviceId = deviceIdQuery || deviceIdCookie;
+
+    const clientIp = getClientIp(req);
+    const ipHash = hashIp(clientIp);
+
+    const latest = await findLatestSubmission(ipHash, deviceId);
+    const remaining = getCooldownRemainingSeconds(latest?.createdAt as any);
+    const canSubmit = remaining === 0;
+
+    res.json({
+      success: true,
+      data: {
+        canSubmit,
+        remainingSeconds: remaining,
+        nextSubmitAt: canSubmit
+          ? null
+          : new Date(Date.now() + remaining * 1000).toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error('Submit status error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Unable to determine submission status',
     });
   }
 });

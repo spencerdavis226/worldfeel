@@ -57,3 +57,9 @@ export interface SubmissionResponse {
   canEdit?: boolean;
   editWindowMinutes?: number;
 }
+
+export interface SubmitStatus {
+  canSubmit: boolean;
+  remainingSeconds: number;
+  nextSubmitAt: string | null;
+}

@@ -5,12 +5,17 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
   PORT: z.coerce.number().default(8080),
   MONGODB_URI: z.string().url('Invalid MongoDB URI'),
   DB_NAME: z.string().default('worldfeeling'),
   WEB_ORIGIN: z.string().url('Invalid web origin URL'),
-  DAY_SALT_SECRET: z.string().min(32, 'Day salt secret must be at least 32 characters'),
+  DAY_SALT_SECRET: z
+    .string()
+    .min(32, 'Day salt secret must be at least 32 characters'),
+  SUBMIT_COOLDOWN_SECONDS: z.coerce.number().int().nonnegative().default(60),
 });
 
 export type Environment = z.infer<typeof envSchema>;

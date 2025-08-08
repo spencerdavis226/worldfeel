@@ -16,6 +16,8 @@ export function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [checkingExisting, setCheckingExisting] = useState(true);
+  const [canSubmit, setCanSubmit] = useState<boolean>(true);
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
@@ -31,14 +33,82 @@ export function HomePage() {
   });
   const [placeholderVisible, setPlaceholderVisible] = useState<boolean>(true);
   const rotateRef = useRef<number | null>(null);
+  const cooldownTimerRef = useRef<number | null>(null);
+  const cooldownFadeTimeoutRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
   const navigate = useNavigate();
+  const [cooldownVisible, setCooldownVisible] = useState<boolean>(false);
 
-  // Since spam protection is disabled for testing, we don't need to check for existing submissions
+  // Check submit cooldown status once on mount
   useEffect(() => {
-    setCheckingExisting(false);
+    (async () => {
+      try {
+        const deviceId = getDeviceId();
+        const resp = await apiClient.getSubmitStatus({ deviceId });
+        if (resp.success && resp.data) {
+          setCanSubmit(resp.data.canSubmit);
+          setRemainingSeconds(resp.data.remainingSeconds || 0);
+          setCooldownVisible(
+            !resp.data.canSubmit && (resp.data.remainingSeconds || 0) > 0
+          );
+        } else {
+          setCanSubmit(true);
+          setRemainingSeconds(0);
+          setCooldownVisible(false);
+        }
+      } catch {
+        // Fail open
+        setCanSubmit(true);
+        setRemainingSeconds(0);
+        setCooldownVisible(false);
+      } finally {
+        setCheckingExisting(false);
+      }
+    })();
   }, []);
+
+  // Countdown tick while locked
+  useEffect(() => {
+    if (!canSubmit && remainingSeconds > 0) {
+      if (cooldownTimerRef.current) {
+        window.clearInterval(cooldownTimerRef.current);
+        cooldownTimerRef.current = null;
+      }
+      setCooldownVisible(true);
+      cooldownTimerRef.current = window.setInterval(() => {
+        setRemainingSeconds((s) => {
+          if (s <= 1) {
+            if (cooldownTimerRef.current) {
+              window.clearInterval(cooldownTimerRef.current);
+              cooldownTimerRef.current = null;
+            }
+            setCanSubmit(true);
+            // Trigger fade out; keep visible briefly during transition
+            if (cooldownFadeTimeoutRef.current) {
+              window.clearTimeout(cooldownFadeTimeoutRef.current);
+              cooldownFadeTimeoutRef.current = null;
+            }
+            cooldownFadeTimeoutRef.current = window.setTimeout(() => {
+              setCooldownVisible(false);
+            }, 650);
+            return 0;
+          }
+          return s - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (cooldownTimerRef.current) {
+        window.clearInterval(cooldownTimerRef.current);
+        cooldownTimerRef.current = null;
+      }
+      if (cooldownFadeTimeoutRef.current) {
+        window.clearTimeout(cooldownFadeTimeoutRef.current);
+        cooldownFadeTimeoutRef.current = null;
+      }
+    };
+  }, [canSubmit, remainingSeconds]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,19 +134,20 @@ export function HomePage() {
         setError(response.error || 'Something went wrong');
       }
     } catch (err) {
-      if (err instanceof Error) {
-        // If they've already submitted, redirect to results instead of showing error
-        if (
-          err.message.includes('Already submitted') ||
-          err.message.includes('already shared')
-        ) {
-          navigate('/results');
+      // On cooldown error, update status and show subtle notice instead of error
+      try {
+        const status = await apiClient.getSubmitStatus({
+          deviceId: getDeviceId(),
+        });
+        if (status.success && status.data) {
+          setCanSubmit(status.data.canSubmit);
+          setRemainingSeconds(status.data.remainingSeconds || 0);
+          setError('');
           return;
         }
-        setError(err.message);
-      } else {
-        setError('Something went wrong. Please try again.');
-      }
+      } catch {}
+      if (err instanceof Error) setError(err.message);
+      else setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -278,35 +349,39 @@ export function HomePage() {
                 </div>
               )}
 
-              {/* Submit button: always rendered; fades in/out based on validity */}
-              <button
-                type="submit"
-                disabled={!selectedKey || loading}
-                aria-hidden={!selectedKey}
-                className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 cta-glass rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
-                  selectedKey ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                }`}
-                style={{
-                  ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
-                  ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
-                  ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
-                }}
-                aria-label="Submit emotion"
-              >
-                <svg
-                  className="w-5 h-5 drop-shadow text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              {/* Submit button: hidden during cooldown, otherwise fades based on validity */}
+              {canSubmit && (
+                <button
+                  type="submit"
+                  disabled={!selectedKey || loading}
+                  aria-hidden={!selectedKey}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 cta-glass rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
+                    selectedKey
+                      ? 'opacity-100'
+                      : 'opacity-0 pointer-events-none'
+                  }`}
+                  style={{
+                    ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
+                    ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
+                    ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
+                  }}
+                  aria-label="Submit emotion"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-5 h-5 drop-shadow text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </button>
+              )}
 
               {/* Suggestions dropdown */}
               {showSuggestions && suggestions.length > 0 && (
@@ -371,6 +446,34 @@ export function HomePage() {
                 </div>
               )}
             </div>
+
+            {/* Cooldown inline notice - styled like the input's glass */}
+            {cooldownVisible && (
+              <div className="flex items-center justify-center mt-5 md:mt-7">
+                <div
+                  className={`px-5 py-3 rounded-2xl bg-white/25 backdrop-blur-xl border border-white/30 text-gray-800 shadow-lg transition-opacity ${
+                    showSuggestions && suggestions.length > 0
+                      ? 'duration-150 ease-out'
+                      : 'duration-500 ease-in'
+                  } ${
+                    !canSubmit && !(showSuggestions && suggestions.length > 0)
+                      ? 'opacity-100'
+                      : 'opacity-0 pointer-events-none'
+                  }`}
+                  aria-hidden={showSuggestions && suggestions.length > 0}
+                >
+                  <span className="inline-flex items-center gap-2 text-[0.95rem]">
+                    <span className="tracking-wide">
+                      You can share again in
+                    </span>
+                    <span className="font-medium tabular-nums text-gray-800">
+                      {Math.floor(remainingSeconds / 60)}m{' '}
+                      {remainingSeconds % 60}s
+                    </span>
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Error message */}
             {error && (
