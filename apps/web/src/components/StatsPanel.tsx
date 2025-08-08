@@ -21,15 +21,21 @@ function WordBadge({
 
   return (
     <div className="flex items-center justify-between py-2 md:py-2.5 px-1">
-      <div className="flex items-center space-x-3">
-        <div className="text-[11px] font-medium text-gray-500 w-6">#{rank}</div>
+      <div className="grid grid-cols-[max-content,0.75rem,1fr] items-center gap-x-3 min-w-0">
+        <div className="text-[11px] font-medium text-gray-500 tabular-nums text-left">
+          #{rank}
+        </div>
         <div
-          className="w-3 h-3 rounded-full"
+          className="w-3 h-3 rounded-full justify-self-center"
           style={{ backgroundColor: hex }}
         />
-        <span className="text-[13px] font-medium text-gray-800">{word}</span>
+        <span className="text-[13px] font-medium text-gray-800 truncate">
+          {word}
+        </span>
       </div>
-      <div className="text-[11px] text-gray-700 tabular-nums">{count}</div>
+      <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
+        {count}
+      </div>
     </div>
   );
 }
