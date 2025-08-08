@@ -20,7 +20,7 @@ function WordBadge({
   const hex = getEmotionColor(word) || '#6DCFF6';
 
   return (
-    <div className="flex items-center justify-between py-2.5 md:py-3 px-1">
+    <div className="flex items-center justify-between py-2 md:py-2.5 px-1">
       <div className="flex items-center space-x-3">
         <div className="text-[11px] font-medium text-gray-500 w-6">#{rank}</div>
         <div
@@ -89,39 +89,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     );
   }
 
-  const top10 = stats?.top10 ?? stats?.top5 ?? [];
-  const [expanded, setExpanded] = useState(false);
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const [collapsedHeight, setCollapsedHeight] = useState<number>(0);
-  const [fullHeight, setFullHeight] = useState<number>(0);
-
-  useEffect(() => {
-    function measureHeights() {
-      const el = listRef.current;
-      if (!el) return;
-      // Full height of up to 10 items
-      setFullHeight(el.scrollHeight);
-      // Collapsed height: first 3 items (or fewer)
-      const children = Array.from(el.children) as HTMLElement[];
-      if (children.length === 0) {
-        setCollapsedHeight(0);
-        return;
-      }
-      const first = children[0];
-      const lastIdx = Math.min(2, children.length - 1);
-      const last = children[lastIdx];
-      const top = first.offsetTop;
-      const bottom = last.offsetTop + last.offsetHeight;
-      const height = bottom - top;
-      setCollapsedHeight(height + 8); // add tiny breathing room
-    }
-    const id = requestAnimationFrame(measureHeights);
-    window.addEventListener('resize', measureHeights);
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener('resize', measureHeights);
-    };
-  }, [top10.length]);
+  // Removed duplicate early declarations; see unified section below
   const your = stats?.yourWord;
   const total = stats?.total || 0;
   const yourPercent =
@@ -129,6 +97,61 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   const yourHex = your ? getEmotionColor(your.word) || '#6DCFF6' : undefined;
   const [hexCopied, setHexCopied] = useState(false);
   const hexCopyTimerRef = useRef<number | null>(null);
+  const top10 = stats?.top10 ?? stats?.top5 ?? [];
+  const [expanded, setExpanded] = useState(false);
+  const [allowExpand, setAllowExpand] = useState(true);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const [collapsedHeight, setCollapsedHeight] = useState<number>(0);
+  const [listMaxHeight, setListMaxHeight] = useState<number>(0);
+  const [listOverflowing, setListOverflowing] = useState<boolean>(false);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+
+  useEffect(() => {
+    function measureHeights() {
+      const listEl = listRef.current;
+      setAllowExpand(window.innerHeight >= 650);
+      if (!listEl) return;
+      const totalHeight = listEl.scrollHeight;
+      // Collapsed height based on first 3 rows
+      const children = Array.from(listEl.children) as HTMLElement[];
+      if (children.length === 0) {
+        setCollapsedHeight(0);
+        setListMaxHeight(0);
+        setListOverflowing(false);
+        return;
+      }
+      const first = children[0];
+      const lastIdx = Math.min(2, children.length - 1);
+      const last = children[lastIdx];
+      const top = first.offsetTop;
+      const bottom = last.offsetTop + last.offsetHeight;
+      const collapsed = bottom - top + 8;
+      setCollapsedHeight(collapsed);
+
+      // Available viewport height from list top, reserving space for footer
+      const listTop = listEl.getBoundingClientRect().top;
+      const reservedBottom = 96; // leave room for footer/spacing
+      const available = Math.max(
+        120,
+        Math.floor(window.innerHeight - listTop - reservedBottom)
+      );
+      const maxForList = Math.min(totalHeight, available);
+      setListMaxHeight(maxForList);
+      setListOverflowing(totalHeight > available);
+    }
+    const id = requestAnimationFrame(measureHeights);
+    window.addEventListener('resize', measureHeights);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('resize', measureHeights);
+    };
+  }, [top10.length, expanded]);
+
+  useEffect(() => {
+    setIsAnimating(true);
+    const t = window.setTimeout(() => setIsAnimating(false), 520);
+    return () => window.clearTimeout(t);
+  }, [expanded]);
 
   async function handleCopyHex(): Promise<void> {
     if (!yourHex) return;
@@ -158,12 +181,14 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     }
   }
 
+  // Remove leftover duplicate measurement effect from prior refactor
+
   return (
     <div className="w-full max-w-xl mx-auto">
       {/* Main emotion - hero section */}
-      <div className="mb-12 md:mb-16">
+      <div className="mb-8 md:mb-16">
         <div className="text-center space-y-6 md:space-y-8">
-          <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
             The world feels
           </h1>
           <div
@@ -173,7 +198,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             {/* Current word */}
             <span
               className={[
-                'block absolute left-1/2 -translate-x-1/2 text-6xl md:text-7xl font-semibold transition-opacity duration-500 ease-out',
+                'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl font-semibold transition-opacity duration-500 ease-out',
                 currentVisible ? 'opacity-100' : 'opacity-0',
               ].join(' ')}
               style={{
@@ -206,7 +231,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       </div>
 
       {/* Your contribution chip (centered, glassy) */}
-      <div className="mt-2 mb-6">
+      <div className="mt-1.5 mb-4">
         <div className="w-full flex justify-center px-0">
           {your ? (
             <div className="w-full sm:w-full md:max-w-md lg:max-w-md">
@@ -246,15 +271,34 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
 
       {/* Top emotions list - compact with expand */}
       {top10.length > 0 && (
-        <div className="p-5 md:p-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg">
+        <div className="p-4 md:p-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-3 md:mb-4">
           <div
             className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
             style={{
-              maxHeight: expanded ? `${fullHeight}px` : `${collapsedHeight}px`,
+              maxHeight:
+                allowExpand && expanded
+                  ? `${listMaxHeight}px`
+                  : `${collapsedHeight}px`,
             }}
           >
-            <div id="top-list" ref={listRef} className="space-y-1">
-              {top10.slice(0, 10).map((item, index) => (
+            <div
+              id="top-list"
+              ref={listRef}
+              className={[
+                'space-y-1',
+                listOverflowing && (expanded || isAnimating)
+                  ? 'custom-scrollbar overflow-y-auto pr-1'
+                  : '',
+              ].join(' ')}
+              style={{
+                maxHeight:
+                  allowExpand && expanded ? `${listMaxHeight}px` : undefined,
+              }}
+            >
+              {(allowExpand && expanded
+                ? top10.slice(0, 10)
+                : top10.slice(0, 3)
+              ).map((item, index) => (
                 <WordBadge
                   key={item.word}
                   word={item.word}
@@ -264,7 +308,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
               ))}
             </div>
           </div>
-          {top10.length > 3 && (
+          {allowExpand && top10.length > 3 && (
             <div className="pt-2 relative h-4">
               <button
                 type="button"
