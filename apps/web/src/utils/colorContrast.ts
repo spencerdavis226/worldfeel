@@ -189,7 +189,6 @@ export function getReadableTextColor(
     const midL = (minL + maxL) / 2;
     const testHsl = { ...hsl, l: midL };
     const testRgb = hslToRgb(testHsl);
-    const testHex = rgbToHex(testRgb);
 
     const contrast = getContrastRatio(testRgb, hexToRgb(backgroundColor));
 

@@ -108,11 +108,34 @@ export function ResultsPage() {
         {/* Main content - centered */}
         <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2">
           <StatsPanel stats={stats} loading={loading} error={error} />
+          {/* Show message when no entries exist */}
+          {!loading && stats?.top?.word === 'silent' && (
+            <div className="text-center space-y-6 md:space-y-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+                The world feels
+              </h1>
+              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none text-gray-400">
+                silent
+              </div>
+              <p className="text-lg text-gray-600 max-w-md mx-auto">
+                No one has shared their feelings yet today. Be the first to
+                break the silence.
+              </p>
+              <div className="pt-4">
+                <button
+                  onClick={() => navigate('/')}
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                >
+                  Share Your Feelings
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer - bottom of viewport */}
         <div className="w-full text-center pb-6 px-4">
-          {stats?.colorHex ? (
+          {stats?.colorHex && stats?.top?.word !== 'silent' ? (
             <div className="flex items-center justify-center mb-4">
               <button
                 type="button"
@@ -138,7 +161,9 @@ export function ResultsPage() {
             </div>
           ) : null}
           <p className="text-sm text-gray-500 mb-2">
-            {stats?.total?.toLocaleString() || '0'} feelings shared today
+            {stats?.top?.word === 'silent'
+              ? 'No feelings shared yet today'
+              : `${stats?.total?.toLocaleString() || '0'} feelings shared today`}
           </p>
           <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
             <Link

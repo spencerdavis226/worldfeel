@@ -269,6 +269,7 @@ export const EMOTIONS = {
   patient: '#A7F3D0',
   grounded: '#99F6E4',
   resilient: '#34D399',
+  silent: '#9CA3AF',
 
   // —— SOCIAL / OTHER DISTINCT ——
   bonded: '#86EFAC',

@@ -81,7 +81,8 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
     count: item.count,
   }));
 
-  const top: WordCount = top5[0] || { word: 'peaceful', count: 0 };
+  // If no entries, use "silent" to represent the quiet state
+  const top: WordCount = top5[0] || { word: 'silent', count: 0 };
 
   // If deviceId provided, find most recent submission for that device to determine yourWord
   if (!yourWordQuery && deviceId) {

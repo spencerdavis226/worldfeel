@@ -56,6 +56,11 @@ function WordBadge({
 }
 
 export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
+  // Hide the stats panel if the word is "silent" (no entries in database)
+  if (stats?.top?.word === 'silent') {
+    return null;
+  }
+
   // Maintain a stable displayed word and cross-fade on change; preserve previous during refresh
   const [displayedWord, setDisplayedWord] = useState<string>('');
   const [prevWord, setPrevWord] = useState<string | null>(null);
