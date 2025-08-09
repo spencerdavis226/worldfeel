@@ -61,6 +61,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   const [prevWord, setPrevWord] = useState<string | null>(null);
   const [currentVisible, setCurrentVisible] = useState<boolean>(true);
   const fadeTimerRef = useRef<number | null>(null);
+  const visibleTickRef = useRef<number | null>(null);
 
   useEffect(() => {
     const nextWord = stats?.top?.word || '';
@@ -75,21 +76,20 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       setPrevWord(displayedWord || null);
       setDisplayedWord(nextWord);
       setCurrentVisible(false);
-      const id1 = requestAnimationFrame(() => {
-        const id2 = requestAnimationFrame(() => setCurrentVisible(true));
-        (setCurrentVisible as unknown as { __id2?: number }).__id2 = id2;
-      });
+      if (visibleTickRef.current) window.clearTimeout(visibleTickRef.current);
+      // Use a stable timeout tick so rapid re-renders don't cancel the fade-in
+      visibleTickRef.current = window.setTimeout(() => {
+        setCurrentVisible(true);
+      }, 0);
       if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
       fadeTimerRef.current = window.setTimeout(() => setPrevWord(null), 450);
-      return () => cancelAnimationFrame(id1);
     }
   }, [stats?.top?.word, loading, displayedWord, prevWord]);
 
   useEffect(() => {
     return () => {
       if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
-      const anySet = setCurrentVisible as unknown as { __id2?: number };
-      if (anySet.__id2) cancelAnimationFrame(anySet.__id2);
+      if (visibleTickRef.current) window.clearTimeout(visibleTickRef.current);
     };
   }, []);
 
@@ -181,28 +181,35 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             style={{ minHeight: '1em' }}
           >
             {/* Current word */}
-            <span
-              className={[
-                'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
-                currentVisible ? 'opacity-100' : 'opacity-0',
-              ].join(' ')}
-              style={(() => {
-                const originalColor =
-                  getEmotionColor(displayedWord) || '#6DCFF6';
-
-                return {
-                  color: getReadableTextColor(originalColor, {
-                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                    isLargeText: true,
-                    preserveVibrancy: true,
-                    maxDarkening: 0.5,
-                  }),
-                  textShadow: getTextShadowForContrast(originalColor, 'subtle'),
-                };
-              })()}
-            >
-              {displayedWord || '\u00A0'}
-            </span>
+            {(() => {
+              const showCurrent = currentVisible || !prevWord;
+              return (
+                <span
+                  className={[
+                    'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
+                    showCurrent ? 'opacity-100' : 'opacity-0',
+                  ].join(' ')}
+                  style={(() => {
+                    const originalColor =
+                      getEmotionColor(displayedWord) || '#6DCFF6';
+                    return {
+                      color: getReadableTextColor(originalColor, {
+                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                        isLargeText: true,
+                        preserveVibrancy: true,
+                        maxDarkening: 0.5,
+                      }),
+                      textShadow: getTextShadowForContrast(
+                        originalColor,
+                        'subtle'
+                      ),
+                    };
+                  })()}
+                >
+                  {displayedWord || stats?.top?.word || '\u00A0'}
+                </span>
+              );
+            })()}
             {/* Previous word during cross-fade */}
             {prevWord && (
               <span

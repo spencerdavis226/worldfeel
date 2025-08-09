@@ -43,6 +43,8 @@ export function ResultsPage() {
   const [showContainer, setShowContainer] = useState(false);
   const [topHexCopied, setTopHexCopied] = useState(false);
   const topHexCopyTimerRef = useRef<number | null>(null);
+  // Keep content visible during auto-refresh; only hide before first load completes
+  const hasShownOnceRef = useRef(false);
 
   async function handleCopyTopHex(): Promise<void> {
     const value = (stats?.colorHex || '').toUpperCase();
@@ -73,12 +75,16 @@ export function ResultsPage() {
     }
   }
   useEffect(() => {
-    // Show container only after stats have loaded or errored to avoid empty shell flash
+    // On the very first load, wait until data is ready to avoid a flash.
+    // After that, keep the UI visible during auto-refreshes.
     if (!loading) {
+      hasShownOnceRef.current = true;
       const id = requestAnimationFrame(() => setShowContainer(true));
       return () => cancelAnimationFrame(id);
     }
-    setShowContainer(false);
+    if (!hasShownOnceRef.current) {
+      setShowContainer(false);
+    }
   }, [loading]);
 
   useEffect(() => {
