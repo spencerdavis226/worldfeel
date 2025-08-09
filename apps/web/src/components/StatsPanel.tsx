@@ -1,6 +1,10 @@
 import type { Stats } from '@worldfeel/shared';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import { useEffect, useRef, useState } from 'react';
+import {
+  getReadableTextColor,
+  getTextShadowForContrast,
+} from '../utils/colorContrast';
 
 interface StatsPanelProps {
   stats: Stats | null;
@@ -182,9 +186,20 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                 'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
                 currentVisible ? 'opacity-100' : 'opacity-0',
               ].join(' ')}
-              style={{
-                color: getEmotionColor(displayedWord) || '#6DCFF6',
-              }}
+              style={(() => {
+                const originalColor =
+                  getEmotionColor(displayedWord) || '#6DCFF6';
+
+                return {
+                  color: getReadableTextColor(originalColor, {
+                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                    isLargeText: true,
+                    preserveVibrancy: true,
+                    maxDarkening: 0.5,
+                  }),
+                  textShadow: getTextShadowForContrast(originalColor, 'subtle'),
+                };
+              })()}
             >
               {displayedWord || '\u00A0'}
             </span>
@@ -195,9 +210,21 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                   'block absolute left-1/2 -translate-x-1/2 text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
                   currentVisible ? 'opacity-0' : 'opacity-100',
                 ].join(' ')}
-                style={{
-                  color: getEmotionColor(prevWord) || '#6DCFF6',
-                }}
+                style={(() => {
+                  const originalColor = getEmotionColor(prevWord) || '#6DCFF6';
+                  return {
+                    color: getReadableTextColor(originalColor, {
+                      backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                      isLargeText: true,
+                      preserveVibrancy: true,
+                      maxDarkening: 0.5,
+                    }),
+                    textShadow: getTextShadowForContrast(
+                      originalColor,
+                      'subtle'
+                    ),
+                  };
+                })()}
                 aria-hidden="true"
               >
                 {prevWord}
@@ -228,10 +255,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
                       className="text-sm text-gray-800 truncate min-w-0 text-center sm:text-left"
                     >
                       {compactYouLabel ? 'You: ' : 'You feel '}
-                      <span
-                        className="font-semibold"
-                        style={{ color: yourHex || undefined }}
-                      >
+                      <span className="font-bold text-gray-900">
                         {your.word}
                       </span>
                     </span>
