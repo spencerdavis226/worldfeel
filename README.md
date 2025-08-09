@@ -237,7 +237,7 @@ The app uses a **Liquid Glass** design language with:
 - `{ expiresAt: 1 }` - TTL index with `expireAfterSeconds: 0`
 - `{ ipHash: 1, deviceId: 1 }` - Compound index for deduplication (sparse)
 - `{ word: 1 }` - Query optimization
-// Location index removed (legacy)
+  // Location index removed (legacy)
 
 ## 🔒 Security & Privacy
 
@@ -246,7 +246,7 @@ The app uses a **Liquid Glass** design language with:
 - **No IP Storage** - Only SHA256 hashes with daily salt rotation
 - **Device ID Cookies** - Client-side UUID for duplicate prevention
 - **Data Expiry** - Automatic cleanup after 24 hours via MongoDB TTL
-// Optional Geolocation (legacy) removed
+  // Optional Geolocation (legacy) removed
 
 ### Security Features
 
@@ -332,6 +332,28 @@ CMD ["npm", "run", "start", "--workspace=apps/server"]
 - `npm run lint` - Lint all packages
 - `npm run typecheck` - TypeScript checking across all packages
 
+### Dev-only database helpers
+
+The following helpers are available only in non-production environments. They refuse to run with `NODE_ENV=production`.
+
+- Clear all submissions (requires confirmation):
+
+```bash
+npm run db:clear
+```
+
+- Seed random submissions (default 20):
+
+```bash
+npm run db:seed
+```
+
+To seed a different count directly from the server workspace:
+
+```bash
+npm --workspace=apps/server run db:seed -- 50
+```
+
 **Server:**
 
 - `npm run dev --workspace=apps/server` - Development server with hot reload
@@ -384,6 +406,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## 🙏 Acknowledgments
 
 // Country State City (legacy) removed
+
 - **MongoDB** - TTL collections for auto-expiring data
 - **TailwindCSS** - Utility-first CSS framework
 - **Zod** - TypeScript-first schema validation
