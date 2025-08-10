@@ -27,7 +27,8 @@ const STATS_CACHE_TTL_MS = 5000; // 5 seconds
 const statsCache = new Map<string, CacheEntry>();
 
 function buildCacheKey(query: StatsQuery = {}): string {
-  const parts = [query.yourWord || ''];
+  // Include deviceId so per-device "yourWord" is not mixed in cache
+  const parts = [query.yourWord || '', (query as any).deviceId || ''];
   return parts.join('|');
 }
 
@@ -59,9 +60,12 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
       $group: {
         _id: '$word',
         count: { $sum: 1 },
+        // Track most recent submission time per word for tie-breaking
+        lastCreatedAt: { $max: '$createdAt' },
       },
     },
-    { $sort: { count: -1, _id: 1 } },
+    // Sort by count desc, then most recent createdAt desc, then alphabetical as final stable tiebreaker
+    { $sort: { count: -1, lastCreatedAt: -1, _id: 1 } },
     { $limit: 100 }, // Enough for ranking and UI
   ];
 
@@ -192,6 +196,8 @@ router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
     const queryData = validationResult.data;
     const statsQuery: any = {};
     if (queryData.yourWord) statsQuery.yourWord = queryData.yourWord;
+    if ((queryData as any).deviceId)
+      statsQuery.deviceId = (queryData as any).deviceId;
 
     const stats = await getStats(statsQuery);
 
