@@ -163,7 +163,7 @@ export function ResultsPage() {
           <p className="text-sm text-gray-500 mb-2">
             {stats?.top?.word === 'silent'
               ? 'No feelings shared yet today'
-              : `${stats?.total?.toLocaleString() || '0'} feelings shared today`}
+              : `${stats?.total?.toLocaleString() || '0'} ${(stats?.total || 0) === 1 ? 'feeling' : 'feelings'} shared today`}
           </p>
           <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
             <Link
