@@ -392,9 +392,9 @@ export function HomePage() {
                 <div
                   id="emotion-suggestions"
                   role="listbox"
-                  className="absolute left-0 right-0 top-full mt-2 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-glass-lg animate-pop-in origin-top"
+                  className="absolute left-0 right-0 top-full mt-2 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-glass-lg animate-pop-in origin-top dropdown-mobile-container"
                 >
-                  <div className="max-h-72 overflow-auto custom-scrollbar space-y-1 p-0.5">
+                  <div className="max-h-72 sm:max-h-72 max-h-[calc(4*3.5rem+0.5rem)] overflow-auto custom-scrollbar space-y-1 p-0.5">
                     {suggestions.map((s, idx) => {
                       const hex = getEmotionColor(s) || '#6DCFF6';
                       const isActive = idx === highlightIndex;
@@ -489,7 +489,18 @@ export function HomePage() {
         </div>
 
         {/* Footer - bottom of viewport */}
-        <div className="w-full text-center pb-6 px-4">
+        <div
+          className={`w-full text-center pb-6 px-4 transition-opacity ${
+            showSuggestions && suggestions.length > 0
+              ? 'duration-150 ease-out'
+              : 'duration-500 ease-in'
+          } ${
+            showSuggestions && suggestions.length > 0
+              ? 'opacity-0 pointer-events-none'
+              : 'opacity-100'
+          }`}
+          aria-hidden={showSuggestions && suggestions.length > 0}
+        >
           <p className="text-sm text-gray-500 mb-2">
             A global emotional snapshot of today
           </p>

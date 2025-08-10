@@ -361,6 +361,26 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-glass-white-md;
   }
+
+  /* Mobile-optimized dropdown container */
+  .dropdown-mobile-container {
+    /* Ensure dropdown doesn't extend beyond viewport on mobile */
+    max-height: calc(100vh - 200px);
+    /* Add subtle backdrop blur for better readability */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Enhanced mobile scrollbar */
+  @media (max-width: 640px) {
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      @apply bg-white/40 rounded-full;
+    }
+  }
 }
 
 @layer utilities {

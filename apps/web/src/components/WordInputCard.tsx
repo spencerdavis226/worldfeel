@@ -186,7 +186,7 @@ export function WordInputCard({
           )}
 
           {canEdit && showSuggestions && suggestions.length > 0 && (
-            <div className="glass-panel no-top-line max-h-56 overflow-auto rounded-2xl p-1 animate-pop-in origin-top">
+            <div className="glass-panel no-top-line max-h-56 sm:max-h-56 max-h-[calc(4*2.5rem+0.5rem)] overflow-auto rounded-2xl p-1 animate-pop-in origin-top dropdown-mobile-container">
               <div className="space-y-1 p-0.5">
                 {suggestions.map((s, idx) => (
                   <button
