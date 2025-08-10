@@ -281,25 +281,36 @@ export function StatsPanel({
                   <div className="text-[11px] font-medium text-gray-500 tabular-nums text-left">
                     #{index + 1}
                   </div>
-                  <div
-                    className="w-3 h-3 rounded-full justify-self-center"
-                    style={{
-                      backgroundColor: getEmotionColor(item.word) || '#6DCFF6',
-                    }}
+                  <AnimatedValue
+                    value={item.word}
+                    animateInitial={false}
+                    fadeOutMs={160}
+                    fadeInMs={260}
+                    render={(word) => (
+                      <div
+                        className="w-3 h-3 rounded-full justify-self-center"
+                        style={{
+                          backgroundColor:
+                            getEmotionColor(String(word)) || '#6DCFF6',
+                        }}
+                      />
+                    )}
                   />
                   <span className="text-[13px] font-medium text-gray-800 truncate">
                     <AnimatedValue
                       value={item.word}
-                      fadeOutMs={120}
-                      fadeInMs={200}
+                      animateInitial={false}
+                      fadeOutMs={180}
+                      fadeInMs={280}
                     />
                   </span>
                 </div>
                 <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
                   <AnimatedValue
                     value={formatPercent(item.count, total)}
-                    fadeOutMs={120}
-                    fadeInMs={200}
+                    animateInitial={false}
+                    fadeOutMs={160}
+                    fadeInMs={260}
                   />
                 </div>
               </div>
