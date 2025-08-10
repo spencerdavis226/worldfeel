@@ -399,7 +399,95 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
   }
 
-  /* One-shot entrance animation utility for page mounts */
+  /* Results page: mount sequence (Apple-like, calm) */
+  @keyframes wf-hero-in {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes wf-chip-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes wf-stats-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes wf-footer-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  .animate-hero-fade-in {
+    animation: wf-hero-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-chip-fade-in {
+    animation: wf-chip-in 1200ms ease-out both;
+  }
+  .animate-stats-fade-in {
+    animation: wf-stats-in 1200ms ease-out both;
+  }
+  .animate-footer-fade-in {
+    animation: wf-footer-in 1200ms ease-out both;
+  }
+
+  /* Stagger timings for sequence: hero -> your-chip -> stats -> footer */
+  .anim-delay-hero {
+    animation-delay: 0ms;
+  }
+  .anim-delay-chip {
+    animation-delay: 1400ms;
+  }
+  .anim-delay-stats {
+    animation-delay: 2600ms;
+  }
+  .anim-delay-footer {
+    animation-delay: 3600ms;
+  }
+
+  /* Container slight fade to avoid flash during first reveal */
+  @keyframes wf-container-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .animate-seq-container {
+    animation: wf-container-in 400ms ease-out both;
+  }
+
+  /* Refresh (15s) micro fade for content blocks and background */
+  @keyframes wf-soft-fade-in {
+    from {
+      opacity: 0.6;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .animate-soft-fade-in {
+    animation: wf-soft-fade-in 300ms ease-out both;
+  }
+
+  /* Restored shared animation utilities used outside Results page */
   @keyframes wf-fade-in-up {
     from {
       opacity: 0;
@@ -410,12 +498,10 @@
       transform: translateY(0) scale(1);
     }
   }
-
   .animate-fade-in-up {
     animation: wf-fade-in-up 2000ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* Simple fade-only (used on Home) */
   @keyframes wf-fade-in {
     from {
       opacity: 0;
@@ -428,7 +514,6 @@
     animation: wf-fade-in 1500ms ease-out both;
   }
 
-  /* Pop-in for dropdowns */
   @keyframes wf-pop-in {
     0% {
       opacity: 0;
@@ -443,7 +528,6 @@
     animation: wf-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* Subtle bounce for CTA appear */
   @keyframes wf-pop-bounce {
     0% {
       transform: scale(0.96);
@@ -462,7 +546,6 @@
     animation: wf-pop-bounce 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* Dramatic delayed word entrance */
   @keyframes wf-fade-scale-in {
     0% {
       opacity: 0;
@@ -481,7 +564,6 @@
     animation: wf-fade-scale-in 1600ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both;
   }
 
-  /* Animation delay utilities */
   .anim-delay-0 {
     animation-delay: 0ms;
   }

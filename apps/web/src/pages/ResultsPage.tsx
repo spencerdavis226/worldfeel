@@ -39,12 +39,16 @@ export function ResultsPage() {
   // Update background color: center = top emotion, edges = personal (if any)
   useBackgroundColor(stats?.top?.word, stats?.yourWord?.word);
 
-  // Hide the main content container until child animations are ready to avoid any flash
+  // Mount-only entrance sequencing
   const [showContainer, setShowContainer] = useState(false);
+  const [isFirstMount, setIsFirstMount] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [topHexCopied, setTopHexCopied] = useState(false);
   const topHexCopyTimerRef = useRef<number | null>(null);
   // Keep content visible during auto-refresh; only hide before first load completes
   const hasShownOnceRef = useRef(false);
+  const prevTopWordRef = useRef<string | undefined>(undefined);
+  const prevLoadingRef = useRef<boolean>(true);
 
   async function handleCopyTopHex(): Promise<void> {
     const value = (stats?.colorHex || '').toUpperCase();
@@ -75,15 +79,47 @@ export function ResultsPage() {
     }
   }
   useEffect(() => {
-    // On the very first load, wait until data is ready to avoid a flash.
-    // After that, keep the UI visible during auto-refreshes.
+    // On initial fetch completion, reveal container and mark first mount sequence
     if (!loading) {
-      hasShownOnceRef.current = true;
-      const id = requestAnimationFrame(() => setShowContainer(true));
+      const id = requestAnimationFrame(() => {
+        setShowContainer(true);
+        if (isFirstMount) {
+          // Kick off entrance sequence once
+          setTimeout(() => setIsFirstMount(false), 4000);
+        }
+        hasShownOnceRef.current = true;
+      });
       return () => cancelAnimationFrame(id);
     }
     if (!hasShownOnceRef.current) {
       setShowContainer(false);
+    }
+  }, [loading, isFirstMount]);
+
+  // Detect soft auto-refresh updates to trigger quick fades without movement
+  useEffect(() => {
+    const currentTopWord = stats?.top?.word;
+    if (!hasShownOnceRef.current) {
+      prevTopWordRef.current = currentTopWord;
+      return;
+    }
+    if (currentTopWord !== prevTopWordRef.current) {
+      setIsRefreshing(true);
+      // Keep the soft fade very short and subtle
+      const t = window.setTimeout(() => setIsRefreshing(false), 400);
+      return () => window.clearTimeout(t);
+    }
+    prevTopWordRef.current = currentTopWord;
+  }, [stats?.top?.word, stats?.total]);
+
+  // Also trigger a brief soft fade when each auto-refresh completes
+  useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = loading;
+    if (hasShownOnceRef.current && wasLoading && !loading) {
+      setIsRefreshing(true);
+      const t = window.setTimeout(() => setIsRefreshing(false), 300);
+      return () => window.clearTimeout(t);
     }
   }, [loading]);
 
@@ -106,8 +142,19 @@ export function ResultsPage() {
         <div></div>
 
         {/* Main content - centered */}
-        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2">
-          <StatsPanel stats={stats} loading={loading} error={error} />
+        <div
+          className={[
+            'w-full max-w-xl mx-auto text-center px-4 sm:px-2',
+            isFirstMount ? 'animate-seq-container' : '',
+          ].join(' ')}
+        >
+          <StatsPanel
+            stats={stats}
+            loading={loading}
+            error={error}
+            isFirstMount={isFirstMount}
+            isRefreshing={isRefreshing}
+          />
           {/* Show message when no entries exist */}
           {!loading && stats?.top?.word === 'silent' && (
             <div className="text-center space-y-4 md:space-y-6">
@@ -134,7 +181,13 @@ export function ResultsPage() {
         </div>
 
         {/* Footer - bottom of viewport */}
-        <div className="w-full text-center pb-6 px-4">
+        <div
+          className={[
+            'w-full text-center pb-6 px-4',
+            isFirstMount ? 'animate-footer-fade-in anim-delay-footer' : '',
+            isRefreshing ? 'animate-soft-fade-in' : '',
+          ].join(' ')}
+        >
           {stats?.colorHex && stats?.top?.word !== 'silent' ? (
             <div className="flex items-center justify-center mb-4">
               <button

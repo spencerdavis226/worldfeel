@@ -8,8 +8,10 @@ import {
 
 interface StatsPanelProps {
   stats: Stats | null;
-  loading: boolean;
   error: string | null;
+  loading?: boolean;
+  isFirstMount?: boolean;
+  isRefreshing?: boolean;
 }
 
 function formatPercent(count: number, total: number): string {
@@ -55,48 +57,16 @@ function WordBadge({
   );
 }
 
-export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
+export function StatsPanel({
+  stats,
+  error,
+  isFirstMount = false,
+  isRefreshing = false,
+}: StatsPanelProps) {
   // Hide the stats panel if the word is "silent" (no entries in database)
   if (stats?.top?.word === 'silent') {
     return null;
   }
-
-  // Maintain a stable displayed word and cross-fade on change; preserve previous during refresh
-  const [displayedWord, setDisplayedWord] = useState<string>('');
-  const [prevWord, setPrevWord] = useState<string | null>(null);
-  const [currentVisible, setCurrentVisible] = useState<boolean>(true);
-  const fadeTimerRef = useRef<number | null>(null);
-  const visibleTickRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const nextWord = stats?.top?.word || '';
-    if (!nextWord && loading) return; // keep previous while fetching
-    if (!displayedWord && !prevWord && nextWord) {
-      setDisplayedWord(nextWord);
-      setCurrentVisible(true);
-      return;
-    }
-    if (!nextWord) return;
-    if (nextWord !== displayedWord) {
-      setPrevWord(displayedWord || null);
-      setDisplayedWord(nextWord);
-      setCurrentVisible(false);
-      if (visibleTickRef.current) window.clearTimeout(visibleTickRef.current);
-      // Use a stable timeout tick so rapid re-renders don't cancel the fade-in
-      visibleTickRef.current = window.setTimeout(() => {
-        setCurrentVisible(true);
-      }, 0);
-      if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
-      fadeTimerRef.current = window.setTimeout(() => setPrevWord(null), 450);
-    }
-  }, [stats?.top?.word, loading, displayedWord, prevWord]);
-
-  useEffect(() => {
-    return () => {
-      if (fadeTimerRef.current) window.clearTimeout(fadeTimerRef.current);
-      if (visibleTickRef.current) window.clearTimeout(visibleTickRef.current);
-    };
-  }, []);
 
   if (error) {
     return (
@@ -115,19 +85,13 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     );
   }
 
-  // Removed duplicate early declarations; see unified section below
-  const your = stats?.yourWord;
-  const total = stats?.total || 0;
-  const yourPercentText = your ? formatPercent(your.count, total) : undefined;
-  const yourHex = your ? getEmotionColor(your.word) || '#6DCFF6' : undefined;
   const [hexCopied, setHexCopied] = useState(false);
   const hexCopyTimerRef = useRef<number | null>(null);
-  const top10 = stats?.top10 ?? stats?.top5 ?? [];
-  // Expansion and scrolling removed to keep the stats as a simple snapshot (top 3 only)
 
   // Dynamically compact the "You feel" label to "You:" only if the text would clip
   const youTextRef = useRef<HTMLSpanElement | null>(null);
   const [compactYouLabel, setCompactYouLabel] = useState(false);
+
   useEffect(() => {
     const checkOverflow = () => {
       const el = youTextRef.current;
@@ -141,10 +105,11 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
       window.removeEventListener('resize', checkOverflow);
       cancelAnimationFrame(id);
     };
-  }, [your?.word]);
+  }, [stats?.yourWord?.word]);
 
   async function handleCopyHex(): Promise<void> {
-    if (!yourHex) return;
+    if (!stats?.yourWord) return;
+    const yourHex = getEmotionColor(stats.yourWord.word) || '#6DCFF6';
     const value = (yourHex || '').toUpperCase();
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -171,12 +136,24 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
     }
   }
 
-  // Remove leftover duplicate measurement effect from prior refactor
+  useEffect(() => {
+    return () => {
+      if (hexCopyTimerRef.current) window.clearTimeout(hexCopyTimerRef.current);
+    };
+  }, []);
+
+  const your = stats?.yourWord;
+  const total = stats?.total || 0;
+  const yourPercentText = your ? formatPercent(your.count, total) : undefined;
+  const yourHex = your ? getEmotionColor(your.word) || '#6DCFF6' : undefined;
+  const top10 = stats?.top10 ?? stats?.top5 ?? [];
 
   return (
     <div className="w-full max-w-xl mx-auto">
       {/* Main emotion - hero section */}
-      <div className="mb-10 md:mb-20 lg:mb-28">
+      <div
+        className={`mb-10 md:mb-20 lg:mb-28 ${isFirstMount ? 'animate-hero-fade-in anim-delay-hero' : ''} ${isRefreshing ? 'animate-soft-fade-in' : ''}`}
+      >
         <div className="text-center space-y-4 md:space-y-6">
           <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
             The world feels
@@ -185,73 +162,32 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             className="relative mx-auto inline-block"
             style={{ minHeight: '1em' }}
           >
-            {/* Current word */}
-            {(() => {
-              const showCurrent = currentVisible || !prevWord;
-              return (
-                <span
-                  className={[
-                    'block absolute left-1/2 -translate-x-1/2 font-semibold tracking-[-0.015em] leading-none transition-opacity duration-500 ease-out text-[clamp(3rem,8vw,7rem)]',
-                    showCurrent ? 'opacity-100' : 'opacity-0',
-                  ].join(' ')}
-                  style={(() => {
-                    const originalColor =
-                      getEmotionColor(displayedWord) || '#6DCFF6';
-                    return {
-                      color: getReadableTextColor(originalColor, {
-                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                        isLargeText: true,
-                        preserveVibrancy: true,
-                        maxDarkening: 0.5,
-                      }),
-                      textShadow: getTextShadowForContrast(
-                        originalColor,
-                        'subtle'
-                      ),
-                    };
-                  })()}
-                >
-                  {displayedWord || stats?.top?.word || '\u00A0'}
-                </span>
-              );
-            })()}
-            {/* Previous word during cross-fade */}
-            {prevWord && (
-              <span
-                className={[
-                  'block absolute left-1/2 -translate-x-1/2 font-semibold tracking-[-0.015em] leading-none transition-opacity duration-500 ease-out text-[clamp(3rem,8vw,7rem)]',
-                  currentVisible ? 'opacity-0' : 'opacity-100',
-                ].join(' ')}
-                style={(() => {
-                  const originalColor = getEmotionColor(prevWord) || '#6DCFF6';
-                  return {
-                    color: getReadableTextColor(originalColor, {
-                      backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                      isLargeText: true,
-                      preserveVibrancy: true,
-                      maxDarkening: 0.5,
-                    }),
-                    textShadow: getTextShadowForContrast(
-                      originalColor,
-                      'subtle'
-                    ),
-                  };
-                })()}
-                aria-hidden="true"
-              >
-                {prevWord}
-              </span>
-            )}
-            {/* Invisible placeholder to reserve height and center layout */}
-            <span className="invisible font-semibold text-[clamp(3rem,8vw,7rem)]">
-              W
+            <span
+              className="block font-semibold tracking-[-0.015em] leading-none text-[clamp(3rem,8vw,7rem)]"
+              style={(() => {
+                const originalColor =
+                  getEmotionColor(stats?.top?.word || '') || '#6DCFF6';
+                return {
+                  color: getReadableTextColor(originalColor, {
+                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                    isLargeText: true,
+                    preserveVibrancy: true,
+                    maxDarkening: 0.5,
+                  }),
+                  textShadow: getTextShadowForContrast(originalColor, 'subtle'),
+                };
+              })()}
+            >
+              {stats?.top?.word || '\u00A0'}
             </span>
           </div>
         </div>
       </div>
 
       {/* Your contribution chip (centered, glassy) */}
-      <div className="mt-1.5 mb-4">
+      <div
+        className={`mt-1.5 mb-4 ${isFirstMount ? 'animate-chip-fade-in anim-delay-chip' : ''} ${isRefreshing ? 'animate-soft-fade-in' : ''}`}
+      >
         <div className="w-full flex justify-center px-0">
           {your ? (
             <div className="w-full">
@@ -329,7 +265,9 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
 
       {/* Top emotions list - snapshot only (top 3), no scroll, no expansion */}
       {top10.length > 0 && (
-        <div className="px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-4">
+        <div
+          className={`px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-4 ${isFirstMount ? 'animate-stats-fade-in anim-delay-stats' : ''} ${isRefreshing ? 'animate-soft-fade-in' : ''}`}
+        >
           <div className="space-y-1.5">
             {top10.slice(0, 3).map((item, index) => (
               <WordBadge

@@ -78,24 +78,20 @@ export function GlassyBackground({
           ...baseVars,
           // Crossfade: base fades out while overlay fades in, keeping total ~0.7
           opacity: fadeHex ? (fadeIn ? 0 : 0.7) : 0.7,
-          transition: 'opacity 900ms cubic-bezier(0.22, 1, 0.36, 1)',
+          transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
           background: `
             radial-gradient(circle at 20% 80%, rgba(${rBase}, ${gBase}, ${bBase}, 0.4) 0%, transparent 50%),
             radial-gradient(circle at 80% 20%, rgba(${Math.min(255, rBase + 30)}, ${Math.min(255, gBase + 30)}, ${Math.min(255, bBase + 30)}, 0.35) 0%, transparent 50%),
             radial-gradient(circle at 40% 40%, rgba(${Math.max(0, rBase - 30)}, ${Math.max(0, gBase - 30)}, ${Math.max(0, bBase - 30)}, 0.25) 0%, transparent 50%),
             linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)
           `,
-          animation: `gradient-shift 20s ease-in-out infinite${
-            hueCycle
-              ? `, wf-hue-rotate ${
+          ...(hueCycle
+            ? {
+                animation: `wf-hue-rotate ${
                   typeof hueDurationMs === 'number'
                     ? `${hueDurationMs}ms`
                     : '180000ms'
-                } linear infinite`
-              : ''
-          }`,
-          ...(hueCycle
-            ? {
+                } linear infinite`,
                 ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
                 filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
                 willChange: 'filter',
@@ -123,24 +119,20 @@ export function GlassyBackground({
           style={{
             ...fadeVars,
             opacity: fadeIn ? 0.7 : 0,
-            transition: 'opacity 900ms cubic-bezier(0.22, 1, 0.36, 1)',
+            transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
             background: `
               radial-gradient(circle at 20% 80%, rgba(${rFade}, ${gFade}, ${bFade}, 0.4) 0%, transparent 50%),
               radial-gradient(circle at 80% 20%, rgba(${Math.min(255, rFade + 30)}, ${Math.min(255, gFade + 30)}, ${Math.min(255, bFade + 30)}, 0.35) 0%, transparent 50%),
               radial-gradient(circle at 40% 40%, rgba(${Math.max(0, rFade - 30)}, ${Math.max(0, gFade - 30)}, ${Math.max(0, bFade - 30)}, 0.25) 0%, transparent 50%),
               linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)
             `,
-            animation: `gradient-shift 20s ease-in-out infinite${
-              hueCycle
-                ? `, wf-hue-rotate ${
+            ...(hueCycle
+              ? {
+                  animation: `wf-hue-rotate ${
                     typeof hueDurationMs === 'number'
                       ? `${hueDurationMs}ms`
                       : '180000ms'
-                  } linear infinite`
-                : ''
-            }`,
-            ...(hueCycle
-              ? {
+                  } linear infinite`,
                   ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
                   filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
                   willChange: 'filter',
