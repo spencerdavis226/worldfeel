@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
+import { AnimatedValue } from '../components/AnimatedValue';
 import { getDeviceId } from '../utils/device';
 import { StatsPanel } from '../components/StatsPanel';
 import { useStats } from '../hooks/useStats';
@@ -42,13 +43,11 @@ export function ResultsPage() {
   // Mount-only entrance sequencing
   const [showContainer, setShowContainer] = useState(false);
   const [isFirstMount, setIsFirstMount] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [topHexCopied, setTopHexCopied] = useState(false);
   const topHexCopyTimerRef = useRef<number | null>(null);
   // Keep content visible during auto-refresh; only hide before first load completes
   const hasShownOnceRef = useRef(false);
   const prevTopWordRef = useRef<string | undefined>(undefined);
-  const prevLoadingRef = useRef<boolean>(true);
 
   async function handleCopyTopHex(): Promise<void> {
     const value = (stats?.colorHex || '').toUpperCase();
@@ -96,32 +95,10 @@ export function ResultsPage() {
     }
   }, [loading, isFirstMount]);
 
-  // Detect soft auto-refresh updates to trigger quick fades without movement
+  // Keep track of top word for potential contextual UI decisions later
   useEffect(() => {
-    const currentTopWord = stats?.top?.word;
-    if (!hasShownOnceRef.current) {
-      prevTopWordRef.current = currentTopWord;
-      return;
-    }
-    if (currentTopWord !== prevTopWordRef.current) {
-      setIsRefreshing(true);
-      // Keep the soft fade very short and subtle
-      const t = window.setTimeout(() => setIsRefreshing(false), 400);
-      return () => window.clearTimeout(t);
-    }
-    prevTopWordRef.current = currentTopWord;
-  }, [stats?.top?.word, stats?.total]);
-
-  // Also trigger a brief soft fade when each auto-refresh completes
-  useEffect(() => {
-    const wasLoading = prevLoadingRef.current;
-    prevLoadingRef.current = loading;
-    if (hasShownOnceRef.current && wasLoading && !loading) {
-      setIsRefreshing(true);
-      const t = window.setTimeout(() => setIsRefreshing(false), 300);
-      return () => window.clearTimeout(t);
-    }
-  }, [loading]);
+    prevTopWordRef.current = stats?.top?.word;
+  }, [stats?.top?.word]);
 
   useEffect(() => {
     return () => {
@@ -145,15 +122,14 @@ export function ResultsPage() {
         <div
           className={[
             'w-full max-w-xl mx-auto text-center px-4 sm:px-2',
-            isFirstMount ? 'animate-seq-container' : '',
+            isFirstMount && showContainer ? 'animate-seq-container' : '',
           ].join(' ')}
         >
           <StatsPanel
             stats={stats}
             loading={loading}
             error={error}
-            isFirstMount={isFirstMount}
-            isRefreshing={isRefreshing}
+            isFirstMount={isFirstMount && showContainer}
           />
           {/* Show message when no entries exist */}
           {!loading && stats?.top?.word === 'silent' && (
@@ -184,8 +160,7 @@ export function ResultsPage() {
         <div
           className={[
             'w-full text-center pb-6 px-4',
-            isFirstMount ? 'animate-footer-fade-in anim-delay-footer' : '',
-            isRefreshing ? 'animate-soft-fade-in' : '',
+            isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
           ].join(' ')}
         >
           {stats?.colorHex && stats?.top?.word !== 'silent' ? (
@@ -206,17 +181,37 @@ export function ResultsPage() {
                   className="inline-block w-[8ch] text-left leading-none"
                   aria-live="polite"
                 >
-                  {topHexCopied
-                    ? 'COPIED'
-                    : (stats.colorHex || '').toUpperCase()}
+                  {topHexCopied ? (
+                    'COPIED'
+                  ) : (
+                    <AnimatedValue
+                      value={(stats.colorHex || '').toUpperCase()}
+                      fadeOutMs={140}
+                      fadeInMs={220}
+                    />
+                  )}
                 </span>
               </button>
             </div>
           ) : null}
           <p className="text-sm text-gray-500 mb-2">
-            {stats?.top?.word === 'silent'
-              ? 'No feelings shared yet today'
-              : `${stats?.total?.toLocaleString() || '0'} ${(stats?.total || 0) === 1 ? 'feeling' : 'feelings'} shared today`}
+            {stats?.top?.word === 'silent' ? (
+              'No feelings shared yet today'
+            ) : (
+              <>
+                <AnimatedValue
+                  value={(stats?.total ?? 0).toLocaleString()}
+                  fadeOutMs={160}
+                  fadeInMs={240}
+                />{' '}
+                <AnimatedValue
+                  value={(stats?.total || 0) === 1 ? 'feeling' : 'feelings'}
+                  fadeOutMs={120}
+                  fadeInMs={200}
+                />{' '}
+                shared today
+              </>
+            )}
           </p>
           <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
             <Link

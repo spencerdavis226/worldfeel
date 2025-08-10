@@ -1,6 +1,7 @@
 import type { Stats } from '@worldfeel/shared';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import { useEffect, useRef, useState } from 'react';
+import { AnimatedValue } from './AnimatedValue';
 import {
   getReadableTextColor,
   getTextShadowForContrast,
@@ -11,7 +12,6 @@ interface StatsPanelProps {
   error: string | null;
   loading?: boolean;
   isFirstMount?: boolean;
-  isRefreshing?: boolean;
 }
 
 function formatPercent(count: number, total: number): string {
@@ -22,46 +22,12 @@ function formatPercent(count: number, total: number): string {
   return `${Math.round(pct)}%`;
 }
 
-function WordBadge({
-  word,
-  count,
-  total,
-  rank,
-}: {
-  word: string;
-  count: number;
-  total: number;
-  rank?: number;
-}) {
-  const hex = getEmotionColor(word) || '#6DCFF6';
-  const percentText = formatPercent(count, total);
-
-  return (
-    <div className="flex items-center justify-between py-2 md:py-2.5 px-1">
-      <div className="grid grid-cols-[max-content,0.75rem,1fr] items-center gap-x-3 min-w-0">
-        <div className="text-[11px] font-medium text-gray-500 tabular-nums text-left">
-          #{rank}
-        </div>
-        <div
-          className="w-3 h-3 rounded-full justify-self-center"
-          style={{ backgroundColor: hex }}
-        />
-        <span className="text-[13px] font-medium text-gray-800 truncate">
-          {word}
-        </span>
-      </div>
-      <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
-        {percentText}
-      </div>
-    </div>
-  );
-}
+// Removed WordBadge in favor of inline rows with fine-grained AnimatedValue transitions
 
 export function StatsPanel({
   stats,
   error,
   isFirstMount = false,
-  isRefreshing = false,
 }: StatsPanelProps) {
   // Hide the stats panel if the word is "silent" (no entries in database)
   if (stats?.top?.word === 'silent') {
@@ -152,7 +118,8 @@ export function StatsPanel({
     <div className="w-full max-w-xl mx-auto">
       {/* Main emotion - hero section */}
       <div
-        className={`mb-10 md:mb-20 lg:mb-28 ${isFirstMount ? 'animate-hero-fade-in anim-delay-hero' : ''} ${isRefreshing ? 'animate-soft-fade-in' : ''}`}
+        className={`mb-10 md:mb-20 lg:mb-28 ${isFirstMount ? 'wf-enter wf-hero wf-d0' : ''}`}
+        aria-live="polite"
       >
         <div className="text-center space-y-4 md:space-y-6">
           <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
@@ -162,31 +129,43 @@ export function StatsPanel({
             className="relative mx-auto inline-block"
             style={{ minHeight: '1em' }}
           >
-            <span
+            <AnimatedValue
               className="block font-semibold tracking-[-0.015em] leading-none text-[clamp(3rem,8vw,7rem)]"
-              style={(() => {
-                const originalColor =
-                  getEmotionColor(stats?.top?.word || '') || '#6DCFF6';
-                return {
-                  color: getReadableTextColor(originalColor, {
-                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                    isLargeText: true,
-                    preserveVibrancy: true,
-                    maxDarkening: 0.5,
-                  }),
-                  textShadow: getTextShadowForContrast(originalColor, 'subtle'),
-                };
-              })()}
-            >
-              {stats?.top?.word || '\u00A0'}
-            </span>
+              value={stats?.top?.word || '\u00A0'}
+              fadeOutMs={200}
+              fadeInMs={300}
+              animateInitial={false}
+              variant="fade"
+              render={(val) => (
+                <span
+                  style={(() => {
+                    const originalColor =
+                      getEmotionColor(stats?.top?.word || '') || '#6DCFF6';
+                    return {
+                      color: getReadableTextColor(originalColor, {
+                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                        isLargeText: true,
+                        preserveVibrancy: true,
+                        maxDarkening: 0.5,
+                      }),
+                      textShadow: getTextShadowForContrast(
+                        originalColor,
+                        'subtle'
+                      ),
+                    };
+                  })()}
+                >
+                  {val}
+                </span>
+              )}
+            />
           </div>
         </div>
       </div>
 
       {/* Your contribution chip (centered, glassy) */}
       <div
-        className={`mt-1.5 mb-4 ${isFirstMount ? 'animate-chip-fade-in anim-delay-chip' : ''} ${isRefreshing ? 'animate-soft-fade-in' : ''}`}
+        className={`mt-1.5 mb-4 ${isFirstMount ? 'wf-enter wf-chip wf-d1' : ''}`}
       >
         <div className="w-full flex justify-center px-0">
           {your ? (
@@ -203,13 +182,21 @@ export function StatsPanel({
                       className="text-sm text-gray-800 truncate min-w-0 text-center sm:text-left"
                     >
                       {compactYouLabel ? 'You: ' : 'You feel '}
-                      <span className="font-bold text-gray-900">
-                        {your.word}
-                      </span>
+                      <AnimatedValue
+                        className="font-bold text-gray-900"
+                        value={your.word}
+                        fadeOutMs={160}
+                        fadeInMs={240}
+                      />
                     </span>
                     <span className="h-4 w-px bg-white/50" />
                     <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
-                      {yourPercentText} match
+                      <AnimatedValue
+                        value={yourPercentText || ''}
+                        fadeOutMs={160}
+                        fadeInMs={240}
+                      />{' '}
+                      match
                     </span>
                   </div>
                   {/* HEX token on desktop/tablet (right side) */}
@@ -228,7 +215,15 @@ export function StatsPanel({
                       className="inline-block w-[8ch] text-left leading-none"
                       aria-live="polite"
                     >
-                      {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
+                      {hexCopied ? (
+                        'COPIED'
+                      ) : (
+                        <AnimatedValue
+                          value={(yourHex || '').toUpperCase()}
+                          fadeOutMs={120}
+                          fadeInMs={200}
+                        />
+                      )}
                     </span>
                   </button>
                 </div>
@@ -249,7 +244,15 @@ export function StatsPanel({
                       className="inline-block w-[8ch] text-left leading-none"
                       aria-live="polite"
                     >
-                      {hexCopied ? 'COPIED' : (yourHex || '').toUpperCase()}
+                      {hexCopied ? (
+                        'COPIED'
+                      ) : (
+                        <AnimatedValue
+                          value={(yourHex || '').toUpperCase()}
+                          fadeOutMs={120}
+                          fadeInMs={200}
+                        />
+                      )}
                     </span>
                   </button>
                 </div>
@@ -266,17 +269,40 @@ export function StatsPanel({
       {/* Top emotions list - snapshot only (top 3), no scroll, no expansion */}
       {top10.length > 0 && (
         <div
-          className={`px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-4 ${isFirstMount ? 'animate-stats-fade-in anim-delay-stats' : ''} ${isRefreshing ? 'animate-soft-fade-in' : ''}`}
+          className={`px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg mb-4 ${isFirstMount ? 'wf-enter wf-stats wf-d2' : ''}`}
         >
           <div className="space-y-1.5">
             {top10.slice(0, 3).map((item, index) => (
-              <WordBadge
+              <div
                 key={item.word}
-                word={item.word}
-                count={item.count}
-                total={total}
-                rank={index + 1}
-              />
+                className="flex items-center justify-between py-2 md:py-2.5 px-1"
+              >
+                <div className="grid grid-cols-[max-content,0.75rem,1fr] items-center gap-x-3 min-w-0">
+                  <div className="text-[11px] font-medium text-gray-500 tabular-nums text-left">
+                    #{index + 1}
+                  </div>
+                  <div
+                    className="w-3 h-3 rounded-full justify-self-center"
+                    style={{
+                      backgroundColor: getEmotionColor(item.word) || '#6DCFF6',
+                    }}
+                  />
+                  <span className="text-[13px] font-medium text-gray-800 truncate">
+                    <AnimatedValue
+                      value={item.word}
+                      fadeOutMs={120}
+                      fadeInMs={200}
+                    />
+                  </span>
+                </div>
+                <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
+                  <AnimatedValue
+                    value={formatPercent(item.count, total)}
+                    fadeOutMs={120}
+                    fadeInMs={200}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </div>

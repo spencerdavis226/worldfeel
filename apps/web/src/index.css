@@ -474,6 +474,62 @@
     animation: wf-container-in 400ms ease-out both;
   }
 
+  /* New unified mount entrance system */
+  @keyframes wf-enter {
+    from {
+      opacity: 0;
+      transform: translateY(var(--wf-distance, 8px))
+        scale(var(--wf-scale, 0.985));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .wf-enter {
+    animation: wf-enter var(--wf-duration, 1400ms)
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+  .wf-d0 {
+    animation-delay: 0ms;
+  }
+  .wf-d1 {
+    animation-delay: 150ms;
+  }
+  .wf-d2 {
+    animation-delay: 300ms;
+  }
+  .wf-d3 {
+    animation-delay: 450ms;
+  }
+  .wf-hero {
+    --wf-distance: 8px;
+    --wf-scale: 0.985;
+    --wf-duration: 1400ms;
+  }
+  .wf-chip {
+    --wf-distance: 6px;
+    --wf-scale: 0.988;
+    --wf-duration: 1200ms;
+  }
+  .wf-stats {
+    --wf-distance: 6px;
+    --wf-scale: 0.988;
+    --wf-duration: 1200ms;
+  }
+  .wf-footer {
+    --wf-distance: 4px;
+    --wf-scale: 0.992;
+    --wf-duration: 1100ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wf-enter {
+      animation-duration: 1ms !important;
+      animation-delay: 0ms !important;
+    }
+  }
+
   /* Refresh (15s) micro fade for content blocks and background */
   @keyframes wf-soft-fade-in {
     from {
