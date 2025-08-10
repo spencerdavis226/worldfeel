@@ -84,8 +84,8 @@ export function ResultsPage() {
       const id = requestAnimationFrame(() => {
         setShowContainer(true);
         if (isFirstMount) {
-          // Kick off entrance sequence once
-          setTimeout(() => setIsFirstMount(false), 4000);
+          // Ensure entrance sequence (including footer: 3600ms delay + 1200ms) completes
+          setTimeout(() => setIsFirstMount(false), 5000);
         }
         hasShownOnceRef.current = true;
       });
