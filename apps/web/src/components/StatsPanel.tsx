@@ -176,9 +176,9 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
   return (
     <div className="w-full max-w-xl mx-auto">
       {/* Main emotion - hero section */}
-      <div className="mb-8 md:mb-16">
-        <div className="text-center space-y-6 md:space-y-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+      <div className="mb-10 md:mb-20 lg:mb-28">
+        <div className="text-center space-y-4 md:space-y-6">
+          <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
             The world feels
           </h1>
           <div
@@ -191,7 +191,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
               return (
                 <span
                   className={[
-                    'block absolute left-1/2 -translate-x-1/2 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
+                    'block absolute left-1/2 -translate-x-1/2 font-semibold tracking-[-0.015em] leading-none transition-opacity duration-500 ease-out text-[clamp(3rem,8vw,7rem)]',
                     showCurrent ? 'opacity-100' : 'opacity-0',
                   ].join(' ')}
                   style={(() => {
@@ -219,7 +219,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
             {prevWord && (
               <span
                 className={[
-                  'block absolute left-1/2 -translate-x-1/2 text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none transition-opacity duration-500 ease-out',
+                  'block absolute left-1/2 -translate-x-1/2 font-semibold tracking-[-0.015em] leading-none transition-opacity duration-500 ease-out text-[clamp(3rem,8vw,7rem)]',
                   currentVisible ? 'opacity-0' : 'opacity-100',
                 ].join(' ')}
                 style={(() => {
@@ -243,7 +243,7 @@ export function StatsPanel({ stats, loading, error }: StatsPanelProps) {
               </span>
             )}
             {/* Invisible placeholder to reserve height and center layout */}
-            <span className="invisible text-6xl md:text-7xl font-semibold">
+            <span className="invisible font-semibold text-[clamp(3rem,8vw,7rem)]">
               W
             </span>
           </div>

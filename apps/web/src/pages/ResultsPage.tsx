@@ -110,11 +110,11 @@ export function ResultsPage() {
           <StatsPanel stats={stats} loading={loading} error={error} />
           {/* Show message when no entries exist */}
           {!loading && stats?.top?.word === 'silent' && (
-            <div className="text-center space-y-6 md:space-y-8">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+            <div className="text-center space-y-4 md:space-y-6">
+              <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
                 The world feels
               </h1>
-              <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none text-gray-400">
+              <div className="font-semibold tracking-[-0.015em] leading-none text-gray-400 text-[clamp(3rem,8vw,7rem)]">
                 silent
               </div>
               <p className="text-lg text-gray-600 max-w-md mx-auto">
