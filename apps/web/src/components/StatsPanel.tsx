@@ -274,7 +274,7 @@ export function StatsPanel({
           <div className="space-y-1.5">
             {top10.slice(0, 3).map((item, index) => (
               <div
-                key={item.word}
+                key={`rank-${index}`}
                 className="flex items-center justify-between py-2 md:py-2.5 px-1"
               >
                 <div className="grid grid-cols-[max-content,0.75rem,1fr] items-center gap-x-3 min-w-0">
