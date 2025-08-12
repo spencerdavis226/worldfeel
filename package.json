@@ -13,7 +13,10 @@
   },
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=packages/shared\" \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/server\"",
-    "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/web",
+    "build": "npm run build:shared && npm run build:server && npm run build:web",
+    "build:shared": "cd packages/shared && npm install && npm run build",
+    "build:server": "cd apps/server && npm install && npm run build",
+    "build:web": "cd apps/web && npm install && npm run build",
     "build:vercel": "npm install && npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/web",
     "build:check": "npm run build && node scripts/check-bundle-size.js",
     "deploy": "./scripts/deploy.sh",
