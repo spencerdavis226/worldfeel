@@ -11,11 +11,11 @@ export function AboutPage() {
   const [avatarSrc, setAvatarSrc] = useState<string>('/spencer.png');
   return (
     <GlassyBackground hueCycle={true} hueDurationMs={120000}>
-      <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
         {/* Main content */}
-        <div className="w-full max-w-3xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-6 sm:space-y-8">
-          {/* Header with proper spacing */}
-          <div className="space-y-4 sm:space-y-5 pt-4 sm:pt-6">
+        <div className="w-full max-w-3xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-4 sm:space-y-6 lg:space-y-8">
+          {/* Header with optimized spacing */}
+          <div className="space-y-3 sm:space-y-4 lg:space-y-5">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight">
               About worldfeel.org
             </h1>
@@ -25,9 +25,9 @@ export function AboutPage() {
             </p>
           </div>
 
-          {/* Main content panel */}
-          <section className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-6 sm:px-8 py-6 sm:py-8 text-left space-y-6 sm:space-y-8">
-            <div className="space-y-3">
+          {/* Main content panel with reduced spacing */}
+          <section className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-6 sm:px-8 py-5 sm:py-6 lg:py-8 text-left space-y-4 sm:space-y-6 lg:space-y-8">
+            <div className="space-y-2 sm:space-y-3">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">
                 What it is
               </h2>
@@ -39,11 +39,11 @@ export function AboutPage() {
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                 How it works
               </h3>
-              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+              <ul className="space-y-1.5 sm:space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-[2px] text-sm">1</span>
                   <span>
@@ -66,7 +66,7 @@ export function AboutPage() {
               </ul>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Color mapping
               </h3>
@@ -78,11 +78,11 @@ export function AboutPage() {
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Privacy
               </h3>
-              <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm sm:text-base">
+              <ul className="list-disc list-inside space-y-0.5 sm:space-y-1 text-gray-700 text-sm sm:text-base">
                 <li>
                   No personal information is collected. Submissions are one‑word
                   only.
@@ -96,7 +96,7 @@ export function AboutPage() {
               </ul>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                 API Access
               </h3>
@@ -125,7 +125,7 @@ export function AboutPage() {
             </div>
 
             {/* Credits section with improved mobile layout */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Credits
               </h3>
@@ -306,7 +306,7 @@ export function AboutPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/40">
+            <div className="pt-3 sm:pt-4 border-t border-white/40">
               <p className="text-sm text-gray-600">
                 Built with care and simplicity. Open to feedback and future
                 experiments.
@@ -314,8 +314,8 @@ export function AboutPage() {
             </div>
           </section>
 
-          {/* CTA buttons with proper spacing from footer */}
-          <div className="flex items-center justify-center gap-3 sm:gap-4 pt-4 sm:pt-6">
+          {/* CTA buttons with optimized spacing */}
+          <div className="flex items-center justify-center gap-3 sm:gap-4 pt-3 sm:pt-4 lg:pt-6">
             <Link
               to="/"
               className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring hover:bg-white/[0.35] transition-colors"
@@ -331,8 +331,8 @@ export function AboutPage() {
           </div>
         </div>
 
-        {/* Footer with proper spacing */}
-        <div className="w-full text-center pb-4 sm:pb-6 px-4 pt-4 sm:pt-6">
+        {/* Footer with minimal spacing */}
+        <div className="w-full text-center pb-3 sm:pb-4 lg:pb-6 px-4 pt-3 sm:pt-4 lg:pt-6 mt-auto">
           <p className="text-xs text-gray-500">
             A global emotional snapshot of today
           </p>
