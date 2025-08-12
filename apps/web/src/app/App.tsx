@@ -3,16 +3,16 @@ import { lazy, Suspense } from 'react';
 
 // Lazy load pages for better performance
 const HomePage = lazy(() =>
-  import('./pages/HomePage').then((m) => ({ default: m.HomePage }))
+  import('@features/HomePage').then((m) => ({ default: m.HomePage }))
 );
 const ResultsPage = lazy(() =>
-  import('./pages/ResultsPage').then((m) => ({ default: m.ResultsPage }))
+  import('@features/ResultsPage').then((m) => ({ default: m.ResultsPage }))
 );
 const AboutPage = lazy(() =>
-  import('./pages/AboutPage').then((m) => ({ default: m.AboutPage }))
+  import('@features/AboutPage').then((m) => ({ default: m.AboutPage }))
 );
 const ApiDocsPage = lazy(() =>
-  import('./pages/ApiDocsPage').then((m) => ({ default: m.ApiDocsPage }))
+  import('@features/ApiDocsPage').then((m) => ({ default: m.ApiDocsPage }))
 );
 
 export function App() {

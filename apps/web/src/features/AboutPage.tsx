@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { GlassyBackground } from '../components/GlassyBackground';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { GlassyBackground } from '@components/GlassyBackground';
+import { usePageTitle } from '@hooks/usePageTitle';
 
 export function AboutPage() {
   // Set page title

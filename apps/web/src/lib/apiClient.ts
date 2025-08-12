@@ -7,7 +7,7 @@ import type {
   ColorResult,
   SubmitStatus,
 } from '@worldfeel/shared';
-import { env } from '../config/env.js';
+import { env } from '@lib/env.js';
 
 // Type for fetch request options
 type RequestOptions = {

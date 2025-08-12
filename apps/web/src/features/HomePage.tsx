@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GlassyBackground } from '../components/GlassyBackground';
-import { getDeviceId } from '../utils/device';
-import { apiClient } from '../utils/api';
+import { GlassyBackground } from '@components/GlassyBackground';
+import { getDeviceId } from '@lib/deviceId';
+import { apiClient } from '@lib/apiClient';
 import { lettersOnly } from '@worldfeel/shared';
-import { navigateWithViewTransition } from '../utils/navigation';
+import { navigateWithViewTransition } from '@lib/viewTransitions';
 import {
   resolveEmotionKey,
   getEmotionColor,
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
-import { decideHeroStyle } from '../utils/colorContrast';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { decideHeroStyle } from '@lib/colorContrast';
+import { usePageTitle } from '@hooks/usePageTitle';
 
 export function HomePage() {
   // Set page title for main page

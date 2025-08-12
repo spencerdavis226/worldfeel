@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { GlassyBackground } from '../components/GlassyBackground';
-import { AnimatedValue } from '../components/AnimatedValue';
-import { getDeviceId } from '../utils/device';
-import { StatsPanel } from '../components/StatsPanel';
-import { useStats } from '../hooks/useStats';
-import { useBackgroundColor } from '../hooks/useBackgroundColor';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { GlassyBackground } from '@components/GlassyBackground';
+import { AnimatedValue } from '@components/AnimatedValue';
+import { getDeviceId } from '@lib/deviceId';
+import { StatsPanel } from '@components/StatsPanel';
+import { useStats } from '@hooks/useStats';
+import { useBackgroundColor } from '@hooks/useEmotionBackground';
+import { usePageTitle } from '@hooks/usePageTitle';
 
 export function ResultsPage() {
   // Set page title

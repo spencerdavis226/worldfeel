@@ -1,11 +1,11 @@
 import type { Stats } from '@worldfeel/shared';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import { useEffect, useRef, useState } from 'react';
-import { AnimatedValue } from './AnimatedValue';
+import { AnimatedValue } from '@components/AnimatedValue';
 import {
   getReadableTextColor,
   getTextShadowForContrast,
-} from '../utils/colorContrast';
+} from '@lib/colorContrast';
 
 interface StatsPanelProps {
   stats: Stats | null;

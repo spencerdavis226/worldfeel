@@ -1,5 +1,5 @@
-import { GlassyBackground } from '../components/GlassyBackground';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { GlassyBackground } from '@components/GlassyBackground';
+import { usePageTitle } from '@hooks/usePageTitle';
 
 export function ApiDocsPage() {
   // Set page title

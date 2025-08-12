@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Stats, StatsQuery } from '@worldfeel/shared';
-import { apiClient } from '../utils/api.js';
+import { apiClient } from '@lib/apiClient.js';
 
 interface UseStatsOptions {
   autoRefresh?: boolean;
