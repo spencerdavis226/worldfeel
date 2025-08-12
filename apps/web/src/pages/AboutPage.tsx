@@ -38,7 +38,7 @@ export function AboutPage() {
               About worldfeel.org
             </h1>
             <p className="text-base sm:text-lg text-gray-600 text-balance">
-              A calm, real‑time snapshot of how people feel today — one word at
+              A calm, real‑time snapshot of how people feel today - one word at
               a time.
             </p>
           </div>
