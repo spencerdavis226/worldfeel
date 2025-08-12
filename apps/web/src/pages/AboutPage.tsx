@@ -8,29 +8,6 @@ export function AboutPage() {
   return (
     <GlassyBackground hueCycle={true} hueDurationMs={120000}>
       <div className="min-h-screen flex flex-col items-center justify-between p-4">
-        {/* Top bar with back link */}
-        <div className="w-full max-w-xl mx-auto flex items-center justify-start pt-2">
-          <Link
-            to="/"
-            className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg inline-flex items-center gap-2 px-4 py-2 focus-visible-ring"
-          >
-            <svg
-              className="w-4 h-4 text-gray-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            <span className="text-sm text-gray-800">Back</span>
-          </Link>
-        </div>
-
         {/* Main content */}
         <div className="w-full max-w-2xl mx-auto text-center px-4 sm:px-2 animate-fade-in space-y-8">
           <div className="space-y-3">
