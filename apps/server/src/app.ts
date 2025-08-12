@@ -15,7 +15,9 @@ app.set('trust proxy', 1);
 // Build allowed origin list (primary + optional comma-separated list)
 const allowedOrigins: string[] = [env.WEB_ORIGIN];
 if (env.WEB_ORIGINS) {
-  for (const o of env.WEB_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)) {
+  for (const o of env.WEB_ORIGINS.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)) {
     if (!allowedOrigins.includes(o)) allowedOrigins.push(o);
   }
 }
