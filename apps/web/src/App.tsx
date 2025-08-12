@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { ResultsPage } from './pages/ResultsPage';
 import { AboutPage } from './pages/AboutPage';
+import { ApiDocsPage } from './pages/ApiDocsPage';
 
 export function App() {
   return (
@@ -11,6 +12,7 @@ export function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/api" element={<ApiDocsPage />} />
           {/* Catch-all route redirects to home */}
           <Route path="*" element={<HomePage />} />
         </Routes>

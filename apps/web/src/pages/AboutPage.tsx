@@ -96,6 +96,34 @@ export function AboutPage() {
               </ul>
             </div>
 
+            <div className="space-y-3">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
+                API Access
+              </h3>
+              <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                We provide a public API for developers and creators who want to
+                integrate the world's emotional state into their projects.
+                Access real-time data about the current emotion and color of the
+                day.
+              </p>
+              <a
+                href="/api"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 underline text-sm sm:text-base"
+              >
+                View API Documentation
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+              </a>
+            </div>
+
             {/* Credits section with improved mobile layout */}
             <div className="space-y-4">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-800">

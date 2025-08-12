@@ -110,7 +110,48 @@ src/
 - Development: `http://localhost:8080/api`
 - Production: `https://your-api-domain.com/api`
 
-### Endpoints
+### Public API
+
+The worldfeel.org API provides public access to real-time global emotional data. This API is designed for developers, creators, and researchers who want to integrate the world's emotional state into their projects.
+
+**Public Endpoint:**
+
+- `GET /public/emotion-of-the-day` - Get the current emotion and color of the day
+
+**Features:**
+
+- No authentication required
+- Rate limited to 100 requests per minute
+- CORS enabled for cross-origin requests
+- Real-time data updated every 10 seconds
+- 24-hour data freshness (entries auto-expire)
+
+**Example Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "emotion": "joy",
+    "color": "#FFD700",
+    "count": 42,
+    "total": 156,
+    "timestamp": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+**Use Cases:**
+
+- Dashboard widgets showing global emotional trends
+- Creative projects that respond to collective mood
+- Research and data visualization
+- Art installations that change based on world emotion
+- Personal mood tracking apps
+
+For complete API documentation, visit: `/api` on the web app.
+
+### Internal API Endpoints
 
 #### `POST /submit`
 
