@@ -29,7 +29,7 @@ export function useStats(
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<StatsQuery>(initialFilters);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mountedRef = useRef(true);
 
   const fetchStats = useCallback(async () => {

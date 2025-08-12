@@ -126,4 +126,4 @@ export function AnimatedValue<T>({
   );
 }
 
-export default AnimatedValue;
+// Remove unused default export

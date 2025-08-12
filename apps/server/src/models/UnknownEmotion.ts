@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface UnknownEmotionDocument extends Document {
+interface UnknownEmotionDocument extends Document {
   word: string;
   count: number;
   firstSeenAt: Date;

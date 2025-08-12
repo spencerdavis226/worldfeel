@@ -18,7 +18,7 @@ const envSchema = z.object({
   SUBMIT_COOLDOWN_SECONDS: z.coerce.number().int().nonnegative().default(60),
 });
 
-export type Environment = z.infer<typeof envSchema>;
+type Environment = z.infer<typeof envSchema>;
 
 function validateEnv(): Environment {
   try {

@@ -39,7 +39,6 @@ async function startServer(): Promise<void> {
 
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
-
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);

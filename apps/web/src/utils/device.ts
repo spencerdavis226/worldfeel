@@ -34,6 +34,4 @@ function setDeviceIdCookie(deviceId: string): void {
 /**
  * Clear device ID (for testing or privacy)
  */
-export function clearDeviceId(): void {
-  document.cookie = `${DEVICE_ID_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-}
+// Remove unused function

@@ -31,9 +31,10 @@ async function findLatestSubmission(
   ipHash: string,
   deviceId?: string
 ): Promise<SubmissionDocument | null> {
-  const filter: any = deviceId
-    ? { $or: [{ deviceId }, { ipHash }] }
-    : { ipHash };
+  const filter: {
+    $or?: Array<{ deviceId: string } | { ipHash: string }>;
+    ipHash?: string;
+  } = deviceId ? { $or: [{ deviceId }, { ipHash }] } : { ipHash };
   return Submission.findOne(filter).sort({ createdAt: -1 }).exec();
 }
 
@@ -114,7 +115,7 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     invalidateStatsCache();
 
     // Get stats for response
-    const statsQuery: any = { yourWord: word };
+    const statsQuery: { yourWord: string } = { yourWord: word };
 
     const stats = await getStats(statsQuery);
 

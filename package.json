@@ -16,17 +16,24 @@
     "db:clear": "npm run db:clear --workspace=apps/server",
     "db:seed": "npm run db:seed --workspace=apps/server",
     "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
     "typecheck": "npm run typecheck --workspaces",
+    "depcheck": "npx depcheck --workspaces",
+    "tsprune": "npm run tsprune --workspaces",
+    "test": "npm run test --workspaces",
+    "test:watch": "npm run test:watch --workspaces",
     "clean": "npm run clean --workspaces"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "concurrently": "^8.2.2",
+    "depcheck": "^1.4.7",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "prettier": "^3.2.5",
+    "ts-prune": "^0.10.3",
     "typescript": "^5.3.3"
   }
 }
