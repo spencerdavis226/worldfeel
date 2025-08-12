@@ -19,11 +19,14 @@ interface SubmitRequest extends Request {
 const EDIT_WINDOW_MINUTES = 5;
 
 function getCooldownRemainingSeconds(lastCreatedAt?: Date): number {
-  // Disable cooldown entirely in non-production to facilitate local testing
-  if (env.NODE_ENV !== 'production') return 0;
   if (!lastCreatedAt) return 0;
+
+  // Use shorter cooldown for development/testing
+  const cooldownSeconds =
+    env.NODE_ENV === 'production' ? env.SUBMIT_COOLDOWN_SECONDS : 15; // 15 seconds for development
+
   const elapsedMs = Date.now() - new Date(lastCreatedAt).getTime();
-  const remainingMs = env.SUBMIT_COOLDOWN_SECONDS * 1000 - elapsedMs;
+  const remainingMs = cooldownSeconds * 1000 - elapsedMs;
   return Math.max(0, Math.ceil(remainingMs / 1000));
 }
 
