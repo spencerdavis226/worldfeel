@@ -28,11 +28,10 @@ export function AboutPage() {
                 What it is
               </h2>
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                worldfeel.org is a minimal, privacy‑minded experiment in
-                collective emotion. You share one word that describes your
-                current feeling. We aggregate those words globally and reflect
-                the moment - no feeds, no comments, just a quiet pulse of how
-                the world feels.
+                worldfeel.org is a mindful experiment in collective emotion. You
+                share one word that captures your current feeling. We gather
+                these words globally and reflect the moment - no feeds, no
+                comments, just a gentle pulse of how the world feels.
               </p>
             </div>
 
@@ -43,19 +42,21 @@ export function AboutPage() {
               <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-[2px] text-sm">1</span>
-                  <span>Share one word (letters only, lowercase).</span>
+                  <span>
+                    Choose one word from our curated list of emotions.
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-[2px] text-sm">2</span>
                   <span>
-                    See how your word contributes to today's global snapshot.
+                    See how your feeling contributes to today's global snapshot.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-[2px] text-sm">3</span>
                   <span>
-                    Stats update about every 10 seconds. Entries naturally
-                    expire in ~24 hours.
+                    Stats update every 10 seconds. Entries naturally expire in
+                    24 hours.
                   </span>
                 </li>
               </ul>
@@ -66,10 +67,10 @@ export function AboutPage() {
                 Color mapping
               </h3>
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                Each emotion maps to a color. Common emotions use a curated
-                palette; uncommon words resolve to the nearest known emotion. We
-                tune contrast for readability and keep labels neutral - the
-                color is the emotion.
+                Each emotion has its own carefully chosen color. Our palette
+                includes over 150 feelings, from joy and calm to reflection and
+                growth. The colors are designed for accessibility and create a
+                visual language of emotion.
               </p>
             </div>
 
@@ -79,14 +80,14 @@ export function AboutPage() {
               </h3>
               <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm sm:text-base">
                 <li>
-                  No personal info is required. Submissions are one‑word only.
+                  No personal information is collected. Submissions are one‑word
+                  only.
                 </li>
                 <li>
-                  Entries live in a 24‑hour window (TTL) and then disappear.
+                  Entries live for 24 hours and then disappear completely.
                 </li>
                 <li>
-                  Basic device‑level rate limiting prevents spam; no profiles or
-                  tracking.
+                  Basic rate limiting prevents spam. No profiles or tracking.
                 </li>
               </ul>
             </div>
@@ -275,7 +276,7 @@ export function AboutPage() {
 
             <div className="pt-4 border-t border-white/40">
               <p className="text-sm text-gray-600">
-                Built with a small, modern stack. Open to feedback and future
+                Built with care and simplicity. Open to feedback and future
                 experiments.
               </p>
             </div>
