@@ -30,12 +30,14 @@
       "@lib/*": ["./src/lib/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@types/*": ["./src/types/*"],
-      "@styles/*": ["./src/styles/*"]
+      "@styles/*": ["./src/styles/*"],
+      "@worldfeel/shared": ["../../packages/shared/src"],
+      "@worldfeel/shared/*": ["../../packages/shared/src/*"]
     },
 
     /* Types */
     "types": ["node"]
   },
-  "include": ["src"],
+  "include": ["src", "../../packages/shared/src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

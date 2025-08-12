@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "./scripts/vercel-build.sh",
   "outputDirectory": "apps/web/dist",
+  "installCommand": "npm install",
   "functions": {
     "apps/server/dist/index.js": {
       "runtime": "nodejs20.x"

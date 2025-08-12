@@ -15,6 +15,7 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@types': path.resolve(__dirname, './src/types'),
       '@styles': path.resolve(__dirname, './src/styles'),
+      '@worldfeel/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
   server: {
@@ -24,6 +25,9 @@ export default defineConfig({
   build: {
     target: 'esnext',
     sourcemap: true,
+    commonjsOptions: {
+      include: [/packages\/shared/, /node_modules/],
+    },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', '@worldfeel/shared'],
