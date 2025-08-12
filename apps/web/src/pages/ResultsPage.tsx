@@ -6,8 +6,12 @@ import { getDeviceId } from '../utils/device';
 import { StatsPanel } from '../components/StatsPanel';
 import { useStats } from '../hooks/useStats';
 import { useBackgroundColor } from '../hooks/useBackgroundColor';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export function ResultsPage() {
+  // Set page title
+  usePageTitle('Results');
+
   const navigate = useNavigate();
   // Memoize the empty filters object to prevent recreations (removed; we build filters dynamically)
 

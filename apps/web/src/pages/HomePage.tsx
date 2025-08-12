@@ -11,8 +11,12 @@ import {
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
 import { decideHeroStyle } from '../utils/colorContrast';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export function HomePage() {
+  // Set page title for main page
+  usePageTitle('', true);
+
   const [word, setWord] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');

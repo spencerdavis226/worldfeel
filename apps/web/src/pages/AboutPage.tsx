@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GlassyBackground } from '../components/GlassyBackground';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export function AboutPage() {
+  // Set page title
+  usePageTitle('About');
+
   const [avatarError, setAvatarError] = useState<boolean>(false);
   const [avatarSrc, setAvatarSrc] = useState<string>('/spencer.png');
   return (
