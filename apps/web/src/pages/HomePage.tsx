@@ -10,6 +10,7 @@ import {
   getEmotionColor,
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
+import { decideHeroStyle } from '../utils/colorContrast';
 
 export function HomePage() {
   const [word, setWord] = useState('');
@@ -371,19 +372,38 @@ export function HomePage() {
                   }}
                   aria-label="Submit emotion"
                 >
-                  <svg
-                    className="w-5 h-5 drop-shadow text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
+                  {(() => {
+                    const hex = getEmotionColor(word) || '#6DCFF6';
+                    const bgHex = '#FFFFFF';
+                    const { color, needsScrim, scrimAlpha } = decideHeroStyle(
+                      hex,
+                      bgHex,
+                      { targetCR: 3.0, tone: 0.12 }
+                    );
+                    const shadow = '0 1px 2px rgba(0,0,0,0.25)';
+                    return (
+                      <svg
+                        className="w-5 h-5"
+                        style={{
+                          color,
+                          filter: needsScrim
+                            ? `drop-shadow(0 0 0 rgba(0,0,0,${scrimAlpha.toFixed(2)}))`
+                            : undefined,
+                          textShadow: shadow as any,
+                        }}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    );
+                  })()}
                 </button>
               )}
 

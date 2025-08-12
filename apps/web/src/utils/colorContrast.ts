@@ -265,3 +265,112 @@ export function shouldUseLightText(backgroundColor: string): boolean {
   const luminance = getLuminance(rgb);
   return luminance < 0.5;
 }
+
+/**
+ * Decide a readable foreground color against a given background using hero-style logic.
+ * - Preserve hue; reduce lightness until desired contrast is met
+ * - Then gently blend the text toward the background (~tone) to embed it
+ * - If still insufficient, optionally raise target; otherwise fall back to neutral ink
+ */
+export function decideHeroStyle(
+  worldHex: string,
+  bgHex: string,
+  options: { targetCR?: number; tone?: number } = {}
+): {
+  color: string;
+  needsScrim: boolean;
+  scrimAlpha: number;
+  achievedContrast: number;
+  usedStrategy: 'tone' | 'raiseTarget' | 'inkFallback';
+} {
+  const targetCR = options.targetCR ?? 3.0;
+  const tone = options.tone ?? 0.12;
+
+  const bgRgb = hexToRgb(bgHex);
+  const bgHsl = rgbToHsl(bgRgb);
+
+  // 1) Tone down lightness to meet contrast
+  const baseRgb = hexToRgb(worldHex);
+  const baseHsl = rgbToHsl(baseRgb);
+
+  // Binary search lightness toward darker
+  let lo = 0;
+  let hi = baseHsl.l;
+  let bestL = baseHsl.l;
+  for (let i = 0; i < 22; i++) {
+    const mid = (lo + hi) / 2;
+    const testRgb = hslToRgb({ h: baseHsl.h, s: baseHsl.s, l: mid });
+    const cr = getContrastRatio(testRgb, bgRgb);
+    if (cr >= targetCR) {
+      bestL = mid;
+      lo = mid; // try slightly lighter to keep vibrancy
+    } else {
+      hi = mid; // go darker
+    }
+    if (hi - lo < 0.6) break;
+  }
+
+  let tonedRgb = hslToRgb({ h: baseHsl.h, s: baseHsl.s, l: bestL });
+
+  // 2) Blend slightly toward background to embed (~tone)
+  const mix = (a: RGB, b: RGB, amount: number): RGB => ({
+    r: Math.round(a.r * (1 - amount) + b.r * amount),
+    g: Math.round(a.g * (1 - amount) + b.g * amount),
+    b: Math.round(a.b * (1 - amount) + b.b * amount),
+  });
+  const embeddedRgb = mix(tonedRgb, bgRgb, Math.max(0, Math.min(1, tone)));
+  const embeddedCR = getContrastRatio(embeddedRgb, bgRgb);
+
+  if (embeddedCR >= targetCR) {
+    return {
+      color: rgbToHex(embeddedRgb),
+      needsScrim: false,
+      scrimAlpha: 0,
+      achievedContrast: embeddedCR,
+      usedStrategy: 'tone',
+    };
+  }
+
+  // 3) Raise target slightly and try again from toned color
+  const raisedTarget = Math.max(targetCR, 3.5);
+  let lo2 = 0;
+  let hi2 = bestL;
+  let bestL2 = bestL;
+  for (let i = 0; i < 18; i++) {
+    const mid = (lo2 + hi2) / 2;
+    const testRgb = hslToRgb({ h: baseHsl.h, s: baseHsl.s, l: mid });
+    const cr = getContrastRatio(testRgb, bgRgb);
+    if (cr >= raisedTarget) {
+      bestL2 = mid;
+      lo2 = mid;
+    } else {
+      hi2 = mid;
+    }
+    if (hi2 - lo2 < 0.6) break;
+  }
+  const raisedRgb = hslToRgb({ h: baseHsl.h, s: baseHsl.s, l: bestL2 });
+  const raisedEmbedded = mix(raisedRgb, bgRgb, Math.max(0, Math.min(1, tone)));
+  const raisedCRAchieved = getContrastRatio(raisedEmbedded, bgRgb);
+  if (raisedCRAchieved >= targetCR) {
+    return {
+      color: rgbToHex(raisedEmbedded),
+      needsScrim: true,
+      scrimAlpha: 0.08,
+      achievedContrast: raisedCRAchieved,
+      usedStrategy: 'raiseTarget',
+    };
+  }
+
+  // 4) Ink fallback: use a darker variant of background hue
+  const inkL = Math.max(0, bgHsl.l - 40);
+  const inkS = Math.min(40, Math.max(10, bgHsl.s));
+  const ink = hslToRgb({ h: bgHsl.h, s: inkS, l: inkL });
+  const inkCR = getContrastRatio(ink, bgRgb);
+  return {
+    color: rgbToHex(ink),
+    needsScrim: true,
+    scrimAlpha: 0.12,
+    achievedContrast: inkCR,
+    usedStrategy: 'inkFallback',
+  };
+}
