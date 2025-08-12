@@ -12,7 +12,7 @@ export function AboutPage() {
         <div className="w-full max-w-xl mx-auto flex items-center justify-start pt-2">
           <Link
             to="/"
-            className="glass-token inline-flex items-center gap-2 px-3 py-1.5 focus-visible-ring"
+            className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg inline-flex items-center gap-2 px-4 py-2 focus-visible-ring"
           >
             <svg
               className="w-4 h-4 text-gray-700"
@@ -43,7 +43,7 @@ export function AboutPage() {
             </p>
           </div>
 
-          <section className="glass-panel px-6 sm:px-8 py-7 sm:py-8 text-left space-y-6">
+          <section className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-6 sm:px-8 py-7 sm:py-8 text-left space-y-6">
             <div className="space-y-2">
               <h2 className="text-2xl font-semibold text-gray-800">
                 What it is
@@ -69,7 +69,7 @@ export function AboutPage() {
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-[2px]">2</span>
                   <span>
-                    See how your word contributes to today’s global snapshot.
+                    See how your word contributes to today's global snapshot.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -112,7 +112,7 @@ export function AboutPage() {
 
             <div className="space-y-3">
               <h3 className="text-xl font-semibold text-gray-800">Credits</h3>
-              <div className="glass-panel flex items-center gap-4 p-4">
+              <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg flex items-center gap-4 p-4">
                 {avatarError ? (
                   <div className="w-12 h-12 rounded-2xl bg-white/70 flex items-center justify-center text-gray-700 font-semibold">
                     S
@@ -144,7 +144,7 @@ export function AboutPage() {
                     href="https://github.com/spencerdavis226"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-token w-9 h-9 inline-flex items-center justify-center focus-visible-ring"
+                    className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg w-9 h-9 inline-flex items-center justify-center focus-visible-ring"
                     aria-label="GitHub"
                     title="GitHub"
                   >
@@ -161,7 +161,7 @@ export function AboutPage() {
                     href="https://www.linkedin.com/in/davisspencer/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-token w-9 h-9 inline-flex items-center justify-center focus-visible-ring"
+                    className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg w-9 h-9 inline-flex items-center justify-center focus-visible-ring"
                     aria-label="LinkedIn"
                     title="LinkedIn"
                   >
@@ -179,7 +179,7 @@ export function AboutPage() {
                     href="http://www.spencerdavis.dev"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-token w-9 h-9 hidden sm:inline-flex items-center justify-center focus-visible-ring"
+                    className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg w-9 h-9 hidden sm:inline-flex items-center justify-center focus-visible-ring"
                     aria-label="Website"
                     title="Website"
                   >
@@ -210,13 +210,13 @@ export function AboutPage() {
           <div className="flex items-center justify-center gap-3 sm:gap-4 pt-2">
             <Link
               to="/"
-              className="glass-button px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring"
+              className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring"
             >
               Share your feeling
             </Link>
             <Link
               to="/results"
-              className="glass-button px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring"
+              className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring"
             >
               View results
             </Link>
