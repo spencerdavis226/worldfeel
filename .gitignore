@@ -122,3 +122,6 @@ credentials/
 config/secrets.json
 .secrets
 *.secret
+
+# Cursor
+.cursor/
