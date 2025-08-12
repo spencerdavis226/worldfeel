@@ -30,45 +30,7 @@ export default {
           'dark-lg': 'rgba(0, 0, 0, 0.3)',
         },
       },
-      backdropBlur: {
-        xs: '2px',
-      },
-      boxShadow: {
-        glass: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-        'glass-lg': '0 15px 35px 0 rgba(31, 38, 135, 0.4)',
-        'inner-highlight': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
-      },
-      animation: {
-        float: 'float 6s ease-in-out infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
-        'fade-in-up': 'fade-in-up 900ms cubic-bezier(0.22, 1, 0.36, 1) both',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        'gradient-shift': {
-          '0%, 100%': { transform: 'translate(0%, 0%) scale(1)' },
-          '25%': { transform: 'translate(-25%, -25%) scale(1.1)' },
-          '50%': { transform: 'translate(25%, -25%) scale(0.9)' },
-          '75%': { transform: 'translate(-25%, 25%) scale(1.05)' },
-        },
-        'fade-in-up': {
-          from: { opacity: '0', transform: 'translateY(24px) scale(0.98)' },
-          to: { opacity: '1', transform: 'translateY(0) scale(1)' },
-        },
-      },
-      borderRadius: {
-        '4xl': '2rem',
-        '5xl': '3rem',
-      },
-      spacing: {
-        18: '4.5rem',
-        88: '22rem',
-        128: '32rem',
-      },
+      // Removed unused extensions - see _graveyard/README.md for details
     },
   },
   plugins: [],

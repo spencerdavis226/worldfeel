@@ -45,64 +45,10 @@
 }
 
 @layer components {
-  /* Liquid Glass Components */
-  .glass-card {
-    @apply backdrop-blur-md bg-white/25 border border-white/30 shadow-glass;
-    border-radius: 24px;
-    position: relative;
-  }
-
-  .glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    border-radius: 24px 24px 0 0;
-  }
-
-  .glass-button {
-    @apply backdrop-blur-md bg-white/30 border border-white/40 shadow-inner-highlight;
-    @apply hover:bg-glass-white-lg hover:border-white/40;
-    @apply active:scale-95 active:bg-glass-white-md;
-    @apply transition-all duration-200 ease-out;
-    border-radius: 16px;
-    position: relative;
-  }
-
-  .glass-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.6),
-      transparent
-    );
-    border-radius: 16px 16px 0 0;
-  }
-
-  .glass-input {
-    @apply backdrop-blur-sm bg-white/25 border border-white/30;
-    @apply focus:bg-glass-white-md focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20;
-    @apply placeholder:text-gray-500/70;
-    @apply transition-all duration-200;
-    border-radius: 16px;
-  }
-
+  /* Glass Panel - Used in HomePage dropdown and other components */
   .glass-panel {
-    @apply backdrop-blur-lg bg-white/[0.28] border border-white/40 shadow-glass-lg;
+    @apply backdrop-blur-lg bg-white/[0.28] border border-white/40;
+    box-shadow: 0 15px 35px 0 rgba(31, 38, 135, 0.4);
     border-radius: 20px;
     position: relative;
   }
@@ -123,7 +69,7 @@
     border-radius: 20px 20px 0 0;
   }
 
-  /* Compact frosted token chip (match stats card recipe) */
+  /* Compact frosted token chip - Used in StatsPanel */
   .glass-token {
     @apply backdrop-blur-sm bg-white/20 border border-white/30 shadow-lg rounded-xl text-gray-800;
   }
@@ -134,124 +80,6 @@
   /* Variant: glass-panel without the decorative top line */
   .no-top-line::before {
     display: none;
-  }
-
-  /* Compact glass call-to-action (tinted by --accent-r/g/b) */
-  .glass-cta {
-    @apply backdrop-blur-md backdrop-saturate-150 border transition-all duration-200 ease-out;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(255, 255, 255, 0.34) 100%
-      ),
-      rgba(
-        var(--accent-r, 109),
-        var(--accent-g, 207),
-        var(--accent-b, 246),
-        0.58
-      );
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.35),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
-      0 10px 26px
-        rgba(
-          var(--accent-r, 109),
-          var(--accent-g, 207),
-          var(--accent-b, 246),
-          0.42
-        );
-    position: relative;
-  }
-  /* Remove decorative top line for simpler look */
-  .glass-cta::before {
-    display: none;
-  }
-  .glass-cta:hover {
-    transform: translateY(-1px);
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.6) 0%,
-        rgba(255, 255, 255, 0.3) 100%
-      ),
-      rgba(
-        var(--accent-r, 109),
-        var(--accent-g, 207),
-        var(--accent-b, 246),
-        0.64
-      );
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.4),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
-      0 12px 30px
-        rgba(
-          var(--accent-r, 109),
-          var(--accent-g, 207),
-          var(--accent-b, 246),
-          0.48
-        );
-  }
-  .glass-cta:active {
-    transform: translateY(0) scale(0.98);
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.44) 0%,
-        rgba(255, 255, 255, 0.3) 100%
-      ),
-      rgba(
-        var(--accent-r, 109),
-        var(--accent-g, 207),
-        var(--accent-b, 246),
-        0.6
-      );
-  }
-
-  /* Static frosted blue CTA (no animations or transforms) */
-  .glass-cta-blue {
-    @apply backdrop-blur-md backdrop-saturate-150 border text-white;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(255, 255, 255, 0.34) 100%
-      ),
-      rgba(10, 132, 255, 0.62);
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.35),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
-      0 10px 26px rgba(10, 132, 255, 0.42);
-    position: relative;
-  }
-  .glass-cta-blue::before {
-    display: none;
-  }
-  .glass-cta-blue:hover {
-    /* Keep hover static (no transform/transition). Slightly adjust fill instantly. */
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.6) 0%,
-        rgba(255, 255, 255, 0.3) 100%
-      ),
-      rgba(10, 132, 255, 0.66);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.4),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
-      0 12px 30px rgba(10, 132, 255, 0.48);
-  }
-  .glass-cta-blue:active {
-    /* No scale; keep a subtle pressed state by darkening slightly */
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(255, 255, 255, 0.28) 100%
-      ),
-      rgba(10, 132, 255, 0.6);
   }
 
   /* Simplified, tintable glass CTA used on Home submit */
@@ -319,14 +147,7 @@
       );
   }
 
-  /* Animated Background */
-  .liquid-bg {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient-shift 15s ease infinite;
-  }
-
-  /* Noise texture overlay */
+  /* Noise texture overlay - Used in GlassyBackground */
   .noise-overlay {
     position: relative;
   }
@@ -345,24 +166,27 @@
     background-size: 4px 4px;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar - Used in HomePage dropdown */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-glass-white rounded-full;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-glass-white-lg rounded-full border border-white/20;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-glass-white-md;
+    background-color: rgba(255, 255, 255, 0.2);
   }
 
-  /* Mobile-optimized dropdown container */
+  /* Mobile-optimized dropdown container - Used in HomePage */
   .dropdown-mobile-container {
     /* Ensure dropdown doesn't extend beyond viewport on mobile */
     max-height: calc(100vh - 200px);
@@ -378,7 +202,8 @@
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      @apply bg-white/40 rounded-full;
+      background-color: rgba(255, 255, 255, 0.4);
+      border-radius: 9999px;
     }
   }
 }
@@ -543,21 +368,7 @@
     animation: wf-soft-fade-in 300ms ease-out both;
   }
 
-  /* Restored shared animation utilities used outside Results page */
-  @keyframes wf-fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(24px) scale(0.98);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-  .animate-fade-in-up {
-    animation: wf-fade-in-up 2000ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
+  /* Animation utilities used across the app */
   @keyframes wf-fade-in {
     from {
       opacity: 0;
@@ -584,71 +395,9 @@
     animation: wf-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  @keyframes wf-pop-bounce {
-    0% {
-      transform: scale(0.96);
-      opacity: 0.9;
-    }
-    60% {
-      transform: scale(1.04);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  .animate-pop-bounce {
-    animation: wf-pop-bounce 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  @keyframes wf-fade-scale-in {
-    0% {
-      opacity: 0;
-      transform: scale(0.96) translateY(6px);
-    }
-    60% {
-      opacity: 1;
-      transform: scale(1.02) translateY(0);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  .animate-fade-scale-in-delayed {
-    animation: wf-fade-scale-in 1600ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both;
-  }
-
-  .anim-delay-0 {
-    animation-delay: 0ms;
-  }
-  .anim-delay-200 {
-    animation-delay: 200ms;
-  }
-  .anim-delay-300 {
-    animation-delay: 300ms;
-  }
-  .anim-delay-400 {
-    animation-delay: 400ms;
-  }
-  .anim-delay-600 {
-    animation-delay: 600ms;
-  }
+  /* Animation delay utilities - Only keeping the ones actually used */
   .anim-delay-700 {
     animation-delay: 700ms;
-  }
-  .anim-delay-900 {
-    animation-delay: 900ms;
-  }
-  .anim-delay-1100 {
-    animation-delay: 1100ms;
-  }
-  .anim-delay-1500 {
-    animation-delay: 1500ms;
-  }
-  .anim-delay-1600 {
-    animation-delay: 1600ms;
   }
 
   /* Very slow hue rotation cycle */
