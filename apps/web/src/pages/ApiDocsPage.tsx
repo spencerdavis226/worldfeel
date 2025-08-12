@@ -176,18 +176,16 @@ export function ApiDocsPage() {
           {/* CTA buttons with proper spacing from footer */}
           <div className="flex items-center justify-center gap-3 sm:gap-4 pt-4 sm:pt-6">
             <a
-              href={`${apiBaseUrl}/public/emotion-of-the-day`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/"
               className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring hover:bg-white/[0.35] transition-colors"
             >
-              Try the API
+              Share your feeling
             </a>
             <a
-              href="/about"
+              href="/results"
               className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring hover:bg-white/[0.35] transition-colors"
             >
-              About worldfeel
+              View results
             </a>
           </div>
         </div>
