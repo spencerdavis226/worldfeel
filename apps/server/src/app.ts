@@ -12,6 +12,14 @@ const app = express();
 // Trust proxy for accurate IP addresses (important for rate limiting and IP hashing)
 app.set('trust proxy', 1);
 
+// Build allowed origin list (primary + optional comma-separated list)
+const allowedOrigins: string[] = [env.WEB_ORIGIN];
+if (env.WEB_ORIGINS) {
+  for (const o of env.WEB_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)) {
+    if (!allowedOrigins.includes(o)) allowedOrigins.push(o);
+  }
+}
+
 // Security middleware
 app.use(
   helmet({
@@ -21,7 +29,7 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", env.WEB_ORIGIN],
+        connectSrc: ["'self'", ...allowedOrigins],
         fontSrc: ["'self'", 'https:', 'data:'],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
@@ -35,7 +43,12 @@ app.use(
 // CORS configuration
 app.use(
   cors({
-    origin: env.WEB_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS: Origin not allowed: ${origin}`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

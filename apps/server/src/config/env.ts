@@ -12,6 +12,8 @@ const envSchema = z.object({
   MONGODB_URI: z.string().url('Invalid MongoDB URI'),
   DB_NAME: z.string().default('worldfeeling'),
   WEB_ORIGIN: z.string().url('Invalid web origin URL'),
+  // Optional, comma-separated list of additional allowed web origins
+  WEB_ORIGINS: z.string().optional(),
   DAY_SALT_SECRET: z
     .string()
     .min(32, 'Day salt secret must be at least 32 characters'),
@@ -43,4 +45,7 @@ if (env.NODE_ENV === 'development') {
   console.log(`  - Port: ${env.PORT}`);
   console.log(`  - Database: ${env.DB_NAME}`);
   console.log(`  - Web Origin: ${env.WEB_ORIGIN}`);
+  if (env.WEB_ORIGINS) {
+    console.log(`  - Additional Web Origins: ${env.WEB_ORIGINS}`);
+  }
 }
