@@ -37,6 +37,7 @@ export const decideHeroStyle = async (
 // Synchronous fallback functions for immediate use
 export const getReadableTextColorSync = (
   color: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   _options?: any
 ): string => {
   // Simple fallback that darkens the color for better contrast
@@ -56,6 +57,7 @@ export const getReadableTextColorSync = (
 
 export const getTextShadowForContrastSync = (
   _color: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   _intensity: 'subtle' | 'medium' | 'strong' = 'medium'
 ): string => {
   // Simple fallback shadow
@@ -65,6 +67,7 @@ export const getTextShadowForContrastSync = (
 export const decideHeroStyleSync = (
   worldHex: string,
   _bgHex: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   _options: { targetCR?: number; tone?: number } = {}
 ): {
   color: string;

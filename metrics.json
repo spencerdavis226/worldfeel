@@ -1,10 +1,10 @@
 {
-  "timestamp": "2024-12-19T00:00:00.000Z",
+  "timestamp": "2024-12-19T01:00:00.000Z",
   "build_metrics": {
     "main_chunk": {
-      "file": "dist/assets/index-DeOYavAu.js",
-      "size": "165.64 kB",
-      "gzip_size": "54.21 kB"
+      "file": "dist/assets/index-CO0fVYk6.js",
+      "size": "161.75 kB",
+      "gzip_size": "53.38 kB"
     },
     "lazy_loaded_routes": [
       {
@@ -39,9 +39,9 @@
       }
     ],
     "css": {
-      "file": "dist/assets/index-7AAybKql.css",
-      "size": "32.57 kB",
-      "gzip_size": "6.22 kB"
+      "file": "dist/assets/index-DqCIXIY6.css",
+      "size": "31.52 kB",
+      "gzip_size": "6.10 kB"
     },
     "html": {
       "file": "dist/index.html",
@@ -50,8 +50,8 @@
     }
   },
   "total_bundle_size": {
-    "raw": "307.50 kB",
-    "gzip": "93.87 kB"
+    "raw": "303.61 kB",
+    "gzip": "92.95 kB"
   },
   "reproduction_commands": [
     "npm install",

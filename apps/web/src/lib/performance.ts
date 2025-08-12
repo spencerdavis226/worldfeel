@@ -48,36 +48,3 @@ export async function timeAsyncFunction<T>(
 
   return result;
 }
-
-/**
- * Start a timer (for manual timing)
- */
-export function startTimer(name: string): string {
-  if (!isDev) return '';
-
-  const timerId = `${name}_${Date.now()}`;
-  console.time(`⏱️  ${name}`);
-  return timerId;
-}
-
-/**
- * End a timer (for manual timing)
- */
-export function endTimer(name: string): void {
-  if (!isDev) return;
-
-  console.timeEnd(`⏱️  ${name}`);
-}
-
-/**
- * Log a performance metric
- */
-export function logMetric(
-  name: string,
-  value: number,
-  unit: string = 'ms'
-): void {
-  if (!isDev) return;
-
-  console.log(`📊 ${name}: ${value}${unit}`);
-}
