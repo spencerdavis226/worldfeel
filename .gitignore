@@ -125,3 +125,4 @@ config/secrets.json
 
 # Cursor
 .cursor/
+DEPLOYMENT.md

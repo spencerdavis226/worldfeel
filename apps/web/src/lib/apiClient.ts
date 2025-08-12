@@ -7,7 +7,7 @@ import type {
   ColorResult,
   SubmitStatus,
 } from '@worldfeel/shared';
-import { env } from '@lib/env.js';
+import { getApiBaseUrl } from '@lib/env.js';
 
 // Type for fetch request options
 type RequestOptions = {
@@ -114,5 +114,5 @@ class ApiClient {
   }
 }
 
-export const apiClient = new ApiClient(env.VITE_API_BASE);
+export const apiClient = new ApiClient(getApiBaseUrl());
 // Remove unused default export

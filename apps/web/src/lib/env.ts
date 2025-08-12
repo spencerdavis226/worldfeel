@@ -27,3 +27,12 @@ function validateEnv(): Environment {
 }
 
 export const env = validateEnv();
+
+// Helper to get API base URL with fallback for production
+export function getApiBaseUrl(): string {
+  // In production, if no API base is set, use the same domain
+  if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE) {
+    return window.location.origin;
+  }
+  return env.VITE_API_BASE;
+}
