@@ -10,8 +10,12 @@
     "db:seed": "NODE_ENV=development tsx src/scripts/devDbTools.ts seed 20",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "depcheck": "npx depcheck",
+    "tsprune": "npx ts-prune",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@worldfeel/shared": "file:../../packages/shared",

@@ -8,7 +8,12 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext ts,tsx",
-    "typecheck": "tsc --noEmit"
+    "lint:fix": "eslint src --ext ts,tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "depcheck": "npx depcheck",
+    "tsprune": "npx ts-prune",
+    "test": "echo \"No tests configured for web app\"",
+    "test:watch": "echo \"No tests configured for web app\""
   },
   "dependencies": {
     "@worldfeel/shared": "file:../../packages/shared",
@@ -19,6 +24,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/node": "^24.2.1",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "@types/uuid": "^9.0.7",

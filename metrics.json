@@ -1,0 +1,67 @@
+{
+  "timestamp": "2024-12-19T00:00:00.000Z",
+  "build_metrics": {
+    "main_chunk": {
+      "file": "dist/assets/index-DeOYavAu.js",
+      "size": "165.64 kB",
+      "gzip_size": "54.21 kB"
+    },
+    "lazy_loaded_routes": [
+      {
+        "file": "dist/assets/usePageTitle-BrkOJgW4.js",
+        "size": "2.89 kB",
+        "gzip_size": "1.12 kB"
+      },
+      {
+        "file": "dist/assets/ApiDocsPage-vRJpzKwq.js",
+        "size": "6.53 kB",
+        "gzip_size": "1.83 kB"
+      },
+      {
+        "file": "dist/assets/HomePage-CgNZwqnI.js",
+        "size": "9.85 kB",
+        "gzip_size": "3.72 kB"
+      },
+      {
+        "file": "dist/assets/AboutPage-BWDcPvoA.js",
+        "size": "11.92 kB",
+        "gzip_size": "2.81 kB"
+      },
+      {
+        "file": "dist/assets/ResultsPage-B-YIGDHK.js",
+        "size": "15.18 kB",
+        "gzip_size": "4.52 kB"
+      },
+      {
+        "file": "dist/assets/colorContrast-Erqa3N1R.js",
+        "size": "71.70 kB",
+        "gzip_size": "19.84 kB"
+      }
+    ],
+    "css": {
+      "file": "dist/assets/index-7AAybKql.css",
+      "size": "32.57 kB",
+      "gzip_size": "6.22 kB"
+    },
+    "html": {
+      "file": "dist/index.html",
+      "size": "1.69 kB",
+      "gzip_size": "0.62 kB"
+    }
+  },
+  "total_bundle_size": {
+    "raw": "307.50 kB",
+    "gzip": "93.87 kB"
+  },
+  "reproduction_commands": [
+    "npm install",
+    "npm run build",
+    "npx depcheck --workspaces",
+    "npx depcheck apps/web",
+    "npx depcheck apps/server",
+    "npx depcheck packages/shared",
+    "cd apps/web && npx ts-prune",
+    "cd apps/server && npx ts-prune",
+    "cd packages/shared && npx ts-prune"
+  ]
+}

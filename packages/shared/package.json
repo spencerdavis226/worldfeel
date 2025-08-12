@@ -15,7 +15,12 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
-    "typecheck": "tsc --noEmit"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "depcheck": "npx depcheck",
+    "tsprune": "npx ts-prune",
+    "test": "echo \"No tests configured for shared package\"",
+    "test:watch": "echo \"No tests configured for shared package\""
   },
   "dependencies": {
     "zod": "^3.22.4"
