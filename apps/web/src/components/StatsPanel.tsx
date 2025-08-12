@@ -1,11 +1,12 @@
 import type { Stats } from '@worldfeel/shared';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { AnimatedValue } from '@components/AnimatedValue';
 import {
-  getReadableTextColor,
-  getTextShadowForContrast,
-} from '@lib/colorContrast';
+  getReadableTextColorSync,
+  getTextShadowForContrastSync,
+} from '@lib/colorContrastLazy';
+import { timeFunction } from '@lib/performance';
 
 interface StatsPanelProps {
   stats: Stats | null;
@@ -24,7 +25,7 @@ function formatPercent(count: number, total: number): string {
 
 // Removed WordBadge in favor of inline rows with fine-grained AnimatedValue transitions
 
-export function StatsPanel({
+export const StatsPanel = memo(function StatsPanel({
   stats,
   error,
   isFirstMount = false,
@@ -73,7 +74,7 @@ export function StatsPanel({
     };
   }, [stats?.yourWord?.word]);
 
-  async function handleCopyHex(): Promise<void> {
+  const handleCopyHex = useCallback(async (): Promise<void> => {
     if (!stats?.yourWord) return;
     const yourHex = getEmotionColor(stats.yourWord.word) || '#6DCFF6';
     const value = (yourHex || '').toUpperCase();
@@ -100,7 +101,7 @@ export function StatsPanel({
     } catch {
       // noop
     }
-  }
+  }, [stats?.yourWord]);
 
   useEffect(() => {
     return () => {
@@ -141,21 +142,25 @@ export function StatsPanel({
                   style={(() => {
                     const originalColor =
                       getEmotionColor(stats?.top?.word || '') || '#6DCFF6';
-                    return {
-                      color: getReadableTextColor(originalColor, {
-                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                        isLargeText: true,
-                        preserveVibrancy: true,
-                        maxDarkening: 0.5,
+                    return timeFunction(
+                      'color-contrast-calculation',
+                      () => ({
+                        color: getReadableTextColorSync(originalColor, {
+                          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                          isLargeText: true,
+                          preserveVibrancy: true,
+                          maxDarkening: 0.5,
+                        }),
+                        textShadow: getTextShadowForContrastSync(
+                          originalColor,
+                          'subtle'
+                        ),
                       }),
-                      textShadow: getTextShadowForContrast(
-                        originalColor,
-                        'subtle'
-                      ),
-                    };
+                      10 // Log if takes longer than 10ms
+                    );
                   })()}
                 >
-                  {val}
+                  {val as string}
                 </span>
               )}
             />
@@ -320,4 +325,4 @@ export function StatsPanel({
       )}
     </div>
   );
-}
+});

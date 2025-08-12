@@ -4,6 +4,7 @@ import {
   useState,
   type ReactNode,
   type CSSProperties,
+  memo,
 } from 'react';
 
 type EqualityFn<T> = (a: T, b: T) => boolean;
@@ -25,7 +26,7 @@ interface AnimatedValueProps<T> {
 
 type Phase = 'idle' | 'fading-out' | 'fading-in';
 
-export function AnimatedValue<T>({
+export const AnimatedValue = memo(function AnimatedValue<T>({
   value,
   className = '',
   fadeOutMs = 220,
@@ -124,6 +125,6 @@ export function AnimatedValue<T>({
       {render ? render(displayValue) : (displayValue as unknown as ReactNode)}
     </span>
   );
-}
+});
 
 // Remove unused default export

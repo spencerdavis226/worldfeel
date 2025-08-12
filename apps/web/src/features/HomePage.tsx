@@ -10,8 +10,9 @@ import {
   getEmotionColor,
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
-import { decideHeroStyle } from '@lib/colorContrast';
+import { decideHeroStyleSync } from '@lib/colorContrastLazy';
 import { usePageTitle } from '@hooks/usePageTitle';
+import { timeAsyncFunction, timeFunction } from '@lib/performance';
 
 export function HomePage() {
   // Set page title for main page
@@ -115,69 +116,75 @@ export function HomePage() {
     };
   }, [canSubmit, remainingSeconds]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Only allow submit when a dropdown selection has been made (valid emotion)
-    if (!selectedKey) return;
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      // Only allow submit when a dropdown selection has been made (valid emotion)
+      if (!selectedKey) return;
 
-    setLoading(true);
-    setError('');
+      setLoading(true);
+      setError('');
 
-    try {
-      const deviceId = getDeviceId();
-      const response = await apiClient.submitWord({
-        // Submit the selected emotion; keep the visible input in sync when selecting
-        word: word.trim().toLowerCase(),
-        deviceId,
-        // No location data for MVP
-      });
-
-      if (response.success) {
-        // Persist your word locally for stats personalization
-        try {
-          localStorage.setItem('wf.yourWord', word.trim().toLowerCase());
-        } catch {
-          // Ignore localStorage errors
-        }
-        // Navigate to results page
-        navigateWithViewTransition('/results', navigate);
-      } else {
-        setError(response.error || 'Something went wrong');
-      }
-    } catch (err) {
-      // On cooldown error, update status and show subtle notice instead of error
       try {
-        const status = await apiClient.getSubmitStatus({
-          deviceId: getDeviceId(),
+        const deviceId = getDeviceId();
+        const response = await apiClient.submitWord({
+          // Submit the selected emotion; keep the visible input in sync when selecting
+          word: word.trim().toLowerCase(),
+          deviceId,
+          // No location data for MVP
         });
-        if (status.success && status.data) {
-          setCanSubmit(status.data.canSubmit);
-          setRemainingSeconds(status.data.remainingSeconds || 0);
-          setError('');
-          return;
-        }
-      } catch {
-        // Ignore status check errors
-      }
-      if (err instanceof Error) setError(err.message);
-      else setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    // Allow only letters and limit length, or allow empty string for backspacing
-    if ((newValue === '' || lettersOnly(newValue)) && newValue.length <= 20) {
-      setWord(newValue);
-      if (error) setError(''); // Clear error when user types
-      setShowSuggestions(true);
-      setHighlightIndex(-1);
-      // Typing invalidates the previous explicit selection
-      setSelectedKey(undefined);
-    }
-  };
+        if (response.success) {
+          // Persist your word locally for stats personalization
+          try {
+            localStorage.setItem('wf.yourWord', word.trim().toLowerCase());
+          } catch {
+            // Ignore localStorage errors
+          }
+          // Navigate to results page
+          navigateWithViewTransition('/results', navigate);
+        } else {
+          setError(response.error || 'Something went wrong');
+        }
+      } catch (err) {
+        // On cooldown error, update status and show subtle notice instead of error
+        try {
+          const status = await apiClient.getSubmitStatus({
+            deviceId: getDeviceId(),
+          });
+          if (status.success && status.data) {
+            setCanSubmit(status.data.canSubmit);
+            setRemainingSeconds(status.data.remainingSeconds || 0);
+            setError('');
+            return;
+          }
+        } catch {
+          // Ignore status check errors
+        }
+        if (err instanceof Error) setError(err.message);
+        else setError('Something went wrong. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [selectedKey, word, navigate]
+  );
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      // Allow only letters and limit length, or allow empty string for backspacing
+      if ((newValue === '' || lettersOnly(newValue)) && newValue.length <= 20) {
+        setWord(newValue);
+        if (error) setError(''); // Clear error when user types
+        setShowSuggestions(true);
+        setHighlightIndex(-1);
+        // Typing invalidates the previous explicit selection
+        setSelectedKey(undefined);
+      }
+    },
+    [error]
+  );
 
   const fetchSuggestions = useCallback(async (q: string) => {
     if (!q.trim()) {
@@ -185,7 +192,11 @@ export function HomePage() {
       return;
     }
     try {
-      const resp = await apiClient.searchEmotions(q, 12);
+      const resp = await timeAsyncFunction(
+        `emotion-search-${q}`,
+        () => apiClient.searchEmotions(q, 12),
+        50 // Log if takes longer than 50ms
+      );
       if (resp.success && Array.isArray(resp.data)) {
         setSuggestions(resp.data);
       }
@@ -255,38 +266,41 @@ export function HomePage() {
     };
   }, [word, emotionKeys, placeholderWord]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || suggestions.length === 0) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setHighlightIndex((idx) => (idx + 1) % suggestions.length);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setHighlightIndex(
-        (idx) => (idx - 1 + suggestions.length) % suggestions.length
-      );
-    } else if (e.key === 'Enter') {
-      if (highlightIndex >= 0) {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (!showSuggestions || suggestions.length === 0) return;
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
-        const pick = suggestions[highlightIndex]!;
-        const resolved = resolveEmotionKey(pick);
-        if (resolved) {
-          setWord(pick);
-          setSelectedKey(resolved);
-          setShowSuggestions(false);
-          setSuggestions([]);
-          // Lock background to the selected emotion color
-          const hex = getEmotionColor(pick) || '#6DCFF6';
-          setAccentHex(hex);
+        setHighlightIndex((idx) => (idx + 1) % suggestions.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setHighlightIndex(
+          (idx) => (idx - 1 + suggestions.length) % suggestions.length
+        );
+      } else if (e.key === 'Enter') {
+        if (highlightIndex >= 0) {
+          e.preventDefault();
+          const pick = suggestions[highlightIndex]!;
+          const resolved = resolveEmotionKey(pick);
+          if (resolved) {
+            setWord(pick);
+            setSelectedKey(resolved);
+            setShowSuggestions(false);
+            setSuggestions([]);
+            // Lock background to the selected emotion color
+            const hex = getEmotionColor(pick) || '#6DCFF6';
+            setAccentHex(hex);
+          }
+        } else {
+          // Prevent free-enter submission unless a selection was made
+          e.preventDefault();
         }
-      } else {
-        // Prevent free-enter submission unless a selection was made
-        e.preventDefault();
+      } else if (e.key === 'Escape') {
+        setShowSuggestions(false);
       }
-    } else if (e.key === 'Escape') {
-      setShowSuggestions(false);
-    }
-  };
+    },
+    [showSuggestions, suggestions.length, highlightIndex]
+  );
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -383,10 +397,14 @@ export function HomePage() {
                   {(() => {
                     const hex = getEmotionColor(word) || '#6DCFF6';
                     const bgHex = '#FFFFFF';
-                    const { color, needsScrim, scrimAlpha } = decideHeroStyle(
-                      hex,
-                      bgHex,
-                      { targetCR: 3.0, tone: 0.12 }
+                    const { color, needsScrim, scrimAlpha } = timeFunction(
+                      'hero-style-calculation',
+                      () =>
+                        decideHeroStyleSync(hex, bgHex, {
+                          targetCR: 3.0,
+                          tone: 0.12,
+                        }),
+                      5 // Log if takes longer than 5ms
                     );
                     const shadow = '0 1px 2px rgba(0,0,0,0.25)';
                     return (

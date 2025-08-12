@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "How Is The World Feeling - A MERN app collecting daily emotions from around the world",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -13,6 +14,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=packages/shared\" \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/server\"",
     "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/web",
+    "build:check": "npm run build && node scripts/check-bundle-size.js",
     "db:clear": "npm run db:clear --workspace=apps/server",
     "db:seed": "npm run db:seed --workspace=apps/server",
     "lint": "npm run lint --workspaces",
