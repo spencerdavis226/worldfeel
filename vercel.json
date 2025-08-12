@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "./scripts/vercel-build.sh",
+  "buildCommand": "npm run build:vercel",
   "outputDirectory": "apps/web/dist",
   "installCommand": "npm install",
   "functions": {
