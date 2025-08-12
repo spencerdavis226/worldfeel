@@ -49,10 +49,11 @@ export function AboutPage() {
                 What it is
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                Worldfeel is a minimal, privacy‑minded experiment in collective
-                emotion. You share one word that describes your current feeling.
-                We aggregate those words globally and reflect the moment — no
-                feeds, no comments, just a quiet pulse of how the world feels.
+                worldfeel.org is a minimal, privacy‑minded experiment in
+                collective emotion. You share one word that describes your
+                current feeling. We aggregate those words globally and reflect
+                the moment - no feeds, no comments, just a quiet pulse of how
+                the world feels.
               </p>
             </div>
 
@@ -88,7 +89,7 @@ export function AboutPage() {
               <p className="text-gray-700 leading-relaxed">
                 Each emotion maps to a color. Common emotions use a curated
                 palette; uncommon words resolve to the nearest known emotion. We
-                tune contrast for readability and keep labels neutral — the
+                tune contrast for readability and keep labels neutral - the
                 color is the emotion.
               </p>
             </div>
