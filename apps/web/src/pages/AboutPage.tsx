@@ -6,13 +6,13 @@ export function AboutPage() {
   const [avatarError, setAvatarError] = useState<boolean>(false);
   const [avatarSrc, setAvatarSrc] = useState<string>('/spencer.png');
   return (
-    <GlassyBackground hueCycle={true} hueDurationMs={240000}>
+    <GlassyBackground hueCycle={true} hueDurationMs={120000}>
       <div className="min-h-screen flex flex-col items-center justify-between p-4">
         {/* Top bar with back link */}
         <div className="w-full max-w-xl mx-auto flex items-center justify-start pt-2">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 glass-token px-3 py-1.5 focus-visible-ring"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg focus-visible-ring"
           >
             <svg
               className="w-4 h-4 text-gray-700"
@@ -35,7 +35,7 @@ export function AboutPage() {
         <div className="w-full max-w-2xl mx-auto text-center px-4 sm:px-2 animate-fade-in space-y-8">
           <div className="space-y-3">
             <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight">
-              About Worldfeel
+              About worldfeel.org
             </h1>
             <p className="text-base sm:text-lg text-gray-600 text-balance">
               A calm, real‑time snapshot of how people feel today — one word at
@@ -43,7 +43,7 @@ export function AboutPage() {
             </p>
           </div>
 
-          <section className="glass-panel px-6 sm:px-8 py-7 sm:py-8 text-left space-y-6">
+          <section className="px-6 sm:px-8 py-7 sm:py-8 text-left space-y-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg">
             <div className="space-y-2">
               <h2 className="text-2xl font-semibold text-gray-800">
                 What it is
@@ -111,7 +111,7 @@ export function AboutPage() {
 
             <div className="space-y-3">
               <h3 className="text-xl font-semibold text-gray-800">Credits</h3>
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/40 border border-white/50 backdrop-blur-sm">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg">
                 {avatarError ? (
                   <div className="w-12 h-12 rounded-2xl bg-white/70 flex items-center justify-center text-gray-700 font-semibold">
                     S
@@ -143,7 +143,7 @@ export function AboutPage() {
                     href="https://github.com/spencerdavis226"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-token w-9 h-9 inline-flex items-center justify-center hover:bg-white/30"
+                    className="w-9 h-9 inline-flex items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/28 active:bg-white/34 focus-visible-ring"
                     aria-label="GitHub"
                     title="GitHub"
                   >
@@ -160,7 +160,7 @@ export function AboutPage() {
                     href="https://www.linkedin.com/in/davisspencer/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-token w-9 h-9 inline-flex items-center justify-center hover:bg-white/30"
+                    className="w-9 h-9 inline-flex items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/28 active:bg-white/34 focus-visible-ring"
                     aria-label="LinkedIn"
                     title="LinkedIn"
                   >
@@ -178,7 +178,7 @@ export function AboutPage() {
                     href="http://www.spencerdavis.dev"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-token w-9 h-9 hidden sm:inline-flex items-center justify-center hover:bg-white/30"
+                    className="w-9 h-9 hidden sm:inline-flex items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/28 active:bg-white/34 focus-visible-ring"
                     aria-label="Website"
                     title="Website"
                   >
@@ -213,13 +213,13 @@ export function AboutPage() {
           <div className="flex items-center justify-center gap-3 sm:gap-4 pt-2">
             <Link
               to="/"
-              className="glass-cta-blue px-5 sm:px-6 py-3 text-sm sm:text-base font-medium rounded-xl focus-visible-ring"
+              className="inline-flex items-center justify-center px-5 sm:px-6 py-3 text-sm sm:text-base font-medium rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/28 active:bg-white/34 focus-visible-ring"
             >
               Share your feeling
             </Link>
             <Link
               to="/results"
-              className="glass-button px-5 sm:px-6 py-3 text-sm sm:text-base font-medium rounded-xl focus-visible-ring"
+              className="inline-flex items-center justify-center px-5 sm:px-6 py-3 text-sm sm:text-base font-medium rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/28 active:bg-white/34 focus-visible-ring"
             >
               View results
             </Link>
