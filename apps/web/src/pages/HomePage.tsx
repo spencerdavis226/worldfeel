@@ -136,7 +136,9 @@ export function HomePage() {
         // Persist your word locally for stats personalization
         try {
           localStorage.setItem('wf.yourWord', word.trim().toLowerCase());
-        } catch {}
+        } catch {
+          // Ignore localStorage errors
+        }
         // Navigate to results page
         navigateWithViewTransition('/results', navigate);
       } else {
@@ -154,7 +156,9 @@ export function HomePage() {
           setError('');
           return;
         }
-      } catch {}
+      } catch {
+        // Ignore status check errors
+      }
       if (err instanceof Error) setError(err.message);
       else setError('Something went wrong. Please try again.');
     } finally {
@@ -186,7 +190,7 @@ export function HomePage() {
         setSuggestions(resp.data);
       }
     } catch {
-      // ignore errors for suggestions
+      // Ignore errors for suggestions
     }
   }, []);
 

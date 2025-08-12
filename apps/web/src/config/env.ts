@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  VITE_API_BASE: z.string().url('Invalid API base URL').default('http://localhost:8080'),
+  VITE_API_BASE: z
+    .string()
+    .url('Invalid API base URL')
+    .default('http://localhost:8080'),
 });
 
-export type Environment = z.infer<typeof envSchema>;
+type Environment = z.infer<typeof envSchema>;
 
 function validateEnv(): Environment {
   try {
@@ -18,7 +21,7 @@ function validateEnv(): Environment {
     }
     // Return defaults for development
     return {
-      VITE_API_BASE: 'http://localhost:8080'
+      VITE_API_BASE: 'http://localhost:8080',
     };
   }
 }

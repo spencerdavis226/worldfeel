@@ -10,15 +10,14 @@ router.post('/', async (_req: Request, res: Response): Promise<void> => {
 
     res.json({
       success: true,
-      message: 'Report received'
+      message: 'Report received',
     });
-
   } catch (error) {
     console.error('Flag error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
-      message: 'Unable to process report'
+      message: 'Unable to process report',
     });
   }
 });

@@ -249,22 +249,12 @@ export function getTextShadowForContrast(
  * Create a tinted background color that complements the text (Google-style)
  * Useful for creating colored background areas behind text
  */
-export function getTintedBackground(
-  textColor: string,
-  opacity: number = 0.12
-): string {
-  const rgb = hexToRgb(textColor);
-  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
-}
+// Remove unused function
 
 /**
  * Utility to determine if we should use light or dark text on a colored background
  */
-export function shouldUseLightText(backgroundColor: string): boolean {
-  const rgb = hexToRgb(backgroundColor);
-  const luminance = getLuminance(rgb);
-  return luminance < 0.5;
-}
+// Remove unused function
 
 /**
  * Decide a readable foreground color against a given background using hero-style logic.

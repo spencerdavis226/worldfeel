@@ -49,7 +49,7 @@ export async function getStats(query: StatsQuery = {}): Promise<Stats> {
   const deviceId = (query as any).deviceId as string | undefined;
 
   // Build match filter for location
-  const matchFilter: any = {
+  const matchFilter: { yourWord?: string; expiresAt?: { $gt: Date } } = {
     expiresAt: { $gt: new Date() }, // Only active submissions
   };
 
@@ -194,7 +194,7 @@ router.get('/', async (req: StatsRequest, res: Response): Promise<void> => {
     }
 
     const queryData = validationResult.data;
-    const statsQuery: any = {};
+    const statsQuery: Record<string, unknown> = {};
     if (queryData.yourWord) statsQuery.yourWord = queryData.yourWord;
     if ((queryData as any).deviceId)
       statsQuery.deviceId = (queryData as any).deviceId;

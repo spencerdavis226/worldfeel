@@ -413,6 +413,8 @@ npm --workspace=apps/server run db:seed -- 50
 - **Prettier** - Automated code formatting
 - **TypeScript** - Strict type checking with latest features
 - **Zod** - Runtime validation matching TypeScript types
+- **Dead Code Detection** - Automated removal of unused exports and functions
+- **Bundle Optimization** - Lazy loading and code splitting for better performance
 
 ## 🧪 Testing
 

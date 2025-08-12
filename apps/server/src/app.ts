@@ -13,30 +13,34 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", env.WEB_ORIGIN],
-      fontSrc: ["'self'", "https:", "data:"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", env.WEB_ORIGIN],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // CORS configuration
-app.use(cors({
-  origin: env.WEB_ORIGIN,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-}));
+app.use(
+  cors({
+    origin: env.WEB_ORIGIN,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+);
 
 // Rate limiting: 60 requests per minute per IP
 const limiter = rateLimit({
@@ -45,14 +49,14 @@ const limiter = rateLimit({
   message: {
     success: false,
     error: 'Too many requests',
-    message: 'Please slow down and try again later'
+    message: 'Please slow down and try again later',
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   skip: (req) => {
     // Skip rate limiting for health checks in development
     return env.NODE_ENV === 'development' && req.path === '/api/health';
-  }
+  },
 });
 
 app.use(limiter);
@@ -78,7 +82,7 @@ app.get('/', (_req, res) => {
     success: true,
     message: 'How Is The World Feeling API',
     version: '1.0.0',
-    docs: '/api/health'
+    docs: '/api/health',
   });
 });
 
@@ -87,24 +91,29 @@ app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     error: 'Not found',
-    message: `Route ${req.originalUrl} not found`
+    message: `Route ${req.originalUrl} not found`,
   });
 });
 
 // Error handling middleware
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
+app.use(
+  (err: Error | unknown, _req: express.Request, res: express.Response) => {
+    console.error('Unhandled error:', err);
 
-  // Don't leak error details in production
-  const message = env.NODE_ENV === 'production'
-    ? 'Something went wrong'
-    : err.message;
+    // Don't leak error details in production
+    const message =
+      env.NODE_ENV === 'production'
+        ? 'Something went wrong'
+        : err instanceof Error
+          ? err.message
+          : 'Unknown error';
 
-  res.status(500).json({
-    success: false,
-    error: 'Internal server error',
-    message
-  });
-});
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message,
+    });
+  }
+);
 
 export default app;

@@ -9,6 +9,14 @@ import type {
 } from '@worldfeel/shared';
 import { env } from '../config/env.js';
 
+// Type for fetch request options
+type RequestOptions = {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: string;
+  credentials?: 'include' | 'omit' | 'same-origin';
+};
+
 class ApiClient {
   private baseUrl: string;
 
@@ -18,11 +26,11 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestOptions = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}/api${endpoint}`;
 
-    const config: RequestInit = {
+    const config: RequestOptions = {
       credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
@@ -108,4 +116,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(env.VITE_API_BASE);
-export default apiClient;
+// Remove unused default export

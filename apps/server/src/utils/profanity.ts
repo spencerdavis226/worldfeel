@@ -44,12 +44,4 @@ export function containsProfanity(word: string): boolean {
   return false;
 }
 
-/**
- * Filter profanity from text
- */
-export function filterProfanity(word: string): string {
-  if (containsProfanity(word)) {
-    return '*'.repeat(word.length);
-  }
-  return word;
-}
+// Remove unused function
