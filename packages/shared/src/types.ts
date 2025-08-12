@@ -44,7 +44,7 @@ export interface ColorResult {
   matched: boolean; // true if emotion matched from map, false if random fallback
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

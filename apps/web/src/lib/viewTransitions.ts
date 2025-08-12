@@ -4,6 +4,7 @@ export function navigateWithViewTransition(
 ) {
   const start = (cb: () => void) => {
     // Use View Transitions API if available; otherwise, just navigate
+    // TODO: Add proper TypeScript definitions for View Transitions API
     // @ts-ignore
     if (document && (document as any).startViewTransition) {
       // @ts-ignore

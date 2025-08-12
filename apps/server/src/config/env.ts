@@ -15,7 +15,7 @@ const envSchema = z.object({
   DAY_SALT_SECRET: z
     .string()
     .min(32, 'Day salt secret must be at least 32 characters'),
-  SUBMIT_COOLDOWN_SECONDS: z.coerce.number().int().nonnegative().default(60),
+  SUBMIT_COOLDOWN_SECONDS: z.coerce.number().int().nonnegative().default(3600),
 });
 
 type Environment = z.infer<typeof envSchema>;

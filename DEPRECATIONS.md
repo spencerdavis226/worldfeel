@@ -16,13 +16,14 @@ This document tracks items that were intentionally left for future cleanup and i
 - `GlassyBackground.tsx`: 2 warnings - Canvas context types
 - `HomePage.tsx`: 4 warnings - Event handler types
 - `ResultsPage.tsx`: 2 warnings - Animation frame types
-- `apiClient.ts`: 2 warnings - Error handling types
-- `viewTransitions.ts`: 2 warnings - Browser API types
+- `apiClient.ts`: ✅ Fixed - Removed unnecessary `any` casts for deviceId
+- `viewTransitions.ts`: 2 warnings - Browser API types (added TODO comment)
+- `colorContrastLazy.ts`: 1 warning - Fallback function parameter type
 
 **Shared (`packages/shared/src/`)**
 
-- `types.ts`: 1 warning - Generic constraint type
-- `validation.ts`: 1 warning - Zod schema type
+- `types.ts`: ✅ Fixed - Replaced `any` with `unknown` in ApiResponse generic
+- `validation.ts`: 1 warning - Zod schema type (kept as `any` due to Map.has() type constraints)
 
 **Rationale**: These `any` types are used in contexts where:
 
@@ -82,6 +83,7 @@ The `packages/shared` exports show as unused in ts-prune due to path alias resol
 - Removed unused devDependencies
 - Moved unused functions to \_graveyard
 - Fixed ESLint configuration
+- Fixed low-risk type issues
 
 **Potential Future**: Additional 1-2% reduction by:
 

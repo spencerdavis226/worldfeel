@@ -76,8 +76,7 @@ class ApiClient {
     const searchParams = new URLSearchParams();
 
     if (params.yourWord) searchParams.set('yourWord', params.yourWord);
-    if ((params as any).deviceId)
-      searchParams.set('deviceId', String((params as any).deviceId));
+    if (params.deviceId) searchParams.set('deviceId', String(params.deviceId));
 
     const query = searchParams.toString();
     const endpoint = `/stats${query ? `?${query}` : ''}`;

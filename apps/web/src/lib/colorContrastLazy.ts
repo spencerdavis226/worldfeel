@@ -38,7 +38,12 @@ export const decideHeroStyle = async (
 export const getReadableTextColorSync = (
   color: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  _options?: any
+  _options: {
+    backgroundColor?: string;
+    isLargeText?: boolean;
+    preserveVibrancy?: boolean;
+    maxDarkening?: number;
+  } = {}
 ): string => {
   // Simple fallback that darkens the color for better contrast
   const hex = color.replace('#', '');
