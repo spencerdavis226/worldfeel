@@ -21,7 +21,7 @@ export function App() {
       <div id="route-root">
         <Suspense
           fallback={
-            <div className="flex items-center justify-center min-h-[100vh] min-h-[100svh]">
+            <div className="flex items-center justify-center min-h-[100vh] min-h-[100svh] min-h-[100dvh]">
               Loading...
             </div>
           }

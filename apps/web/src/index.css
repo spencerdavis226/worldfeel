@@ -7,11 +7,17 @@
     @apply bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900;
     min-height: 100vh;
     min-height: 100svh;
+    min-height: 100dvh;
     font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04';
+    /* Avoid white gap during toolbar show/hide in iOS Chrome/Safari */
+    overflow-x: hidden;
+    overflow-y: overlay;
   }
 
   html {
     scroll-behavior: smooth;
+    /* Prevent rubber-band overscroll from revealing blank underlays */
+    overscroll-behavior-y: none;
   }
 
   /* View Transitions - route fades */
@@ -192,6 +198,7 @@
     /* Ensure dropdown doesn't extend beyond viewport on mobile */
     max-height: calc(100vh - 200px);
     max-height: calc(100svh - 200px);
+    max-height: calc(100dvh - 200px);
     /* Add subtle backdrop blur for better readability */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);

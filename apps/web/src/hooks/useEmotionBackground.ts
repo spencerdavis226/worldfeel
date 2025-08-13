@@ -102,7 +102,7 @@ export function useBackgroundColor(
         ${edge2} 100%
       )
     `;
-    document.body.style.minHeight = '100svh';
+    document.body.style.minHeight = '100dvh';
 
     // Cleanup function
     return () => {

@@ -321,7 +321,7 @@ export function HomePage() {
   if (checkingExisting) {
     return (
       <GlassyBackground colorHex={accentHex} hueCycle={false}>
-        <div className="min-h-[100vh] min-h-[100svh] flex flex-col items-center justify-center p-4">
+        <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
         </div>
       </GlassyBackground>
@@ -330,7 +330,7 @@ export function HomePage() {
 
   return (
     <GlassyBackground colorHex={accentHex} hueCycle={false}>
-      <div className="min-h-[100vh] min-h-[100svh] flex flex-col items-center justify-between p-4">
+      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4">
         {/* Top spacer */}
         <div></div>
 
@@ -535,7 +535,7 @@ export function HomePage() {
 
         {/* Footer - bottom of viewport */}
         <div
-          className={`w-full text-center pb-[calc(1.5rem+env(safe-area-inset-bottom))] px-4 transition-opacity ${
+          className={`w-full text-center pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4 transition-opacity ${
             showSuggestions && suggestions.length > 0
               ? 'duration-150 ease-out'
               : 'duration-500 ease-in'
