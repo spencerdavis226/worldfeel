@@ -69,7 +69,7 @@ export function GlassyBackground({
   } as React.CSSProperties;
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-[100vh] min-h-[100svh] relative overflow-hidden">
       {/* Animated gradient background */}
       {/* Base layer (fades out) */}
       <div

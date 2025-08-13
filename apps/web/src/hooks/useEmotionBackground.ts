@@ -102,12 +102,13 @@ export function useBackgroundColor(
         ${edge2} 100%
       )
     `;
-    document.body.style.minHeight = '100vh';
+    document.body.style.minHeight = '100svh';
 
     // Cleanup function
     return () => {
       // Reset to default background
       document.body.style.background = '';
+      document.body.style.minHeight = '';
       document.documentElement.style.removeProperty('--emotion-color-r');
       document.documentElement.style.removeProperty('--emotion-color-g');
       document.documentElement.style.removeProperty('--emotion-color-b');

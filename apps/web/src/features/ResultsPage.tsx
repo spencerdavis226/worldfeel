@@ -115,7 +115,7 @@ export function ResultsPage() {
     <GlassyBackground colorHex={stats?.colorHex}>
       <div
         className={[
-          'min-h-screen flex flex-col items-center justify-between p-4',
+          'min-h-[100vh] min-h-[100svh] flex flex-col items-center justify-between p-4',
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
@@ -163,7 +163,7 @@ export function ResultsPage() {
         {/* Footer - bottom of viewport */}
         <div
           className={[
-            'w-full text-center pb-6 px-4',
+            'w-full text-center pb-[calc(1.5rem+env(safe-area-inset-bottom))] px-4',
             isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
           ].join(' ')}
         >
