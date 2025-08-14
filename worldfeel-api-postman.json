@@ -1,0 +1,177 @@
+{
+  "info": {
+    "name": "WorldFeel API",
+    "description": "Real-time global emotional state API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.worldfeel.org",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Check if the API server is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Public Emotion of the Day",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/public/emotion-of-the-day",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "public", "emotion-of-the-day"]
+        },
+        "description": "Get the current emotion and color of the day with usage statistics"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Stats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "stats"]
+        },
+        "description": "Get current statistics about submitted emotions"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Stats with Query",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/stats?yourWord=joy&deviceId=test-device",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "stats"],
+          "query": [
+            {
+              "key": "yourWord",
+              "value": "joy",
+              "description": "Filter stats for a specific word"
+            },
+            {
+              "key": "deviceId",
+              "value": "test-device",
+              "description": "Filter stats for a specific device"
+            }
+          ]
+        },
+        "description": "Get statistics filtered by word or device ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Submit Emotion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"word\": \"joy\",\n  \"deviceId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/submit",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "submit"]
+        },
+        "description": "Submit a new emotion word"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Color for Word",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/color?word=joy",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "color"],
+          "query": [
+            {
+              "key": "word",
+              "value": "joy",
+              "description": "The emotion word to get color for"
+            }
+          ]
+        },
+        "description": "Get the color hex code for a specific emotion word"
+      },
+      "response": []
+    },
+    {
+      "name": "Search Emotions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/emotions/search?q=joy&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "emotions", "search"],
+          "query": [
+            {
+              "key": "q",
+              "value": "joy",
+              "description": "Search query for emotions"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Maximum number of results (1-100)"
+            }
+          ]
+        },
+        "description": "Search for emotions by query string"
+      },
+      "response": []
+    },
+    {
+      "name": "Flag Content",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"word\": \"inappropriate-word\",\n  \"reason\": \"This word is inappropriate\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/flag",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "flag"]
+        },
+        "description": "Flag inappropriate content"
+      },
+      "response": []
+    }
+  ]
+}
