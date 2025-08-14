@@ -392,7 +392,7 @@ export function ResultsPage() {
         {/* Footer - positioned at bottom with generous spacing */}
         <div
           className={[
-            'w-full text-center mb-12 px-4 ios-footer-fix absolute bottom-0 left-0 right-0',
+            'w-full text-center mb-32 px-4 ios-footer-fix absolute bottom-0 left-0 right-0',
             isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
           ].join(' ')}
         >
