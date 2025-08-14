@@ -62,7 +62,13 @@ export function getDeviceId(): string {
   // Create new device ID with fingerprint prefix for better identification
   const fingerprint = generateDeviceFingerprint();
   const deviceId = `${fingerprint}-${uuidv4()}`;
-  setDeviceIdCookie(deviceId);
+
+  // Try to set cookie, but don't fail if it doesn't work
+  try {
+    setDeviceIdCookie(deviceId);
+  } catch (error) {
+    console.warn('Failed to set device ID cookie:', error);
+  }
 
   // Also store in localStorage as backup
   try {
@@ -81,11 +87,28 @@ function setDeviceIdCookie(deviceId: string): void {
   const expires = new Date();
   expires.setFullYear(expires.getFullYear() + 1); // 1 year
 
-  // Use more secure cookie settings
+  // Use more compatible cookie settings for embedded browsers
   const secure = window.location.protocol === 'https:';
-  const sameSite = secure ? 'Strict' : 'Lax';
+  const sameSite = 'Lax'; // Use 'Lax' for better compatibility with embedded browsers
 
-  document.cookie = `${DEVICE_ID_KEY}=${deviceId}; expires=${expires.toUTCString()}; path=/; SameSite=${sameSite}${secure ? '; Secure' : ''}`;
+  const cookieString = `${DEVICE_ID_KEY}=${deviceId}; expires=${expires.toUTCString()}; path=/; SameSite=${sameSite}${secure ? '; Secure' : ''}`;
+
+  try {
+    document.cookie = cookieString;
+
+    // Verify cookie was set (helpful for debugging embedded browser issues)
+    const cookies = document.cookie.split(';');
+    const wasSet = cookies.some((cookie) => {
+      const [name] = cookie.trim().split('=');
+      return name === DEVICE_ID_KEY;
+    });
+
+    if (!wasSet) {
+      console.warn('Device ID cookie may not have been set properly');
+    }
+  } catch (error) {
+    console.error('Failed to set device ID cookie:', error);
+  }
 }
 
 /**

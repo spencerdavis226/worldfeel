@@ -82,9 +82,16 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     }
 
     // Validate device ID format
-    if (deviceId && (typeof deviceId !== 'string' || deviceId.length < 10)) {
-      console.warn('Invalid device ID format:', deviceId);
-      deviceId = uuidv4(); // Generate a new one
+    if (deviceId && typeof deviceId === 'string') {
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const fingerprintUuidRegex =
+        /^[a-z0-9]+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+      if (!uuidRegex.test(deviceId) && !fingerprintUuidRegex.test(deviceId)) {
+        console.warn('Invalid device ID format:', deviceId);
+        deviceId = uuidv4(); // Generate a new one
+      }
     }
 
     const clientIp = getClientIp(req);

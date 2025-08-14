@@ -16,7 +16,14 @@ export const wordSchema = z
 
 export const deviceIdSchema = z
   .string()
-  .uuid('Invalid device ID format')
+  .refine((id) => {
+    // Accept either pure UUID or fingerprint-uuid format
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const fingerprintUuidRegex =
+      /^[a-z0-9]+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id) || fingerprintUuidRegex.test(id);
+  }, 'Invalid device ID format')
   .optional();
 
 export const submissionRequestSchema = z.object({
