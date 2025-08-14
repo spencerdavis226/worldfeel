@@ -161,26 +161,58 @@ export function UniversalBackground({
     ),
   };
 
-  const displayEdgeRgb =
-    currentEdgeRgb && nextEdgeRgb
-      ? {
-          r: interpolateColor(
-            currentEdgeRgb.r,
-            nextEdgeRgb.r,
-            crossfadeProgress
-          ),
-          g: interpolateColor(
-            currentEdgeRgb.g,
-            nextEdgeRgb.g,
-            crossfadeProgress
-          ),
-          b: interpolateColor(
-            currentEdgeRgb.b,
-            nextEdgeRgb.b,
-            crossfadeProgress
-          ),
-        }
-      : currentEdgeRgb;
+  // Calculate edge color with opacity interpolation for smooth add/remove
+  const getEdgeColorWithOpacity = () => {
+    const hasCurrentEdge = currentEdgeRgb !== null;
+    const hasNextEdge = nextEdgeRgb !== null;
+
+    // If we have both current and next edge colors, interpolate normally
+    if (hasCurrentEdge && hasNextEdge) {
+      return {
+        r: interpolateColor(
+          currentEdgeRgb!.r,
+          nextEdgeRgb!.r,
+          crossfadeProgress
+        ),
+        g: interpolateColor(
+          currentEdgeRgb!.g,
+          nextEdgeRgb!.g,
+          crossfadeProgress
+        ),
+        b: interpolateColor(
+          currentEdgeRgb!.b,
+          nextEdgeRgb!.b,
+          crossfadeProgress
+        ),
+        opacity: 1, // Full opacity when transitioning between colors
+      };
+    }
+
+    // If we're transitioning from no edge color to having one (fade in)
+    if (!hasCurrentEdge && hasNextEdge) {
+      return {
+        r: nextEdgeRgb!.r,
+        g: nextEdgeRgb!.g,
+        b: nextEdgeRgb!.b,
+        opacity: crossfadeProgress, // Fade in from 0 to 1
+      };
+    }
+
+    // If we're transitioning from having edge color to none (fade out)
+    if (hasCurrentEdge && !hasNextEdge) {
+      return {
+        r: currentEdgeRgb!.r,
+        g: currentEdgeRgb!.g,
+        b: currentEdgeRgb!.b,
+        opacity: 1 - crossfadeProgress, // Fade out from 1 to 0
+      };
+    }
+
+    // No edge color at all
+    return null;
+  };
+
+  const displayEdgeRgb = getEdgeColorWithOpacity();
 
   // Create organic, asymmetric gradient backgrounds with multiple layers
   const createOrganicGradient = (
@@ -189,7 +221,8 @@ export function UniversalBackground({
     centerB: number,
     edgeR?: number,
     edgeG?: number,
-    edgeB?: number
+    edgeB?: number,
+    edgeOpacity: number = 1
   ) => {
     // Use edge color if provided, otherwise create a complementary color
     const effectiveEdgeR = edgeR ?? Math.max(0, Math.min(255, centerR + 60));
@@ -228,8 +261,8 @@ export function UniversalBackground({
       ),
       /* Secondary organic blob - offset, creates asymmetry */
       radial-gradient(ellipse 85% 65% at ${secondaryX}% ${secondaryY}%,
-        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.18) 0%,
-        rgba(${lightEdgeR}, ${lightEdgeG}, ${lightEdgeB}, 0.14) 45%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, ${0.18 * edgeOpacity}) 0%,
+        rgba(${lightEdgeR}, ${lightEdgeG}, ${lightEdgeB}, ${0.14 * edgeOpacity}) 45%,
         transparent 85%
       ),
       /* Tertiary accent blob - smaller, adds depth */
@@ -241,13 +274,13 @@ export function UniversalBackground({
       /* Enhanced ambient glow layer */
       radial-gradient(ellipse 120% 80% at 50% 50%,
         rgba(${centerR}, ${centerG}, ${centerB}, 0.08) 0%,
-        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.06) 60%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, ${0.06 * edgeOpacity}) 60%,
         transparent 100%
       ),
       /* Additional secondary color prominence layer */
       radial-gradient(ellipse 100% 70% at 60% 60%,
-        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.12) 0%,
-        rgba(${lightEdgeR}, ${lightEdgeG}, ${lightEdgeB}, 0.08) 50%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, ${0.12 * edgeOpacity}) 0%,
+        rgba(${lightEdgeR}, ${lightEdgeG}, ${lightEdgeB}, ${0.08 * edgeOpacity}) 50%,
         transparent 80%
       ),
       /* Organic flowing lines - creates movement */
@@ -255,7 +288,7 @@ export function UniversalBackground({
         transparent 0deg,
         rgba(${centerR}, ${centerG}, ${centerB}, 0.06) 60deg,
         transparent 120deg,
-        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.06) 180deg,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, ${0.06 * edgeOpacity}) 180deg,
         transparent 240deg,
         rgba(${centerR}, ${centerG}, ${centerB}, 0.04) 300deg,
         transparent 360deg
@@ -264,7 +297,7 @@ export function UniversalBackground({
       linear-gradient(135deg,
         rgba(${centerR}, ${centerG}, ${centerB}, 0.06) 0%,
         transparent 30%,
-        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.06) 70%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, ${0.06 * edgeOpacity}) 70%,
         transparent 100%
       ),
       /* Reduced warm ambient overlay */
@@ -281,7 +314,8 @@ export function UniversalBackground({
     displayCenterRgb.b,
     displayEdgeRgb?.r,
     displayEdgeRgb?.g,
-    displayEdgeRgb?.b
+    displayEdgeRgb?.b,
+    displayEdgeRgb?.opacity ?? 1
   );
 
   // Cleanup on unmount
