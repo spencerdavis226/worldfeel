@@ -115,54 +115,55 @@ export function ResultsPage() {
     <GlassyBackground colorHex={stats?.colorHex}>
       <div
         className={[
-          'ios-viewport-fix p-4 pt-20 sm:pt-24',
+          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4 pt-20 sm:pt-24 ios-layout-fix',
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
-        {/* Main content - centered with proper spacing */}
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <div
-            className={[
-              'w-full max-w-xl mx-auto text-center px-4 sm:px-2',
-              isFirstMount && showContainer ? 'animate-seq-container' : '',
-            ].join(' ')}
-          >
-            <StatsPanel
-              stats={stats}
-              loading={loading}
-              error={error}
-              isFirstMount={isFirstMount && showContainer}
-            />
-            {/* Show message when no entries exist */}
-            {!loading && stats?.top?.word === 'silent' && (
-              <div className="text-center space-y-4 md:space-y-6">
-                <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
-                  The world feels
-                </h1>
-                <div className="font-semibold tracking-[-0.015em] leading-none text-gray-400 text-[clamp(3rem,8vw,7rem)]">
-                  silent
-                </div>
-                <p className="text-lg text-gray-600 max-w-md mx-auto">
-                  No one has shared their feelings yet today. Be the first to
-                  break the silence.
-                </p>
-                <div className="pt-4">
-                  <button
-                    onClick={() => navigate('/')}
-                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                  >
-                    Share Your Feelings
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Top spacer */}
+        <div></div>
 
-        {/* Footer - positioned with safe area consideration */}
+        {/* Main content - centered */}
         <div
           className={[
-            'w-full text-center mt-auto pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4',
+            'w-full max-w-xl mx-auto text-center px-4 sm:px-2',
+            isFirstMount && showContainer ? 'animate-seq-container' : '',
+          ].join(' ')}
+        >
+          <StatsPanel
+            stats={stats}
+            loading={loading}
+            error={error}
+            isFirstMount={isFirstMount && showContainer}
+          />
+          {/* Show message when no entries exist */}
+          {!loading && stats?.top?.word === 'silent' && (
+            <div className="text-center space-y-4 md:space-y-6">
+              <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
+                The world feels
+              </h1>
+              <div className="font-semibold tracking-[-0.015em] leading-none text-gray-400 text-[clamp(3rem,8vw,7rem)]">
+                silent
+              </div>
+              <p className="text-lg text-gray-600 max-w-md mx-auto">
+                No one has shared their feelings yet today. Be the first to
+                break the silence.
+              </p>
+              <div className="pt-4">
+                <button
+                  onClick={() => navigate('/')}
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                >
+                  Share Your Feelings
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer - bottom of viewport with iOS safe area consideration */}
+        <div
+          className={[
+            'w-full text-center pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4 ios-footer-fix',
             isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
           ].join(' ')}
         >

@@ -42,6 +42,27 @@
       /* Additional iOS Safari viewport fix */
       min-height: -webkit-fill-available;
     }
+
+    /* iOS-specific footer positioning to ensure visibility */
+    .ios-footer-fix {
+      /* Ensure footer is always visible on iOS */
+      position: relative;
+      z-index: 10;
+      /* Add extra padding for iOS safe areas */
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+
+    /* iOS-specific layout adjustments for better viewport handling */
+    .ios-layout-fix {
+      /* Use iOS-specific viewport units */
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+      /* Ensure proper flex behavior on iOS */
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   /* iOS Safari viewport utility class */

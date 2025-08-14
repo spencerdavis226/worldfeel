@@ -10,7 +10,7 @@ export function ApiDocsPage() {
 
   return (
     <GlassyBackground hueCycle={true} hueDurationMs={120000}>
-      <div className="ios-viewport-fix flex flex-col items-center justify-between p-4 sm:p-6 pt-20 sm:pt-24">
+      <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 pt-20 sm:pt-24">
         {/* Main content */}
         <div className="w-full max-w-4xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-6 sm:space-y-8">
           {/* Header with proper spacing */}
@@ -175,7 +175,7 @@ export function ApiDocsPage() {
         </div>
 
         {/* Footer with proper spacing */}
-        <div className="w-full text-center pb-4 sm:pb-6 px-4 pt-4 sm:pt-6 mt-auto">
+        <div className="w-full text-center pb-4 sm:pb-6 px-4 pt-4 sm:pt-6">
           <p className="text-xs text-gray-500">
             Real-time global emotional data
           </p>

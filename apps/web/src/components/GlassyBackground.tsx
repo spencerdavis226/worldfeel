@@ -70,60 +70,21 @@ export function GlassyBackground({
 
   return (
     <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] relative overflow-hidden">
-      {/* Animated gradient background */}
-      {/* Base layer (fades out) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          ...baseVars,
-          // Crossfade: base fades out while overlay fades in, keeping total ~0.7
-          opacity: fadeHex ? (fadeIn ? 0 : 0.7) : 0.7,
-          transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
-          background: `
-            radial-gradient(circle at 20% 80%, rgba(${rBase}, ${gBase}, ${bBase}, 0.4) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(${Math.min(255, rBase + 30)}, ${Math.min(255, gBase + 30)}, ${Math.min(255, bBase + 30)}, 0.35) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(${Math.max(0, rBase - 30)}, ${Math.max(0, gBase - 30)}, ${Math.max(0, bBase - 30)}, 0.25) 0%, transparent 50%),
-            linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)
-          `,
-          ...(hueCycle
-            ? {
-                animation: `wf-hue-rotate ${
-                  typeof hueDurationMs === 'number'
-                    ? `${hueDurationMs}ms`
-                    : '180000ms'
-                } linear infinite`,
-                ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
-                filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
-                willChange: 'filter',
-              }
-            : {}),
-        }}
-      />
-
-      {/* Fade-in layer (fades in to new color) */}
-      {fadeHex && (
+      {/* Fixed background container */}
+      <div className="fixed inset-0 w-full h-full">
+        {/* Animated gradient background */}
+        {/* Base layer (fades out) */}
         <div
-          className="absolute inset-0"
-          onTransitionEnd={(e) => {
-            if (e.propertyName !== 'opacity') return;
-            if (fadeIn) {
-              // Fade-in reached; swap base to the new color while overlay is at max opacity
-              setDisplayHex(fadeHex || colorHex);
-              // Then start fading overlay out next frame
-              requestAnimationFrame(() => setFadeIn(false));
-            } else {
-              // Fade-out completed; remove overlay to avoid any stacking
-              setFadeHex(null);
-            }
-          }}
+          className="absolute inset-0 w-full h-full"
           style={{
-            ...fadeVars,
-            opacity: fadeIn ? 0.7 : 0,
+            ...baseVars,
+            // Crossfade: base fades out while overlay fades in, keeping total ~0.7
+            opacity: fadeHex ? (fadeIn ? 0 : 0.7) : 0.7,
             transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
             background: `
-              radial-gradient(circle at 20% 80%, rgba(${rFade}, ${gFade}, ${bFade}, 0.4) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(${Math.min(255, rFade + 30)}, ${Math.min(255, gFade + 30)}, ${Math.min(255, bFade + 30)}, 0.35) 0%, transparent 50%),
-              radial-gradient(circle at 40% 40%, rgba(${Math.max(0, rFade - 30)}, ${Math.max(0, gFade - 30)}, ${Math.max(0, bFade - 30)}, 0.25) 0%, transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(${rBase}, ${gBase}, ${bBase}, 0.4) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(${Math.min(255, rBase + 30)}, ${Math.min(255, gBase + 30)}, ${Math.min(255, bBase + 30)}, 0.35) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(${Math.max(0, rBase - 30)}, ${Math.max(0, gBase - 30)}, ${Math.max(0, bBase - 30)}, 0.25) 0%, transparent 50%),
               linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)
             `,
             ...(hueCycle
@@ -140,10 +101,52 @@ export function GlassyBackground({
               : {}),
           }}
         />
-      )}
 
-      {/* Subtle noise texture */}
-      <div className="absolute inset-0 noise-overlay opacity-20" />
+        {/* Fade-in layer (fades in to new color) */}
+        {fadeHex && (
+          <div
+            className="absolute inset-0 w-full h-full"
+            onTransitionEnd={(e) => {
+              if (e.propertyName !== 'opacity') return;
+              if (fadeIn) {
+                // Fade-in reached; swap base to the new color while overlay is at max opacity
+                setDisplayHex(fadeHex || colorHex);
+                // Then start fading overlay out next frame
+                requestAnimationFrame(() => setFadeIn(false));
+              } else {
+                // Fade-out completed; remove overlay to avoid any stacking
+                setFadeHex(null);
+              }
+            }}
+            style={{
+              ...fadeVars,
+              opacity: fadeIn ? 0.7 : 0,
+              transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
+              background: `
+                radial-gradient(circle at 20% 80%, rgba(${rFade}, ${gFade}, ${bFade}, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(${Math.min(255, rFade + 30)}, ${Math.min(255, gFade + 30)}, ${Math.min(255, bFade + 30)}, 0.35) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(${Math.max(0, rFade - 30)}, ${Math.max(0, gFade - 30)}, ${Math.max(0, bFade - 30)}, 0.25) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%)
+              `,
+              ...(hueCycle
+                ? {
+                    animation: `wf-hue-rotate ${
+                      typeof hueDurationMs === 'number'
+                        ? `${hueDurationMs}ms`
+                        : '180000ms'
+                    } linear infinite`,
+                    ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
+                    filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
+                    willChange: 'filter',
+                  }
+                : {}),
+            }}
+          />
+        )}
+
+        {/* Subtle noise texture */}
+        <div className="absolute inset-0 w-full h-full noise-overlay opacity-20" />
+      </div>
 
       {/* Main content */}
       <div className="relative z-10">{children}</div>
