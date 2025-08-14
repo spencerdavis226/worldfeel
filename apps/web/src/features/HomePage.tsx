@@ -321,7 +321,7 @@ export function HomePage() {
   if (checkingExisting) {
     return (
       <GlassyBackground colorHex={accentHex} hueCycle={false}>
-        <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4">
+        <div className="ios-viewport-fix flex flex-col items-center justify-center p-4">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
         </div>
       </GlassyBackground>
@@ -330,212 +330,211 @@ export function HomePage() {
 
   return (
     <GlassyBackground colorHex={accentHex} hueCycle={false}>
-      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4 pt-20 sm:pt-24">
-        {/* Top spacer */}
-        <div></div>
+      <div className="ios-viewport-fix p-4 pt-20 sm:pt-24">
+        {/* Main content - centered with proper spacing */}
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in">
+            {/* Main prompt */}
+            <div className="mb-12 md:mb-16">
+              <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
+                How are you feeling today?
+              </h1>
+            </div>
 
-        {/* Main content - centered (animate only content, keep footer static) */}
-        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in">
-          {/* Main prompt */}
-          <div className="mb-12 md:mb-16">
-            <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
-              How are you feeling today?
-            </h1>
-          </div>
+            {/* Input form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="relative">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={word}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  id="feeling"
+                  name="feeling"
+                  placeholder=""
+                  className="w-full pl-20 pr-20 sm:pl-14 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/30 transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
+                  disabled={loading}
+                  autoComplete="off"
+                  spellCheck="false"
+                  maxLength={20}
+                  aria-autocomplete="list"
+                  aria-expanded={showSuggestions}
+                  aria-controls="emotion-suggestions"
+                />
+                {/* Rotating placeholder overlay (only when input is empty) */}
+                {word.trim() === '' && (
+                  <div
+                    className={`pointer-events-none absolute inset-0 flex items-center justify-center text-gray-500 select-none transition-opacity duration-300 ${
+                      placeholderVisible ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    {placeholderWord}
+                  </div>
+                )}
 
-          {/* Input form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <input
-                ref={inputRef}
-                type="text"
-                value={word}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                id="feeling"
-                name="feeling"
-                placeholder=""
-                className="w-full pl-20 pr-20 sm:pl-14 sm:pr-14 py-6 sm:py-5 text-xl sm:text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/30 transition-all duration-200 shadow-lg min-h-[64px] sm:min-h-[60px]"
-                disabled={loading}
-                autoComplete="off"
-                spellCheck="false"
-                maxLength={20}
-                aria-autocomplete="list"
-                aria-expanded={showSuggestions}
-                aria-controls="emotion-suggestions"
-              />
-              {/* Rotating placeholder overlay (only when input is empty) */}
-              {word.trim() === '' && (
-                <div
-                  className={`pointer-events-none absolute inset-0 flex items-center justify-center text-gray-500 select-none transition-opacity duration-300 ${
-                    placeholderVisible ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  {placeholderWord}
-                </div>
-              )}
-
-              {/* Submit button: hidden during cooldown, otherwise fades based on validity */}
-              {canSubmit && (
-                <button
-                  type="submit"
-                  disabled={!selectedKey || loading}
-                  aria-hidden={!selectedKey}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 cta-glass rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
-                    selectedKey
-                      ? 'opacity-100'
-                      : 'opacity-0 pointer-events-none'
-                  }`}
-                  style={{
-                    ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
-                    ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
-                    ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
-                  }}
-                  aria-label="Submit emotion"
-                >
-                  {(() => {
-                    const hex = getEmotionColor(word) || '#6DCFF6';
-                    const bgHex = '#FFFFFF';
-                    const { color, needsScrim, scrimAlpha } = timeFunction(
-                      'hero-style-calculation',
-                      () =>
-                        decideHeroStyleSync(hex, bgHex, {
-                          targetCR: 3.0,
-                          tone: 0.12,
-                        }),
-                      5 // Log if takes longer than 5ms
-                    );
-                    const shadow = '0 1px 2px rgba(0,0,0,0.25)';
-                    return (
-                      <svg
-                        className="w-5 h-5"
-                        style={{
-                          color,
-                          filter: needsScrim
-                            ? `drop-shadow(0 0 0 rgba(0,0,0,${scrimAlpha.toFixed(2)}))`
-                            : undefined,
-                          textShadow: shadow as any,
-                        }}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
-                        />
-                      </svg>
-                    );
-                  })()}
-                </button>
-              )}
-
-              {/* Suggestions dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div
-                  id="emotion-suggestions"
-                  role="listbox"
-                  className="absolute left-0 right-0 top-full mt-2 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-glass-lg animate-pop-in origin-top dropdown-mobile-container"
-                >
-                  <div className="max-h-72 sm:max-h-72 max-h-[calc(4*3.5rem+0.5rem)] overflow-auto custom-scrollbar space-y-1 p-0.5">
-                    {suggestions.map((s, idx) => {
-                      const hex = getEmotionColor(s) || '#6DCFF6';
-                      const isActive = idx === highlightIndex;
-                      return (
-                        <button
-                          type="button"
-                          key={`${s}-${idx}`}
-                          role="option"
-                          aria-selected={isActive}
-                          onMouseDown={(ev) => ev.preventDefault()}
-                          onClick={() => {
-                            const resolved = resolveEmotionKey(s);
-                            if (!resolved) return;
-                            setWord(s);
-                            setSelectedKey(resolved);
-                            setShowSuggestions(false);
-                            setSuggestions([]);
-                          }}
-                          className={`w-full text-left px-4 sm:px-5 py-3 rounded-xl border transition-all focus-visible-ring shadow-inner-highlight backdrop-blur-sm ${
-                            isActive
-                              ? 'bg-white/60 border-white/40'
-                              : 'bg-white/35 hover:bg-white/45 active:bg-white/55 border-white/30'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span
-                                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: hex }}
-                              />
-                              <span className="text-gray-800 text-base truncate">
-                                {s}
-                              </span>
-                            </div>
-                            {isActive && (
-                              <svg
-                                className="w-4 h-4 text-gray-600 flex-shrink-0"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-7.364 7.364a1 1 0 01-1.414 0L3.293 9.536a1 1 0 011.414-1.414l3.222 3.222 6.657-6.657a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                          </div>
-                        </button>
+                {/* Submit button: hidden during cooldown, otherwise fades based on validity */}
+                {canSubmit && (
+                  <button
+                    type="submit"
+                    disabled={!selectedKey || loading}
+                    aria-hidden={!selectedKey}
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 cta-glass rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
+                      selectedKey
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none'
+                    }`}
+                    style={{
+                      ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
+                      ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
+                      ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
+                    }}
+                    aria-label="Submit emotion"
+                  >
+                    {(() => {
+                      const hex = getEmotionColor(word) || '#6DCFF6';
+                      const bgHex = '#FFFFFF';
+                      const { color, needsScrim, scrimAlpha } = timeFunction(
+                        'hero-style-calculation',
+                        () =>
+                          decideHeroStyleSync(hex, bgHex, {
+                            targetCR: 3.0,
+                            tone: 0.12,
+                          }),
+                        5 // Log if takes longer than 5ms
                       );
-                    })}
+                      const shadow = '0 1px 2px rgba(0,0,0,0.25)';
+                      return (
+                        <svg
+                          className="w-5 h-5"
+                          style={{
+                            color,
+                            filter: needsScrim
+                              ? `drop-shadow(0 0 0 rgba(0,0,0,${scrimAlpha.toFixed(2)}))`
+                              : undefined,
+                            textShadow: shadow as any,
+                          }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 7l5 5m0 0l-5 5m5-5H6"
+                          />
+                        </svg>
+                      );
+                    })()}
+                  </button>
+                )}
+
+                {/* Suggestions dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div
+                    id="emotion-suggestions"
+                    role="listbox"
+                    className="absolute left-0 right-0 top-full mt-2 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-glass-lg animate-pop-in origin-top dropdown-mobile-container"
+                  >
+                    <div className="max-h-72 sm:max-h-72 max-h-[calc(4*3.5rem+0.5rem)] overflow-auto custom-scrollbar space-y-1 p-0.5">
+                      {suggestions.map((s, idx) => {
+                        const hex = getEmotionColor(s) || '#6DCFF6';
+                        const isActive = idx === highlightIndex;
+                        return (
+                          <button
+                            type="button"
+                            key={`${s}-${idx}`}
+                            role="option"
+                            aria-selected={isActive}
+                            onMouseDown={(ev) => ev.preventDefault()}
+                            onClick={() => {
+                              const resolved = resolveEmotionKey(s);
+                              if (!resolved) return;
+                              setWord(s);
+                              setSelectedKey(resolved);
+                              setShowSuggestions(false);
+                              setSuggestions([]);
+                            }}
+                            className={`w-full text-left px-4 sm:px-5 py-3 rounded-xl border transition-all focus-visible-ring shadow-inner-highlight backdrop-blur-sm ${
+                              isActive
+                                ? 'bg-white/60 border-white/40'
+                                : 'bg-white/35 hover:bg-white/45 active:bg-white/55 border-white/30'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <span
+                                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: hex }}
+                                />
+                                <span className="text-gray-800 text-base truncate">
+                                  {s}
+                                </span>
+                              </div>
+                              {isActive && (
+                                <svg
+                                  className="w-4 h-4 text-gray-600 flex-shrink-0"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-7.364 7.364a1 1 0 01-1.414 0L3.293 9.536a1 1 0 011.414-1.414l3.222 3.222 6.657-6.657a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Cooldown inline notice - styled like the input's glass */}
+              {cooldownVisible && (
+                <div className="flex items-center justify-center mt-5 md:mt-7">
+                  <div
+                    className={`px-5 py-3 rounded-2xl bg-white/25 backdrop-blur-xl border border-white/30 text-gray-800 shadow-lg transition-opacity ${
+                      showSuggestions && suggestions.length > 0
+                        ? 'duration-150 ease-out'
+                        : 'duration-500 ease-in'
+                    } ${
+                      !canSubmit && !(showSuggestions && suggestions.length > 0)
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none'
+                    }`}
+                    aria-hidden={showSuggestions && suggestions.length > 0}
+                  >
+                    <span className="inline-flex items-center gap-2 text-[0.95rem]">
+                      <span className="tracking-wide">
+                        You can share again in
+                      </span>
+                      <span className="font-medium tabular-nums text-gray-800">
+                        {Math.floor(remainingSeconds / 60)}m{' '}
+                        {remainingSeconds % 60}s
+                      </span>
+                    </span>
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Cooldown inline notice - styled like the input's glass */}
-            {cooldownVisible && (
-              <div className="flex items-center justify-center mt-5 md:mt-7">
-                <div
-                  className={`px-5 py-3 rounded-2xl bg-white/25 backdrop-blur-xl border border-white/30 text-gray-800 shadow-lg transition-opacity ${
-                    showSuggestions && suggestions.length > 0
-                      ? 'duration-150 ease-out'
-                      : 'duration-500 ease-in'
-                  } ${
-                    !canSubmit && !(showSuggestions && suggestions.length > 0)
-                      ? 'opacity-100'
-                      : 'opacity-0 pointer-events-none'
-                  }`}
-                  aria-hidden={showSuggestions && suggestions.length > 0}
-                >
-                  <span className="inline-flex items-center gap-2 text-[0.95rem]">
-                    <span className="tracking-wide">
-                      You can share again in
-                    </span>
-                    <span className="font-medium tabular-nums text-gray-800">
-                      {Math.floor(remainingSeconds / 60)}m{' '}
-                      {remainingSeconds % 60}s
-                    </span>
-                  </span>
+              {/* Error message */}
+              {error && (
+                <div className="text-red-600 text-sm bg-red-50/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                  {error}
                 </div>
-              </div>
-            )}
-
-            {/* Error message */}
-            {error && (
-              <div className="text-red-600 text-sm bg-red-50/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-                {error}
-              </div>
-            )}
-          </form>
+              )}
+            </form>
+          </div>
         </div>
 
-        {/* Footer - bottom of viewport */}
+        {/* Footer - positioned with safe area consideration */}
         <div
-          className={`w-full text-center pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4 transition-opacity ${
+          className={`w-full text-center mt-auto pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4 transition-opacity ${
             showSuggestions && suggestions.length > 0
               ? 'duration-150 ease-out'
               : 'duration-500 ease-in'

@@ -20,6 +20,42 @@
     scroll-behavior: smooth;
   }
 
+  /* iOS Safari specific viewport fixes */
+  @supports (-webkit-touch-callout: none) {
+    /* iOS Safari specific styles */
+    body {
+      /* Prevent viewport issues on iOS Safari */
+      -webkit-overflow-scrolling: touch;
+      /* Ensure proper viewport calculation */
+      height: 100vh;
+      height: 100svh;
+      height: 100dvh;
+    }
+
+    /* Fix for iOS Safari dynamic viewport issues */
+    .min-h-\[100vh\],
+    .min-h-\[100svh\],
+    .min-h-\[100dvh\] {
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      /* Additional iOS Safari viewport fix */
+      min-height: -webkit-fill-available;
+    }
+  }
+
+  /* iOS Safari viewport utility class */
+  .ios-viewport-fix {
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    /* iOS Safari specific viewport handling */
+    min-height: -webkit-fill-available;
+    /* Ensure proper flex behavior on iOS */
+    display: flex;
+    flex-direction: column;
+  }
+
   /* View Transitions - route fades */
   ::view-transition-old(root),
   ::view-transition-new(root) {
