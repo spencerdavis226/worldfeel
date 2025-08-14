@@ -151,9 +151,7 @@ export function AboutPage() {
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 font-medium">
-                      Created by Spencer Davis
-                    </p>
+                    <p className="text-gray-800 font-medium">Spencer Davis</p>
                     <p className="text-gray-600 text-sm">
                       Design, code, and color system
                     </p>
@@ -238,9 +236,7 @@ export function AboutPage() {
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-gray-800 font-medium">
-                        Created by Spencer Davis
-                      </p>
+                      <p className="text-gray-800 font-medium">Spencer Davis</p>
                       <p className="text-gray-600 text-sm">
                         Design, code, and color system
                       </p>
