@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { GlassyBackground } from '@components/GlassyBackground';
+import { UniversalBackground } from '@components/UniversalBackground';
 import { usePageTitle } from '@hooks/usePageTitle';
 
 export function AboutPage() {
@@ -10,7 +10,7 @@ export function AboutPage() {
   const [avatarError, setAvatarError] = useState<boolean>(false);
   const [avatarSrc, setAvatarSrc] = useState<string>('/spencer.png');
   return (
-    <GlassyBackground hueCycle={true} hueDurationMs={120000}>
+    <UniversalBackground hueCycle={true} hueDurationMs={120000}>
       <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 pt-20 sm:pt-24">
         {/* Main content */}
         <div className="w-full max-w-3xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-4 sm:space-y-6 lg:space-y-8">
@@ -322,6 +322,6 @@ export function AboutPage() {
           </p>
         </div>
       </div>
-    </GlassyBackground>
+    </UniversalBackground>
   );
 }

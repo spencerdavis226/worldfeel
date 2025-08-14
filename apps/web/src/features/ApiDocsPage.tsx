@@ -1,4 +1,4 @@
-import { GlassyBackground } from '@components/GlassyBackground';
+import { UniversalBackground } from '@components/UniversalBackground';
 import { usePageTitle } from '@hooks/usePageTitle';
 
 export function ApiDocsPage() {
@@ -9,7 +9,7 @@ export function ApiDocsPage() {
     import.meta.env.VITE_API_URL || 'https://api.worldfeel.org';
 
   return (
-    <GlassyBackground hueCycle={true} hueDurationMs={120000}>
+    <UniversalBackground hueCycle={true} hueDurationMs={120000}>
       <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 pt-20 sm:pt-24">
         {/* Main content */}
         <div className="w-full max-w-4xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-6 sm:space-y-8">
@@ -181,6 +181,6 @@ export function ApiDocsPage() {
           </p>
         </div>
       </div>
-    </GlassyBackground>
+    </UniversalBackground>
   );
 }

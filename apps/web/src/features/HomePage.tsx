@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GlassyBackground } from '@components/GlassyBackground';
+import { UniversalBackground } from '@components/UniversalBackground';
 import { getDeviceId } from '@lib/deviceId';
 import { apiClient } from '@lib/apiClient';
 import { lettersOnly } from '@worldfeel/shared';
@@ -320,16 +320,16 @@ export function HomePage() {
   // Show loading state while checking for existing submissions
   if (checkingExisting) {
     return (
-      <GlassyBackground colorHex={accentHex} hueCycle={false}>
+      <UniversalBackground centerColorHex={accentHex} hueCycle={false}>
         <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
         </div>
-      </GlassyBackground>
+      </UniversalBackground>
     );
   }
 
   return (
-    <GlassyBackground colorHex={accentHex} hueCycle={false}>
+    <UniversalBackground centerColorHex={accentHex} hueCycle={false}>
       <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4 ios-layout-fix">
         {/* Main content - moved up significantly */}
         <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in -mt-32 sm:-mt-40">
@@ -548,6 +548,6 @@ export function HomePage() {
           </p>
         </div>
       </div>
-    </GlassyBackground>
+    </UniversalBackground>
   );
 }

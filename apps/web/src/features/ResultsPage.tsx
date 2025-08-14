@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GlassyBackground } from '@components/GlassyBackground';
+import { UniversalBackground } from '@components/UniversalBackground';
 import { AnimatedValue } from '@components/AnimatedValue';
 import { getDeviceId } from '@lib/deviceId';
 import { useStats } from '@hooks/useStats';
-import { useBackgroundColor } from '@hooks/useEmotionBackground';
 import { usePageTitle } from '@hooks/usePageTitle';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import {
@@ -46,16 +45,13 @@ export function ResultsPage() {
     }
   }, []);
 
-  const { stats, loading, error } = useStats(
+  const { stats, loading } = useStats(
     { ...(yourWord ? { yourWord } : {}), ...(deviceId ? { deviceId } : {}) },
     {
       autoRefresh: true,
       refreshInterval: 15000,
     }
   );
-
-  // Update background color: center = top emotion, edges = personal (if any)
-  useBackgroundColor(stats?.top?.word, stats?.yourWord?.word);
 
   // Mount-only entrance sequencing
   const [showContainer, setShowContainer] = useState(false);
@@ -125,7 +121,12 @@ export function ResultsPage() {
   }, []);
 
   return (
-    <GlassyBackground colorHex={stats?.colorHex}>
+    <UniversalBackground
+      centerColorHex={stats?.colorHex}
+      edgeColorHex={
+        stats?.yourWord?.word ? getEmotionColor(stats.yourWord.word) : undefined
+      }
+    >
       <div
         className={[
           'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4 ios-layout-fix',
@@ -447,6 +448,6 @@ export function ResultsPage() {
           </p>
         </div>
       </div>
-    </GlassyBackground>
+    </UniversalBackground>
   );
 }

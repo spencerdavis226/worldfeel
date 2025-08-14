@@ -267,7 +267,7 @@
       );
   }
 
-  /* Noise texture overlay - Used in GlassyBackground */
+  /* Noise texture overlay - Used in UniversalBackground */
   .noise-overlay {
     position: relative;
   }
