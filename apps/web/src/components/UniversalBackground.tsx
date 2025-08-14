@@ -329,17 +329,13 @@ export function UniversalBackground({
 
   return (
     <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] relative overflow-hidden">
-      {/* Fixed background container - pinned to viewport with extended bottom coverage */}
-      <div
-        className="fixed inset-0 w-full h-full z-0"
-        style={{ bottom: '-100px' }}
-      >
+      {/* Fixed background container - pinned to viewport */}
+      <div className="fixed inset-0 w-full h-full z-0">
         {/* Single background layer with interpolated colors */}
         <div
           className="absolute inset-0 w-full h-full"
           style={{
             background: currentGradient,
-            height: 'calc(100% + 100px)', // Extend beyond container
             ...(hueCycle
               ? {
                   animation: `wf-hue-rotate ${hueDurationMs}ms linear infinite`,
@@ -359,15 +355,11 @@ export function UniversalBackground({
           className="absolute inset-0 w-full h-full organic-shapes"
           style={{
             animation: 'wf-breathing 8s ease-in-out infinite',
-            height: 'calc(100% + 100px)', // Extend beyond container
           }}
         />
 
         {/* Subtle noise texture */}
-        <div
-          className="absolute inset-0 w-full h-full noise-overlay opacity-10"
-          style={{ height: 'calc(100% + 100px)' }} // Extend beyond container
-        />
+        <div className="absolute inset-0 w-full h-full noise-overlay opacity-10" />
       </div>
 
       {/* Main content */}
