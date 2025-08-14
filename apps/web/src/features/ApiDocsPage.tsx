@@ -10,7 +10,7 @@ export function ApiDocsPage() {
 
   return (
     <GlassyBackground hueCycle={true} hueDurationMs={120000}>
-      <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6">
+      <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 pt-20 sm:pt-24">
         {/* Main content */}
         <div className="w-full max-w-4xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-6 sm:space-y-8">
           {/* Header with proper spacing */}
@@ -172,22 +172,6 @@ export function ApiDocsPage() {
               </p>
             </div>
           </section>
-
-          {/* CTA buttons with proper spacing from footer */}
-          <div className="flex items-center justify-center gap-3 sm:gap-4 pt-4 sm:pt-6">
-            <a
-              href="/"
-              className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring hover:bg-white/[0.35] transition-colors"
-            >
-              Share your feeling
-            </a>
-            <a
-              href="/results"
-              className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg px-5 sm:px-6 py-3 text-sm sm:text-base font-medium focus-visible-ring hover:bg-white/[0.35] transition-colors"
-            >
-              View results
-            </a>
-          </div>
         </div>
 
         {/* Footer with proper spacing */}

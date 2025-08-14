@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GlassyBackground } from '@components/GlassyBackground';
 import { AnimatedValue } from '@components/AnimatedValue';
 import { getDeviceId } from '@lib/deviceId';
@@ -115,7 +115,7 @@ export function ResultsPage() {
     <GlassyBackground colorHex={stats?.colorHex}>
       <div
         className={[
-          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4',
+          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4 pt-20 sm:pt-24',
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
@@ -217,31 +217,6 @@ export function ResultsPage() {
               </>
             )}
           </p>
-          <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
-            <Link
-              to="/about"
-              className="hover:text-gray-600 transition-colors py-2 focus-visible-ring rounded"
-            >
-              About
-            </Link>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => {
-                // Prefer view transition when going back to home
-                // @ts-ignore
-                if (document && (document as any).startViewTransition) {
-                  // @ts-ignore
-                  (document as any).startViewTransition(() => navigate('/'));
-                } else {
-                  navigate('/');
-                }
-              }}
-              className="hover:text-gray-600 transition-colors py-2 focus-visible-ring rounded"
-            >
-              Home
-            </button>
-          </div>
         </div>
       </div>
     </GlassyBackground>

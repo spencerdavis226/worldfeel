@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GlassyBackground } from '@components/GlassyBackground';
 import { getDeviceId } from '@lib/deviceId';
 import { apiClient } from '@lib/apiClient';
@@ -330,7 +330,7 @@ export function HomePage() {
 
   return (
     <GlassyBackground colorHex={accentHex} hueCycle={false}>
-      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4">
+      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4 pt-20 sm:pt-24">
         {/* Top spacer */}
         <div></div>
 
@@ -546,25 +546,9 @@ export function HomePage() {
           }`}
           aria-hidden={showSuggestions && suggestions.length > 0}
         >
-          <p className="text-sm text-gray-500 mb-2">
+          <p className="text-sm text-gray-500">
             A global emotional snapshot of today
           </p>
-          <div className="flex items-center justify-center space-x-6 text-xs text-gray-400">
-            <Link
-              to="/about"
-              className="hover:text-gray-600 transition-colors py-2 focus-visible-ring rounded"
-            >
-              About
-            </Link>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => navigateWithViewTransition('/results', navigate)}
-              className="hover:text-gray-600 transition-colors py-2 focus-visible-ring rounded"
-            >
-              View Results
-            </button>
-          </div>
         </div>
       </div>
     </GlassyBackground>

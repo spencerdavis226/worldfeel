@@ -12,6 +12,8 @@
     /* Avoid white gap during toolbar show/hide in iOS Chrome/Safari */
     overflow-x: hidden;
     overflow-y: overlay;
+    /* Ensure proper safe area handling for iOS Safari */
+    padding-top: env(safe-area-inset-top);
   }
 
   html {
@@ -33,6 +35,12 @@
     animation-name: fade-in;
   }
 
+  /* Ensure navigation stays visible during view transitions */
+  ::view-transition-old(nav),
+  ::view-transition-new(nav) {
+    animation: none;
+  }
+
   @keyframes fade-out {
     from {
       opacity: 1;
@@ -52,6 +60,35 @@
 }
 
 @layer components {
+  /* Navigation Bar - Apple-like frosted glass */
+  .nav-glass {
+    @apply backdrop-blur-xl bg-white/70 border-b border-white/20 shadow-sm;
+    /* Ensure proper rendering on iOS Safari */
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    /* Support for older browsers */
+    background-color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Navigation link styles for better touch targets */
+  .nav-link {
+    @apply px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring;
+    /* Ensure minimum touch target size for mobile */
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-link-active {
+    @apply text-gray-900 bg-white/50 shadow-sm;
+  }
+
+  .nav-link-inactive {
+    @apply text-gray-600 hover:text-gray-800 hover:bg-white/30;
+  }
+
   /* Glass Panel - Used in HomePage dropdown and other components */
   .glass-panel {
     @apply backdrop-blur-lg bg-white/[0.28] border border-white/40;
