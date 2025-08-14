@@ -6,7 +6,7 @@ export function ApiDocsPage() {
   usePageTitle('API Documentation');
 
   const apiBaseUrl =
-    import.meta.env.VITE_API_URL || 'https://api.worldfeel.org';
+    import.meta.env.VITE_API_BASE || 'https://worldfeel.onrender.com';
 
   return (
     <UniversalBackground hueCycle={true} hueDurationMs={120000}>
