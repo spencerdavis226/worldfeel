@@ -94,7 +94,7 @@ export function ApiDocsPage() {
                         Example Request
                       </h4>
                       <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
-                        {`curl ${apiBaseUrl}/api/public/emotion-of-the-day`}
+                        {`curl "${apiBaseUrl}/api/public/emotion-of-the-day"`}
                       </div>
                     </div>
 
@@ -139,7 +139,7 @@ export function ApiDocsPage() {
                         Example Request
                       </h4>
                       <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
-                        {`curl ${apiBaseUrl}/api/health`}
+                        {`curl "${apiBaseUrl}/api/health"`}
                       </div>
                     </div>
 
