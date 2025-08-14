@@ -10,8 +10,8 @@ import rateLimit from 'express-rate-limit';
 
 const router = Router();
 
-// Mount all API routes (POST endpoints disabled for security)
-// router.use('/submit', submitRouter); // DISABLED - POST endpoint
+// Mount all API routes
+router.use('/submit', submitRouter);
 router.use('/stats', statsRouter);
 router.use('/color', colorRouter);
 router.use('/emotions', emotionsRouter);
