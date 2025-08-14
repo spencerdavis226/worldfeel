@@ -15,7 +15,10 @@ function generateDeviceFingerprint(): string {
     screen.colorDepth,
     new Date().getTimezoneOffset(),
     navigator.hardwareConcurrency || 'unknown',
-    navigator.deviceMemory || 'unknown',
+    // Use more compatible properties
+    navigator.platform || 'unknown',
+    navigator.cookieEnabled ? 'cookies-on' : 'cookies-off',
+    'ontouchstart' in window ? 'touch' : 'no-touch',
   ];
 
   // Create a simple hash of the components
