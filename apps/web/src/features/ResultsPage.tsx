@@ -133,12 +133,17 @@ export function ResultsPage() {
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
-        {/* Main content - Apple-like centered layout */}
+        {/* Main content - Simple, elegant layout */}
         <div
           className={[
-            'w-full max-w-xl mx-auto text-center px-4 sm:px-2 apple-center',
+            'w-full max-w-2xl mx-auto text-center px-4 sm:px-6 flex flex-col justify-center',
             isFirstMount && showContainer ? 'animate-seq-container' : '',
           ].join(' ')}
+          style={{
+            minHeight: 'calc(100vh - 4rem)',
+            paddingTop: 'env(safe-area-inset-top)',
+            paddingBottom: 'env(safe-area-inset-bottom)',
+          }}
         >
           {/* Hero section with main emotion */}
           <div
@@ -192,12 +197,12 @@ export function ResultsPage() {
           </div>
 
           {/* Results Panel - grouped glass chips centered as a unit */}
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-4">
             {/* Your contribution chip */}
             <div
-              className={`${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
+              className={`w-full ${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
             >
-              <div className="w-full flex justify-center px-0">
+              <div className="w-full">
                 {stats?.yourWord ? (
                   <div className="w-full">
                     <div
@@ -313,7 +318,7 @@ export function ResultsPage() {
             {/* Top emotions stats chip */}
             {stats?.top10 && stats.top10.length > 0 && (
               <div
-                className={`px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
+                className={`w-full px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
               >
                 <div className="space-y-1.5">
                   {stats.top10.slice(0, 3).map((item, index) => (
@@ -390,7 +395,7 @@ export function ResultsPage() {
 
           {/* Footer content moved to main area */}
           <div
-            className={`mt-6 sm:mt-8 md:mt-10 space-y-3 sm:space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
+            className={`mt-8 md:mt-12 space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
           >
             {stats?.colorHex && stats?.top?.word !== 'silent' ? (
               <div className="flex items-center justify-center">

@@ -130,6 +130,21 @@
     overflow: visible;
   }
 
+  /* Simple, elegant iPhone positioning */
+  @supports (-webkit-touch-callout: none) {
+    /* Modern iPhones - position content higher and use more width */
+    @media screen and (max-aspect-ratio: 9/16) {
+      .max-w-2xl {
+        max-width: 92vw !important;
+      }
+
+      .flex.flex-col.justify-center {
+        justify-content: flex-start !important;
+        padding-top: calc(8vh + env(safe-area-inset-top)) !important;
+      }
+    }
+  }
+
   /* View Transitions - route fades */
   ::view-transition-old(root),
   ::view-transition-new(root) {
