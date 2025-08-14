@@ -34,10 +34,9 @@ async function findLatestSubmission(
   ipHash: string,
   deviceId?: string
 ): Promise<SubmissionDocument | null> {
-  const filter: {
-    $or?: Array<{ deviceId: string } | { ipHash: string }>;
-    ipHash?: string;
-  } = deviceId ? { $or: [{ deviceId }, { ipHash }] } : { ipHash };
+  // Prioritize deviceId over ipHash for better device-specific behavior
+  // Only fall back to ipHash if no deviceId is provided
+  const filter = deviceId ? { deviceId } : { ipHash };
   return Submission.findOne(filter).sort({ createdAt: -1 }).exec();
 }
 
@@ -82,8 +81,23 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       });
     }
 
+    // Validate device ID format
+    if (deviceId && (typeof deviceId !== 'string' || deviceId.length < 10)) {
+      console.warn('Invalid device ID format:', deviceId);
+      deviceId = uuidv4(); // Generate a new one
+    }
+
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
+
+    // Log device identification for debugging
+    if (env.NODE_ENV === 'development') {
+      console.log('Submission attempt:', {
+        deviceId: deviceId ? `${deviceId.substring(0, 8)}...` : 'none',
+        ipHash: `${ipHash.substring(0, 8)}...`,
+        word,
+      });
+    }
 
     // Enforce cooldown: check latest submission by deviceId or ipHash
     const latest = await findLatestSubmission(ipHash, deviceId);
@@ -153,6 +167,7 @@ router.get('/status', async (req: Request, res: Response): Promise<void> => {
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
+    // Use the same device-specific logic as the submission endpoint
     const latest = await findLatestSubmission(ipHash, deviceId);
     const remaining = getCooldownRemainingSeconds(latest?.createdAt as any);
     const canSubmit = remaining === 0;

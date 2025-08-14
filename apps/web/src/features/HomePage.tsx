@@ -146,20 +146,30 @@ export function HomePage() {
           setError(response.error || 'Something went wrong');
         }
       } catch (err) {
-        // On cooldown error, update status and show subtle notice instead of error
-        try {
-          const status = await apiClient.getSubmitStatus({
-            deviceId: getDeviceId(),
-          });
-          if (status.success && status.data) {
-            setCanSubmit(status.data.canSubmit);
-            setRemainingSeconds(status.data.remainingSeconds || 0);
-            setError('');
+        // Handle cooldown errors more gracefully
+        if (err instanceof Error && err.message.includes('429')) {
+          try {
+            const status = await apiClient.getSubmitStatus({
+              deviceId: getDeviceId(),
+            });
+            if (status.success && status.data) {
+              setCanSubmit(status.data.canSubmit);
+              setRemainingSeconds(status.data.remainingSeconds || 0);
+              setCooldownVisible(
+                !status.data.canSubmit &&
+                  (status.data.remainingSeconds || 0) > 0
+              );
+              setError(''); // Clear any existing error
+              return;
+            }
+          } catch (statusErr) {
+            // If status check fails, show generic cooldown message
+            setError('Please wait before submitting again');
             return;
           }
-        } catch {
-          // Ignore status check errors
         }
+
+        // Handle other errors
         if (err instanceof Error) setError(err.message);
         else setError('Something went wrong. Please try again.');
       } finally {
