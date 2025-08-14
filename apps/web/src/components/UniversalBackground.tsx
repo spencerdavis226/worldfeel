@@ -51,10 +51,6 @@ export function UniversalBackground({
 
   const transitionRef = useRef<number | null>(null);
 
-  // Mouse parallax effect for subtle interactivity
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const backgroundRef = useRef<HTMLDivElement>(null);
-
   // Handle center color transitions with smooth crossfade
   useEffect(() => {
     if (centerColorHex === currentCenterHex && edgeColorHex === currentEdgeHex)
@@ -193,9 +189,7 @@ export function UniversalBackground({
     centerB: number,
     edgeR?: number,
     edgeG?: number,
-    edgeB?: number,
-    mouseX: number = 0.5,
-    mouseY: number = 0.5
+    edgeB?: number
   ) => {
     // Use edge color if provided, otherwise create a complementary color
     const effectiveEdgeR = edgeR ?? Math.max(0, Math.min(255, centerR + 60));
@@ -215,13 +209,13 @@ export function UniversalBackground({
     const lightEdgeG = Math.min(255, effectiveEdgeG + 40);
     const lightEdgeB = Math.min(255, effectiveEdgeB + 40);
 
-    // Calculate mouse-influenced positions for more dynamic feel
-    const primaryX = 45 + (mouseX - 0.5) * 10;
-    const primaryY = 35 + (mouseY - 0.5) * 10;
-    const secondaryX = 55 + (mouseX - 0.5) * 15;
-    const secondaryY = 65 + (mouseY - 0.5) * 15;
-    const tertiaryX = 25 + (mouseX - 0.5) * 20;
-    const tertiaryY = 75 + (mouseY - 0.5) * 20;
+    // Fixed positions for organic shapes
+    const primaryX = 45;
+    const primaryY = 35;
+    const secondaryX = 55;
+    const secondaryY = 65;
+    const tertiaryX = 25;
+    const tertiaryY = 75;
 
     // Create organic, asymmetric shapes with multiple layers
     return `
@@ -287,35 +281,8 @@ export function UniversalBackground({
     displayCenterRgb.b,
     displayEdgeRgb?.r,
     displayEdgeRgb?.g,
-    displayEdgeRgb?.b,
-    mousePosition.x,
-    mousePosition.y
+    displayEdgeRgb?.b
   );
-
-  // Handle mouse movement for subtle parallax
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!backgroundRef.current) return;
-
-      const rect = backgroundRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-
-      setMousePosition({ x, y });
-    };
-
-    const handleMouseLeave = () => {
-      setMousePosition({ x: 0.5, y: 0.5 });
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -329,7 +296,7 @@ export function UniversalBackground({
   return (
     <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] relative overflow-hidden">
       {/* Fixed background container - pinned to viewport */}
-      <div ref={backgroundRef} className="fixed inset-0 w-full h-full z-0">
+      <div className="fixed inset-0 w-full h-full z-0">
         {/* Single background layer with interpolated colors */}
         <div
           className="absolute inset-0 w-full h-full"
@@ -354,28 +321,8 @@ export function UniversalBackground({
           className="absolute inset-0 w-full h-full organic-shapes"
           style={{
             animation: 'wf-breathing 8s ease-in-out infinite',
-            transform: `translate(${(mousePosition.x - 0.5) * 8}px, ${(mousePosition.y - 0.5) * 8}px)`,
-            transition: 'transform 0.1s ease-out',
           }}
         />
-
-        {/* Subtle shimmer effect */}
-        <div
-          className="absolute inset-0 w-full h-full overflow-hidden"
-          style={{
-            opacity: 0.5,
-          }}
-        >
-          <div
-            className="absolute w-full h-full"
-            style={{
-              background:
-                'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%)',
-              animation: 'wf-shimmer 12s ease-in-out infinite',
-              willChange: 'transform',
-            }}
-          />
-        </div>
 
         {/* Subtle noise texture */}
         <div className="absolute inset-0 w-full h-full noise-overlay opacity-10" />
