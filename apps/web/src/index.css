@@ -18,8 +18,6 @@
 
   html {
     scroll-behavior: smooth;
-    /* Prevent rubber-band overscroll from revealing blank underlays */
-    overscroll-behavior-y: none;
   }
 
   /* View Transitions - route fades */
