@@ -51,6 +51,10 @@ export function UniversalBackground({
   const targetCenterHexRef = useRef<string>(centerColorHex);
   const targetEdgeHexRef = useRef<string | undefined>(edgeColorHex);
 
+  // Mouse parallax effect for subtle interactivity
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
   // Handle center color transitions
   useEffect(() => {
     if (centerColorHex === displayCenterHex) return;
@@ -89,74 +93,154 @@ export function UniversalBackground({
     [fadeEdgeHex]
   );
 
-  // Create gradient backgrounds
-  const createGradient = (
+  // Create organic, asymmetric gradient backgrounds with multiple layers
+  const createOrganicGradient = (
     centerR: number,
     centerG: number,
     centerB: number,
     edgeR?: number,
     edgeG?: number,
-    edgeB?: number
+    edgeB?: number,
+    mouseX: number = 0.5,
+    mouseY: number = 0.5
   ) => {
-    const edge1 =
-      edgeR !== undefined
-        ? `rgba(${edgeR}, ${edgeG}, ${edgeB}, 0.12)`
-        : `rgba(255,255,255,0.12)`;
-    const edge2 =
-      edgeR !== undefined
-        ? `rgba(${edgeR}, ${edgeG}, ${edgeB}, 0.12)`
-        : `rgba(0,0,0,0.10)`;
+    // Use edge color if provided, otherwise create a complementary color
+    const effectiveEdgeR = edgeR ?? Math.max(0, Math.min(255, centerR + 60));
+    const effectiveEdgeG = edgeG ?? Math.max(0, Math.min(255, centerG - 40));
+    const effectiveEdgeB = edgeB ?? Math.max(0, Math.min(255, centerB + 80));
 
-    const lightCenterR = Math.min(255, centerR + 40);
-    const lightCenterG = Math.min(255, centerG + 40);
-    const lightCenterB = Math.min(255, centerB + 40);
-    const darkCenterR = Math.max(0, centerR - 20);
-    const darkCenterG = Math.max(0, centerG - 20);
-    const darkCenterB = Math.max(0, centerB - 20);
+    // Create variations for depth and organic feel
+    const lightCenterR = Math.min(255, centerR + 50);
+    const lightCenterG = Math.min(255, centerG + 50);
+    const lightCenterB = Math.min(255, centerB + 50);
 
-    const lightColor = `rgba(${lightCenterR}, ${lightCenterG}, ${lightCenterB}, 0.1)`;
-    const mainColor = `rgba(${centerR}, ${centerG}, ${centerB}, 0.06)`;
-    const darkColor = `rgba(${darkCenterR}, ${darkCenterG}, ${darkCenterB}, 0.1)`;
+    const darkCenterR = Math.max(0, centerR - 30);
+    const darkCenterG = Math.max(0, centerG - 30);
+    const darkCenterB = Math.max(0, centerB - 30);
 
+    const lightEdgeR = Math.min(255, effectiveEdgeR + 40);
+    const lightEdgeG = Math.min(255, effectiveEdgeG + 40);
+    const lightEdgeB = Math.min(255, effectiveEdgeB + 40);
+
+    // Calculate mouse-influenced positions for more dynamic feel
+    const primaryX = 45 + (mouseX - 0.5) * 10;
+    const primaryY = 35 + (mouseY - 0.5) * 10;
+    const secondaryX = 55 + (mouseX - 0.5) * 15;
+    const secondaryY = 65 + (mouseY - 0.5) * 15;
+    const tertiaryX = 25 + (mouseX - 0.5) * 20;
+    const tertiaryY = 75 + (mouseY - 0.5) * 20;
+
+    // Create organic, asymmetric shapes with multiple layers
     return `
-      radial-gradient( 60% 60% at 50% 40%,
-        ${mainColor} 0%,
-        ${lightColor} 45%,
-        ${darkColor} 70%,
-        ${edge1} 100%
+      /* Primary organic blob - asymmetric, flowing */
+      radial-gradient(ellipse 80% 60% at ${primaryX}% ${primaryY}%,
+        rgba(${centerR}, ${centerG}, ${centerB}, 0.18) 0%,
+        rgba(${lightCenterR}, ${lightCenterG}, ${lightCenterB}, 0.14) 40%,
+        rgba(${darkCenterR}, ${darkCenterG}, ${darkCenterB}, 0.08) 70%,
+        transparent 100%
       ),
+      /* Secondary organic blob - offset, creates asymmetry */
+      radial-gradient(ellipse 85% 65% at ${secondaryX}% ${secondaryY}%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.18) 0%,
+        rgba(${lightEdgeR}, ${lightEdgeG}, ${lightEdgeB}, 0.14) 45%,
+        transparent 85%
+      ),
+      /* Tertiary accent blob - smaller, adds depth */
+      radial-gradient(ellipse 40% 30% at ${tertiaryX}% ${tertiaryY}%,
+        rgba(${centerR}, ${centerG}, ${centerB}, 0.12) 0%,
+        rgba(${lightCenterR}, ${lightCenterG}, ${lightCenterB}, 0.08) 60%,
+        transparent 100%
+      ),
+      /* Enhanced ambient glow layer */
+      radial-gradient(ellipse 120% 80% at 50% 50%,
+        rgba(${centerR}, ${centerG}, ${centerB}, 0.08) 0%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.06) 60%,
+        transparent 100%
+      ),
+      /* Additional secondary color prominence layer */
+      radial-gradient(ellipse 100% 70% at 60% 60%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.12) 0%,
+        rgba(${lightEdgeR}, ${lightEdgeG}, ${lightEdgeB}, 0.08) 50%,
+        transparent 80%
+      ),
+      /* Organic flowing lines - creates movement */
+      conic-gradient(from 45deg at 30% 40%,
+        transparent 0deg,
+        rgba(${centerR}, ${centerG}, ${centerB}, 0.06) 60deg,
+        transparent 120deg,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.06) 180deg,
+        transparent 240deg,
+        rgba(${centerR}, ${centerG}, ${centerB}, 0.04) 300deg,
+        transparent 360deg
+      ),
+      /* Enhanced diagonal flow */
       linear-gradient(135deg,
-        ${lightColor} 0%,
-        ${mainColor} 50%,
-        ${edge2} 100%
+        rgba(${centerR}, ${centerG}, ${centerB}, 0.06) 0%,
+        transparent 30%,
+        rgba(${effectiveEdgeR}, ${effectiveEdgeG}, ${effectiveEdgeB}, 0.06) 70%,
+        transparent 100%
+      ),
+      /* Reduced warm ambient overlay */
+      radial-gradient(ellipse 150% 100% at 50% 50%,
+        rgba(255, 248, 240, 0.008) 0%,
+        transparent 70%
       )
     `;
   };
 
-  const baseGradient = createGradient(
+  const baseGradient = createOrganicGradient(
     centerRgb.r,
     centerRgb.g,
     centerRgb.b,
     edgeRgb?.r,
     edgeRgb?.g,
-    edgeRgb?.b
+    edgeRgb?.b,
+    mousePosition.x,
+    mousePosition.y
   );
 
-  const fadeGradient = createGradient(
+  const fadeGradient = createOrganicGradient(
     fadeCenterRgb.r,
     fadeCenterRgb.g,
     fadeCenterRgb.b,
     fadeEdgeRgb?.r,
     fadeEdgeRgb?.g,
-    fadeEdgeRgb?.b
+    fadeEdgeRgb?.b,
+    mousePosition.x,
+    mousePosition.y
   );
 
   const transitionStyle = `all ${transitionDurationMs}ms cubic-bezier(0.22, 1, 0.36, 1)`;
 
+  // Handle mouse movement for subtle parallax
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!backgroundRef.current) return;
+
+      const rect = backgroundRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+
+      setMousePosition({ x, y });
+    };
+
+    const handleMouseLeave = () => {
+      setMousePosition({ x: 0.5, y: 0.5 });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
   return (
     <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] relative overflow-hidden">
       {/* Fixed background container - pinned to viewport */}
-      <div className="fixed inset-0 w-full h-full z-0">
+      <div ref={backgroundRef} className="fixed inset-0 w-full h-full z-0">
         {/* Base layer (fades out) */}
         <div
           className="absolute inset-0 w-full h-full"
@@ -171,7 +255,10 @@ export function UniversalBackground({
                   filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
                   willChange: 'filter',
                 }
-              : {}),
+              : {
+                  animation: 'wf-temperature-shift 15s ease-in-out infinite',
+                  willChange: 'filter',
+                }),
           }}
         />
 
@@ -209,8 +296,36 @@ export function UniversalBackground({
           />
         )}
 
+        {/* Animated organic shapes layer */}
+        <div
+          className="absolute inset-0 w-full h-full organic-shapes"
+          style={{
+            animation: 'wf-breathing 8s ease-in-out infinite',
+            transform: `translate(${(mousePosition.x - 0.5) * 8}px, ${(mousePosition.y - 0.5) * 8}px)`,
+            transition: 'transform 0.1s ease-out',
+          }}
+        />
+
+        {/* Subtle shimmer effect */}
+        <div
+          className="absolute inset-0 w-full h-full overflow-hidden"
+          style={{
+            opacity: 0.5,
+          }}
+        >
+          <div
+            className="absolute w-full h-full"
+            style={{
+              background:
+                'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%)',
+              animation: 'wf-shimmer 12s ease-in-out infinite',
+              willChange: 'transform',
+            }}
+          />
+        </div>
+
         {/* Subtle noise texture */}
-        <div className="absolute inset-0 w-full h-full noise-overlay opacity-20" />
+        <div className="absolute inset-0 w-full h-full noise-overlay opacity-10" />
       </div>
 
       {/* Main content */}

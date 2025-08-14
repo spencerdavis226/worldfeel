@@ -531,4 +531,102 @@
       filter: hue-rotate(calc(var(--wf-hue-start) + 1turn));
     }
   }
+
+  /* Organic floating animation for background shapes */
+  @keyframes wf-organic-float {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    25% {
+      transform: translate(2px, -3px) rotate(0.5deg) scale(1.02);
+    }
+    50% {
+      transform: translate(-1px, 2px) rotate(-0.3deg) scale(0.98);
+    }
+    75% {
+      transform: translate(3px, 1px) rotate(0.2deg) scale(1.01);
+    }
+  }
+
+  /* Gentle breathing animation for wellness feel */
+  @keyframes wf-breathing {
+    0%,
+    100% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  /* Subtle shimmer effect for premium feel */
+  @keyframes wf-shimmer {
+    0% {
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+      transform: translateX(200%) translateY(200%) rotate(45deg);
+    }
+  }
+
+  /* Subtle color temperature shift for organic feel */
+  @keyframes wf-temperature-shift {
+    0%,
+    100% {
+      filter: hue-rotate(0deg) saturate(1.1);
+    }
+    50% {
+      filter: hue-rotate(3deg) saturate(1.15);
+    }
+  }
+
+  /* Organic shapes layer with flowing gradients */
+  .organic-shapes::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(
+        ellipse 60% 40% at 20% 30%,
+        rgba(255, 255, 255, 0.06) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 50% 35% at 80% 60%,
+        rgba(255, 255, 255, 0.04) 0%,
+        transparent 65%
+      ),
+      radial-gradient(
+        ellipse 30% 25% at 40% 80%,
+        rgba(255, 255, 255, 0.03) 0%,
+        transparent 60%
+      );
+    animation: wf-organic-float 25s ease-in-out infinite reverse;
+    will-change: transform;
+  }
+
+  .organic-shapes::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: conic-gradient(
+      from 120deg at 70% 20%,
+      transparent 0deg,
+      rgba(255, 255, 255, 0.02) 90deg,
+      transparent 180deg,
+      rgba(255, 255, 255, 0.015) 270deg,
+      transparent 360deg
+    );
+    animation: wf-organic-float 30s ease-in-out infinite;
+    will-change: transform;
+  }
 }
