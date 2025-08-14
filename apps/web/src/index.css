@@ -267,6 +267,81 @@
       );
   }
 
+  /* New consistent glass submit button - matches app's glass panel aesthetic */
+  .glass-submit-button {
+    @apply backdrop-blur-xl bg-white/30 border border-white/40 shadow-lg;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-submit-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 50%
+    );
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  .glass-submit-button:hover {
+    @apply bg-white/40 border-white/50;
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.15),
+      0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-submit-button:active {
+    @apply bg-white/35;
+    transform: translateY(1px);
+  }
+
+  .glass-submit-button:focus-visible {
+    @apply bg-white/45 border-white/60;
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.3),
+      0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .glass-submit-button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* Crossfade transition animations for submit button */
+  @keyframes submit-button-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-50%) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+  }
+
+  @keyframes submit-button-exit {
+    from {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-50%) scale(0.9);
+    }
+  }
+
+  .submit-button-enter {
+    animation: submit-button-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .submit-button-exit {
+    animation: submit-button-exit 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
   /* Noise texture overlay - Used in UniversalBackground */
   .noise-overlay {
     position: relative;

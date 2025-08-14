@@ -10,9 +10,8 @@ import {
   getEmotionColor,
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
-import { decideHeroStyleSync } from '@lib/colorContrastLazy';
 import { usePageTitle } from '@hooks/usePageTitle';
-import { timeAsyncFunction, timeFunction } from '@lib/performance';
+import { timeAsyncFunction } from '@lib/performance';
 
 export function HomePage() {
   // Set page title for main page
@@ -372,60 +371,36 @@ export function HomePage() {
                 </div>
               )}
 
-              {/* Submit button: hidden during cooldown, otherwise fades based on validity */}
+              {/* Submit button with smooth crossfade transitions */}
               {canSubmit && (
                 <button
                   type="submit"
                   disabled={!selectedKey || loading}
                   aria-hidden={!selectedKey}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 cta-glass rounded-xl flex items-center justify-center focus-visible-ring transition-opacity duration-300 ${
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-submit-button flex items-center justify-center focus-visible-ring ${
                     selectedKey
-                      ? 'opacity-100'
-                      : 'opacity-0 pointer-events-none'
+                      ? 'submit-button-enter'
+                      : 'submit-button-exit pointer-events-none'
                   }`}
-                  style={{
-                    ['--accent-r' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(1, 3), 16)}`,
-                    ['--accent-g' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(3, 5), 16)}`,
-                    ['--accent-b' as any]: `${parseInt((getEmotionColor(word) || '#6DCFF6').slice(5, 7), 16)}`,
-                  }}
                   aria-label="Submit emotion"
                 >
-                  {(() => {
-                    const hex = getEmotionColor(word) || '#6DCFF6';
-                    const bgHex = '#FFFFFF';
-                    const { color, needsScrim, scrimAlpha } = timeFunction(
-                      'hero-style-calculation',
-                      () =>
-                        decideHeroStyleSync(hex, bgHex, {
-                          targetCR: 3.0,
-                          tone: 0.12,
-                        }),
-                      5 // Log if takes longer than 5ms
-                    );
-                    const shadow = '0 1px 2px rgba(0,0,0,0.25)';
-                    return (
-                      <svg
-                        className="w-5 h-5"
-                        style={{
-                          color,
-                          filter: needsScrim
-                            ? `drop-shadow(0 0 0 rgba(0,0,0,${scrimAlpha.toFixed(2)}))`
-                            : undefined,
-                          textShadow: shadow as any,
-                        }}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
-                        />
-                      </svg>
-                    );
-                  })()}
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-gray-800/30 border-t-gray-800 rounded-full animate-spin" />
+                  ) : (
+                    <svg
+                      className="w-5 h-5 text-gray-800 drop-shadow-sm"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  )}
                 </button>
               )}
 
