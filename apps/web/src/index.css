@@ -452,7 +452,7 @@
     animation: wf-stats-in 1200ms ease-out both;
   }
 
-  /* Stagger timings for sequence: hero -> your-chip -> stats */
+  /* Stagger timings for sequence: hero -> your-chip -> stats -> footer */
   .anim-delay-hero {
     animation-delay: 0ms;
   }
@@ -461,6 +461,9 @@
   }
   .anim-delay-stats {
     animation-delay: 2600ms;
+  }
+  .anim-delay-footer {
+    animation-delay: 3600ms;
   }
 
   /* Container slight fade to avoid flash during first reveal */
@@ -519,6 +522,11 @@
     --wf-distance: 6px;
     --wf-scale: 0.988;
     --wf-duration: 1800ms;
+  }
+  .wf-footer {
+    --wf-distance: 4px;
+    --wf-scale: 0.992;
+    --wf-duration: 1600ms;
   }
 
   @media (prefers-reduced-motion: reduce) {

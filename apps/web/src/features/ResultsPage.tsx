@@ -389,7 +389,9 @@ export function ResultsPage() {
           )}
 
           {/* Footer content moved to main area */}
-          <div className="mt-8 md:mt-12 space-y-4">
+          <div 
+            className={`mt-8 md:mt-12 space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
+          >
             {stats?.colorHex && stats?.top?.word !== 'silent' ? (
               <div className="flex items-center justify-center">
                 <button
