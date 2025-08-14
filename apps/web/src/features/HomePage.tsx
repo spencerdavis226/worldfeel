@@ -372,16 +372,11 @@ export function HomePage() {
               )}
 
               {/* Submit button with smooth crossfade transitions */}
-              {canSubmit && (
+              {canSubmit && selectedKey && (
                 <button
                   type="submit"
-                  disabled={!selectedKey || loading}
-                  aria-hidden={!selectedKey}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-submit-button flex items-center justify-center focus-visible-ring ${
-                    selectedKey
-                      ? 'submit-button-enter'
-                      : 'submit-button-exit pointer-events-none'
-                  }`}
+                  disabled={loading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-11 sm:h-11 glass-submit-button flex items-center justify-center focus-visible-ring submit-button-enter"
                   aria-label="Submit emotion"
                 >
                   {loading ? (
