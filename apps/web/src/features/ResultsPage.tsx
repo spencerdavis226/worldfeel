@@ -136,7 +136,7 @@ export function ResultsPage() {
         {/* Main content - Simple, elegant layout */}
         <div
           className={[
-            'w-full max-w-2xl mx-auto text-center px-4 sm:px-6 flex flex-col justify-center',
+            'w-full max-w-4xl mx-auto text-center px-4 sm:px-6 flex flex-col justify-center',
             isFirstMount && showContainer ? 'animate-seq-container' : '',
           ].join(' ')}
           style={{
@@ -196,138 +196,95 @@ export function ResultsPage() {
             </div>
           </div>
 
-          {/* Results Panel - grouped glass chips centered as a unit */}
-          <div className="space-y-4">
+          {/* Results Panel - Clean, wide chips with elegant spacing */}
+          <div className="space-y-4 max-w-3xl mx-auto w-full">
             {/* Your contribution chip */}
             <div
               className={`w-full ${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
             >
-              <div className="w-full">
-                {stats?.yourWord ? (
-                  <div className="w-full">
-                    <div
-                      className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 min-w-0"
-                      aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
+              {stats?.yourWord ? (
+                <div
+                  className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                  aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
+                >
+                  <div className="flex items-center justify-center sm:justify-start gap-3">
+                    <span className="text-sm text-gray-800">
+                      You feel{' '}
+                      <AnimatedValue
+                        className="font-bold text-gray-900"
+                        value={stats.yourWord.word}
+                        fadeOutMs={160}
+                        fadeInMs={240}
+                      />
+                    </span>
+                    <span className="h-4 w-px bg-white/50" />
+                    <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
+                      <AnimatedValue
+                        value={formatPercent(
+                          stats.yourWord.count,
+                          stats.total || 0
+                        )}
+                        fadeOutMs={160}
+                        fadeInMs={240}
+                      />{' '}
+                      match
+                    </span>
+                  </div>
+                  {/* HEX token */}
+                  <button
+                    type="button"
+                    onClick={handleCopyTopHex}
+                    title="Copy HEX"
+                    className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
+                  >
+                    <span
+                      className="inline-block w-3 h-3 rounded-full"
+                      style={{
+                        backgroundColor:
+                          getEmotionColor(stats.yourWord.word) ||
+                          '#6DCFF6',
+                      }}
+                      aria-hidden
+                    />
+                    <span
+                      className="inline-block w-[8ch] text-left leading-none"
+                      aria-live="polite"
                     >
-                      <div className="w-full flex items-center justify-center sm:justify-between gap-2 sm:gap-3 min-w-0">
-                        {/* Left cluster: label + divider + percent (single line) */}
-                        <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 min-w-0 sm:flex-1">
-                          <span className="text-sm text-gray-800 truncate min-w-0 text-center sm:text-left">
-                            You feel{' '}
-                            <AnimatedValue
-                              className="font-bold text-gray-900"
-                              value={stats.yourWord.word}
-                              fadeOutMs={160}
-                              fadeInMs={240}
-                            />
-                          </span>
-                          <span className="h-4 w-px bg-white/50" />
-                          <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
-                            <AnimatedValue
-                              value={formatPercent(
-                                stats.yourWord.count,
-                                stats.total || 0
-                              )}
-                              fadeOutMs={160}
-                              fadeInMs={240}
-                            />{' '}
-                            match
-                          </span>
-                        </div>
-                        {/* HEX token on desktop/tablet (right side) */}
-                        <button
-                          type="button"
-                          onClick={handleCopyTopHex}
-                          title="Copy HEX"
-                          className="hidden sm:inline-flex glass-token items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
-                        >
-                          <span
-                            className="inline-block w-2 h-2 rounded-[3px]"
-                            style={{
-                              backgroundColor:
-                                getEmotionColor(stats.yourWord.word) ||
-                                '#6DCFF6',
-                            }}
-                            aria-hidden
-                          />
-                          <span
-                            className="inline-block w-[8ch] text-left leading-none"
-                            aria-live="polite"
-                          >
-                            {topHexCopied ? (
-                              'COPIED'
-                            ) : (
-                              <AnimatedValue
-                                value={(
-                                  getEmotionColor(stats.yourWord.word) ||
-                                  '#6DCFF6'
-                                ).toUpperCase()}
-                                fadeOutMs={120}
-                                fadeInMs={200}
-                              />
-                            )}
-                          </span>
-                        </button>
-                      </div>
-                      {/* HEX token on mobile (second row) */}
-                      <div className="mt-1 sm:hidden w-full flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={handleCopyTopHex}
-                          title="Copy HEX"
-                          className="glass-token inline-flex items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
-                        >
-                          <span
-                            className="inline-block w-2 h-2 rounded-[3px]"
-                            style={{
-                              backgroundColor:
-                                getEmotionColor(stats.yourWord.word) ||
-                                '#6DCFF6',
-                            }}
-                            aria-hidden
-                          />
-                          <span
-                            className="inline-block w-[8ch] text-left leading-none"
-                            aria-live="polite"
-                          >
-                            {topHexCopied ? (
-                              'COPIED'
-                            ) : (
-                              <AnimatedValue
-                                value={(
-                                  getEmotionColor(stats.yourWord.word) ||
-                                  '#6DCFF6'
-                                ).toUpperCase()}
-                                fadeOutMs={120}
-                                fadeInMs={200}
-                              />
-                            )}
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-full sm:w-full md:max-w-md lg:max-w-md bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-4 py-3 text-sm text-gray-700 text-center">
-                    Share one word to see your color today.
-                  </div>
-                )}
-              </div>
+                      {topHexCopied ? (
+                        'COPIED'
+                      ) : (
+                        <AnimatedValue
+                          value={(
+                            getEmotionColor(stats.yourWord.word) ||
+                            '#6DCFF6'
+                          ).toUpperCase()}
+                          fadeOutMs={120}
+                          fadeInMs={200}
+                        />
+                      )}
+                    </span>
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 text-sm text-gray-700 text-center">
+                  Share one word to see your color today.
+                </div>
+              )}
             </div>
 
             {/* Top emotions stats chip */}
             {stats?.top10 && stats.top10.length > 0 && (
               <div
-                className={`w-full px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
+                className={`w-full px-6 py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
               >
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {stats.top10.slice(0, 3).map((item, index) => (
                     <div
                       key={`rank-${index}`}
-                      className="flex items-center justify-between py-2 md:py-2.5 px-1"
+                      className="flex items-center justify-between py-2.5 px-1"
                     >
-                      <div className="grid grid-cols-[max-content,0.75rem,1fr] items-center gap-x-3 min-w-0">
-                        <div className="text-[11px] font-medium text-gray-500 tabular-nums text-left">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="text-xs font-medium text-gray-500 tabular-nums w-8 text-left">
                           #{index + 1}
                         </div>
                         <AnimatedValue
@@ -337,7 +294,7 @@ export function ResultsPage() {
                           fadeInMs={260}
                           render={(word) => (
                             <div
-                              className="w-3 h-3 rounded-full justify-self-center"
+                              className="w-3 h-3 rounded-full flex-shrink-0"
                               style={{
                                 backgroundColor:
                                   getEmotionColor(String(word)) || '#6DCFF6',
@@ -345,7 +302,7 @@ export function ResultsPage() {
                             />
                           )}
                         />
-                        <span className="text-[13px] font-medium text-gray-800 truncate">
+                        <span className="text-sm font-medium text-gray-800 truncate">
                           <AnimatedValue
                             value={item.word}
                             animateInitial={false}
@@ -354,7 +311,7 @@ export function ResultsPage() {
                           />
                         </span>
                       </div>
-                      <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
+                      <div className="text-xs text-gray-700 tabular-nums w-12 text-right flex-shrink-0">
                         <AnimatedValue
                           value={formatPercent(item.count, stats.total || 0)}
                           animateInitial={false}
@@ -403,11 +360,11 @@ export function ResultsPage() {
                   type="button"
                   onClick={handleCopyTopHex}
                   title="Copy top color HEX"
-                  className="glass-token inline-flex items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:text-gray-800 transition-colors"
+                  className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:text-gray-800 transition-colors"
                   aria-label={`Top color ${topHexCopied ? 'copied' : (stats.colorHex || '').toUpperCase()}`}
                 >
                   <span
-                    className="inline-block w-2 h-2 rounded-[3px]"
+                    className="inline-block w-3 h-3 rounded-full"
                     style={{ backgroundColor: stats.colorHex }}
                     aria-hidden
                   />

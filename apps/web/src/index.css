@@ -138,12 +138,6 @@
         justify-content: flex-start !important;
         padding-top: calc(6vh + env(safe-area-inset-top)) !important;
       }
-
-      /* Force chips to use full width */
-      .bg-white\/20.backdrop-blur-sm {
-        width: 100% !important;
-        max-width: 100% !important;
-      }
     }
   }
 
