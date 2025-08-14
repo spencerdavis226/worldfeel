@@ -21,14 +21,18 @@ function formatPercent(count: number, total: number): string {
 }
 
 export function ResultsPage() {
-  // Set page title
   usePageTitle('Results');
 
   const navigate = useNavigate();
-  // Memoize the empty filters object to prevent recreations (removed; we build filters dynamically)
+  const [showContainer, setShowContainer] = useState(false);
+  const [isFirstMount, setIsFirstMount] = useState(true);
+  const [yourHexCopied, setYourHexCopied] = useState(false);
+  const [topHexCopied, setTopHexCopied] = useState(false);
+  const yourHexCopyTimerRef = useRef<number | null>(null);
+  const topHexCopyTimerRef = useRef<number | null>(null);
+  const hasShownOnceRef = useRef(false);
 
-  // Get global stats (no filters for MVP)
-  // Load your word from local storage if available
+  // Get user's word and device ID
   const yourWord = useMemo(() => {
     try {
       return localStorage.getItem('wf.yourWord') || undefined;
@@ -45,7 +49,7 @@ export function ResultsPage() {
     }
   }, []);
 
-  const { stats, loading } = useStats(
+  const { stats, loading, error } = useStats(
     { ...(yourWord ? { yourWord } : {}), ...(deviceId ? { deviceId } : {}) },
     {
       autoRefresh: true,
@@ -53,36 +57,18 @@ export function ResultsPage() {
     }
   );
 
-  // Mount-only entrance sequencing
-  const [showContainer, setShowContainer] = useState(false);
-  const [isFirstMount, setIsFirstMount] = useState(true);
-  const [yourHexCopied, setYourHexCopied] = useState(false);
-  const yourHexCopyTimerRef = useRef<number | null>(null);
-  const [topHexCopied, setTopHexCopied] = useState(false);
-  const topHexCopyTimerRef = useRef<number | null>(null);
-  // Keep content visible during auto-refresh; only hide before first load completes
-  const hasShownOnceRef = useRef(false);
-  const prevTopWordRef = useRef<string | undefined>(undefined);
+  // Check if database is empty or if we're in an error state (show silent as fallback)
+  const isEmpty = !loading && (stats?.top?.word === 'silent' || error);
 
+  // Copy handlers
   async function handleCopyYourHex(): Promise<void> {
     const value = stats?.yourWord?.word
       ? (getEmotionColor(stats.yourWord.word) || '#6DCFF6').toUpperCase()
       : '';
     if (!value) return;
+
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(value);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = value;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
+      await navigator.clipboard?.writeText(value);
       setYourHexCopied(true);
       if (yourHexCopyTimerRef.current)
         window.clearTimeout(yourHexCopyTimerRef.current);
@@ -91,27 +77,32 @@ export function ResultsPage() {
         1200
       );
     } catch {
-      // noop
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = value;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setYourHexCopied(true);
+      if (yourHexCopyTimerRef.current)
+        window.clearTimeout(yourHexCopyTimerRef.current);
+      yourHexCopyTimerRef.current = window.setTimeout(
+        () => setYourHexCopied(false),
+        1200
+      );
     }
   }
 
   async function handleCopyTopHex(): Promise<void> {
     const value = (stats?.colorHex || '').toUpperCase();
     if (!value) return;
+
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(value);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = value;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
+      await navigator.clipboard?.writeText(value);
       setTopHexCopied(true);
       if (topHexCopyTimerRef.current)
         window.clearTimeout(topHexCopyTimerRef.current);
@@ -120,16 +111,32 @@ export function ResultsPage() {
         1200
       );
     } catch {
-      // noop
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = value;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setTopHexCopied(true);
+      if (topHexCopyTimerRef.current)
+        window.clearTimeout(topHexCopyTimerRef.current);
+      topHexCopyTimerRef.current = window.setTimeout(
+        () => setTopHexCopied(false),
+        1200
+      );
     }
   }
+
+  // Animation effects
   useEffect(() => {
-    // On initial fetch completion, reveal container and mark first mount sequence
     if (!loading) {
       const id = requestAnimationFrame(() => {
         setShowContainer(true);
         if (isFirstMount) {
-          // Ensure entrance sequence (including footer: 3600ms delay + 1200ms) completes
           setTimeout(() => setIsFirstMount(false), 5000);
         }
         hasShownOnceRef.current = true;
@@ -140,11 +147,6 @@ export function ResultsPage() {
       setShowContainer(false);
     }
   }, [loading, isFirstMount]);
-
-  // Keep track of top word for potential contextual UI decisions later
-  useEffect(() => {
-    prevTopWordRef.current = stats?.top?.word;
-  }, [stats?.top?.word]);
 
   useEffect(() => {
     return () => {
@@ -168,7 +170,6 @@ export function ResultsPage() {
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
-        {/* Main content - Simple, elegant layout */}
         <div
           className={[
             'w-full max-w-4xl mx-auto text-center px-4 sm:px-6 flex flex-col justify-center',
@@ -180,7 +181,7 @@ export function ResultsPage() {
             paddingBottom: 'env(safe-area-inset-bottom)',
           }}
         >
-          {/* Hero section with main emotion */}
+          {/* Main hero section */}
           <div
             className={`mb-8 sm:mb-12 md:mb-16 lg:mb-20 ${isFirstMount && showContainer ? 'wf-enter wf-hero wf-d0' : ''}`}
             aria-live="polite"
@@ -195,7 +196,7 @@ export function ResultsPage() {
               >
                 <AnimatedValue
                   className="block font-semibold tracking-[-0.015em] leading-none text-[clamp(3rem,8vw,7rem)]"
-                  value={stats?.top?.word || '\u00A0'}
+                  value={stats?.top?.word || (error ? 'silent' : '\u00A0')}
                   fadeOutMs={200}
                   fadeInMs={300}
                   animateInitial={false}
@@ -204,7 +205,9 @@ export function ResultsPage() {
                     <span
                       style={(() => {
                         const originalColor =
-                          getEmotionColor(stats?.top?.word || '') || '#6DCFF6';
+                          getEmotionColor(
+                            stats?.top?.word || (error ? 'silent' : '')
+                          ) || '#6DCFF6';
                         return timeFunction(
                           'color-contrast-calculation',
                           () => ({
@@ -219,7 +222,7 @@ export function ResultsPage() {
                               'subtle'
                             ),
                           }),
-                          10 // Log if takes longer than 10ms
+                          10
                         );
                       })()}
                     >
@@ -231,151 +234,13 @@ export function ResultsPage() {
             </div>
           </div>
 
-          {/* Results Panel - Clean, wide chips with elegant spacing */}
-          <div className="space-y-4 max-w-3xl mx-auto w-full">
-            {/* Your contribution chip */}
-            <div
-              className={`w-full ${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
-            >
-              {stats?.yourWord ? (
-                <div
-                  className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4"
-                  aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div className="flex items-center justify-center sm:justify-start gap-3">
-                      <span className="text-sm text-gray-800">
-                        You feel{' '}
-                        <AnimatedValue
-                          className="font-bold text-gray-900"
-                          value={stats.yourWord.word}
-                          fadeOutMs={160}
-                          fadeInMs={240}
-                        />
-                      </span>
-                      <span className="h-4 w-px bg-white/50" />
-                      <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
-                        <AnimatedValue
-                          value={formatPercent(
-                            stats.yourWord.count,
-                            stats.total || 0
-                          )}
-                          fadeOutMs={160}
-                          fadeInMs={240}
-                        />{' '}
-                        match
-                      </span>
-                    </div>
-                    {/* HEX token */}
-                    <div className="flex justify-center sm:justify-end">
-                      <button
-                        type="button"
-                        onClick={handleCopyYourHex}
-                        title="Copy HEX"
-                        className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
-                      >
-                        <span
-                          className="inline-block w-3 h-3 rounded-full"
-                          style={{
-                            backgroundColor:
-                              getEmotionColor(stats.yourWord.word) || '#6DCFF6',
-                          }}
-                          aria-hidden
-                        />
-                        <span
-                          className="inline-block w-[8ch] text-left leading-none"
-                          aria-live="polite"
-                        >
-                          {yourHexCopied ? (
-                            'COPIED'
-                          ) : (
-                            <AnimatedValue
-                              value={(
-                                getEmotionColor(stats.yourWord.word) ||
-                                '#6DCFF6'
-                              ).toUpperCase()}
-                              fadeOutMs={120}
-                              fadeInMs={200}
-                            />
-                          )}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 text-sm text-gray-700 text-center">
-                  Share one word to see your color today.
-                </div>
-              )}
-            </div>
-
-            {/* Top emotions stats chip */}
-            {stats?.top10 && stats.top10.length > 0 && (
-              <div
-                className={`w-full px-6 py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
-              >
-                <div className="space-y-2">
-                  {stats.top10.slice(0, 3).map((item, index) => (
-                    <div
-                      key={`rank-${index}`}
-                      className="flex items-center justify-between py-2.5 px-1"
-                    >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="text-xs font-medium text-gray-500 tabular-nums w-8 text-left">
-                          #{index + 1}
-                        </div>
-                        <AnimatedValue
-                          value={item.word}
-                          animateInitial={false}
-                          fadeOutMs={160}
-                          fadeInMs={260}
-                          render={(word) => (
-                            <div
-                              className="w-3 h-3 rounded-full flex-shrink-0"
-                              style={{
-                                backgroundColor:
-                                  getEmotionColor(String(word)) || '#6DCFF6',
-                              }}
-                            />
-                          )}
-                        />
-                        <span className="text-sm font-medium text-gray-800 truncate">
-                          <AnimatedValue
-                            value={item.word}
-                            animateInitial={false}
-                            fadeOutMs={180}
-                            fadeInMs={280}
-                          />
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-700 tabular-nums w-12 text-right flex-shrink-0">
-                        <AnimatedValue
-                          value={formatPercent(item.count, stats.total || 0)}
-                          animateInitial={false}
-                          fadeOutMs={160}
-                          fadeInMs={260}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Show message when no entries exist */}
-          {!loading && stats?.top?.word === 'silent' && (
-            <div className="text-center space-y-4 md:space-y-6">
-              <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
-                The world feels
-              </h1>
-              <div className="font-semibold tracking-[-0.015em] leading-none text-gray-400 text-[clamp(3rem,8vw,7rem)]">
-                silent
-              </div>
+          {/* Empty state message */}
+          {isEmpty && (
+            <div className="text-center space-y-4 md:space-y-6 mb-8">
               <p className="text-lg text-gray-600 max-w-md mx-auto">
-                No one has shared their feelings yet today. Be the first to
-                break the silence.
+                {error
+                  ? 'Unable to connect to the server. Please check your connection and try again.'
+                  : 'No one has shared their feelings yet today. Be the first to break the silence.'}
               </p>
               <div className="pt-4">
                 <button
@@ -388,11 +253,146 @@ export function ResultsPage() {
             </div>
           )}
 
-          {/* Footer content moved to main area */}
+          {/* Results Panel - Only show when not empty */}
+          {!isEmpty && (
+            <div className="space-y-4 max-w-3xl mx-auto w-full">
+              {/* Your contribution chip */}
+              <div
+                className={`w-full ${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
+              >
+                {stats?.yourWord ? (
+                  <div
+                    className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4"
+                    aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex items-center justify-center sm:justify-start gap-3">
+                        <span className="text-sm text-gray-800">
+                          You feel{' '}
+                          <AnimatedValue
+                            className="font-bold text-gray-900"
+                            value={stats.yourWord.word}
+                            fadeOutMs={160}
+                            fadeInMs={240}
+                          />
+                        </span>
+                        <span className="h-4 w-px bg-white/50" />
+                        <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
+                          <AnimatedValue
+                            value={formatPercent(
+                              stats.yourWord.count,
+                              stats.total || 0
+                            )}
+                            fadeOutMs={160}
+                            fadeInMs={240}
+                          />{' '}
+                          match
+                        </span>
+                      </div>
+                      <div className="flex justify-center sm:justify-end">
+                        <button
+                          type="button"
+                          onClick={handleCopyYourHex}
+                          title="Copy HEX"
+                          className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
+                        >
+                          <span
+                            className="inline-block w-3 h-3 rounded-full"
+                            style={{
+                              backgroundColor:
+                                getEmotionColor(stats.yourWord.word) ||
+                                '#6DCFF6',
+                            }}
+                            aria-hidden
+                          />
+                          <span
+                            className="inline-block w-[8ch] text-left leading-none"
+                            aria-live="polite"
+                          >
+                            {yourHexCopied ? (
+                              'COPIED'
+                            ) : (
+                              <AnimatedValue
+                                value={(
+                                  getEmotionColor(stats.yourWord.word) ||
+                                  '#6DCFF6'
+                                ).toUpperCase()}
+                                fadeOutMs={120}
+                                fadeInMs={200}
+                              />
+                            )}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 text-sm text-gray-700 text-center">
+                    Share one word to see your color today.
+                  </div>
+                )}
+              </div>
+
+              {/* Top emotions stats chip */}
+              {stats?.top10 && stats.top10.length > 0 && (
+                <div
+                  className={`w-full px-6 py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
+                >
+                  <div className="space-y-2">
+                    {stats.top10.slice(0, 3).map((item, index) => (
+                      <div
+                        key={`rank-${index}`}
+                        className="flex items-center justify-between py-2.5 px-1"
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="text-xs font-medium text-gray-500 tabular-nums w-8 text-left">
+                            #{index + 1}
+                          </div>
+                          <AnimatedValue
+                            value={item.word}
+                            animateInitial={false}
+                            fadeOutMs={160}
+                            fadeInMs={260}
+                            render={(word) => (
+                              <div
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{
+                                  backgroundColor:
+                                    getEmotionColor(String(word)) || '#6DCFF6',
+                                }}
+                              />
+                            )}
+                          />
+                          <span className="text-sm font-medium text-gray-800 truncate">
+                            <AnimatedValue
+                              value={item.word}
+                              animateInitial={false}
+                              fadeOutMs={180}
+                              fadeInMs={280}
+                            />
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-700 tabular-nums w-12 text-right flex-shrink-0">
+                          <AnimatedValue
+                            value={formatPercent(item.count, stats.total || 0)}
+                            animateInitial={false}
+                            fadeOutMs={160}
+                            fadeInMs={260}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Footer */}
           <div
             className={`mt-8 md:mt-12 space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
           >
-            {stats?.colorHex && stats?.top?.word !== 'silent' ? (
+            {stats?.colorHex && !isEmpty ? (
               <div className="flex items-center justify-center">
                 <button
                   type="button"
@@ -424,8 +424,12 @@ export function ResultsPage() {
               </div>
             ) : null}
             <p className="text-sm text-gray-500 text-center">
-              {stats?.top?.word === 'silent' ? (
-                'No feelings shared yet today'
+              {isEmpty ? (
+                error ? (
+                  'Connection error'
+                ) : (
+                  'No feelings shared yet today'
+                )
               ) : (
                 <>
                   <AnimatedValue
