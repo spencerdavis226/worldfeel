@@ -56,11 +56,44 @@ export function ResultsPage() {
   // Mount-only entrance sequencing
   const [showContainer, setShowContainer] = useState(false);
   const [isFirstMount, setIsFirstMount] = useState(true);
+  const [yourHexCopied, setYourHexCopied] = useState(false);
+  const yourHexCopyTimerRef = useRef<number | null>(null);
   const [topHexCopied, setTopHexCopied] = useState(false);
   const topHexCopyTimerRef = useRef<number | null>(null);
   // Keep content visible during auto-refresh; only hide before first load completes
   const hasShownOnceRef = useRef(false);
   const prevTopWordRef = useRef<string | undefined>(undefined);
+
+  async function handleCopyYourHex(): Promise<void> {
+    const value = stats?.yourWord?.word
+      ? (getEmotionColor(stats.yourWord.word) || '#6DCFF6').toUpperCase()
+      : '';
+    if (!value) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setYourHexCopied(true);
+      if (yourHexCopyTimerRef.current)
+        window.clearTimeout(yourHexCopyTimerRef.current);
+      yourHexCopyTimerRef.current = window.setTimeout(
+        () => setYourHexCopied(false),
+        1200
+      );
+    } catch {
+      // noop
+    }
+  }
 
   async function handleCopyTopHex(): Promise<void> {
     const value = (stats?.colorHex || '').toUpperCase();
@@ -115,6 +148,8 @@ export function ResultsPage() {
 
   useEffect(() => {
     return () => {
+      if (yourHexCopyTimerRef.current)
+        window.clearTimeout(yourHexCopyTimerRef.current);
       if (topHexCopyTimerRef.current)
         window.clearTimeout(topHexCopyTimerRef.current);
     };
@@ -235,7 +270,7 @@ export function ResultsPage() {
                     <div className="flex justify-center sm:justify-end">
                       <button
                         type="button"
-                        onClick={handleCopyTopHex}
+                        onClick={handleCopyYourHex}
                         title="Copy HEX"
                         className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
                       >
@@ -251,7 +286,7 @@ export function ResultsPage() {
                           className="inline-block w-[8ch] text-left leading-none"
                           aria-live="polite"
                         >
-                          {topHexCopied ? (
+                          {yourHexCopied ? (
                             'COPIED'
                           ) : (
                             <AnimatedValue
