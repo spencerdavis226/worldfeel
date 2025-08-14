@@ -126,3 +126,10 @@ config/secrets.json
 # Cursor
 .cursor/
 DEPLOYMENT.md
+
+# API Testing Files (Development Only)
+test-api.sh
+test-api-quick.sh
+test-api-comprehensive.sh
+API_TESTING_GUIDE.md
+API_TESTING_SUMMARY.md
