@@ -502,7 +502,7 @@ export function HomePage() {
 
         {/* Footer - positioned at bottom with generous spacing */}
         <div
-          className={`w-full text-center mb-32 px-4 transition-opacity ios-footer-fix absolute bottom-0 left-0 right-0 ${
+          className={`w-full text-center mb-16 sm:mb-24 md:mb-32 px-4 transition-opacity ios-footer-fix absolute bottom-0 left-0 right-0 ${
             showSuggestions && suggestions.length > 0
               ? 'duration-150 ease-out'
               : 'duration-500 ease-in'
