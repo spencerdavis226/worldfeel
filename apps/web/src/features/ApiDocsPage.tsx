@@ -375,13 +375,6 @@ export function ApiDocsPage() {
               </p>
             </div>
           </section>
-
-          {/* Footer content moved to main area */}
-          <div className="mt-8 md:mt-12">
-            <p className="text-sm text-gray-500 text-center">
-              Real-time global emotional data
-            </p>
-          </div>
         </div>
       </div>
     </UniversalBackground>
