@@ -80,29 +80,7 @@
       },
       "response": []
     },
-    {
-      "name": "Submit Emotion",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"word\": \"joy\",\n  \"deviceId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/api/submit",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "submit"]
-        },
-        "description": "Submit a new emotion word"
-      },
-      "response": []
-    },
+
     {
       "name": "Get Color for Word",
       "request": {
@@ -150,28 +128,6 @@
       },
       "response": []
     },
-    {
-      "name": "Flag Content",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"word\": \"inappropriate-word\",\n  \"reason\": \"This word is inappropriate\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/api/flag",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "flag"]
-        },
-        "description": "Flag inappropriate content"
-      },
-      "response": []
-    }
+
   ]
 }

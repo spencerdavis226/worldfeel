@@ -31,9 +31,11 @@ export function ApiDocsPage() {
                 Overview
               </h2>
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                The worldfeel.org API provides real-time access to the current
+                The worldfeel.org API provides read-only access to the current
                 emotional state of the world. Get the emotion and color of the
-                day, updated every 10 seconds as people share their feelings.
+                day, along with statistics and search functionality. This is a
+                public, read-only API designed for data consumption and
+                integration.
               </p>
             </div>
 
@@ -196,6 +198,130 @@ export function ApiDocsPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Get Statistics Endpoint */}
+                <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg p-4 sm:p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                      GET
+                    </span>
+                    <code className="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">
+                      /api/stats
+                    </code>
+                  </div>
+
+                  <p className="text-gray-700 text-sm mb-4">
+                    Get current statistics about submitted emotions. Supports
+                    optional query parameters for filtering.
+                  </p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Query Parameters (Optional)
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`yourWord=joy&deviceId=550e8400-e29b-41d4-a716-446655440000`}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Request
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`curl "${apiBaseUrl}/api/stats?yourWord=joy"`}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Response
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`{
+  "success": true,
+  "data": {
+    "total": 84,
+    "top": {
+      "word": "sad",
+      "count": 3
+    },
+    "top5": [
+      {"word": "sad", "count": 3},
+      {"word": "dejected", "count": 3},
+      {"word": "aroused", "count": 3}
+    ],
+    "colorHex": "#395BE7",
+    "yourWord": {
+      "word": "joy",
+      "count": 1,
+      "rank": 13,
+      "percentile": 83
+    }
+  }
+}`}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                {/* Search Emotions Endpoint */}
+                <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg p-4 sm:p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                      GET
+                    </span>
+                    <code className="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">
+                      /api/emotions/search?q=joy&limit=10
+                    </code>
+                  </div>
+
+                  <p className="text-gray-700 text-sm mb-4">
+                    Search for emotions by query string. Supports fuzzy matching
+                    and returns up to 100 results.
+                  </p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Query Parameters
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`q=joy&limit=10`}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Request
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`curl "${apiBaseUrl}/api/emotions/search?q=joy&limit=3"`}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Response
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`{
+  "success": true,
+  "data": [
+    "joyful",
+    "content",
+    "shy"
+  ]
+}`}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
             </div>
 
@@ -204,9 +330,9 @@ export function ApiDocsPage() {
                 Rate Limits
               </h3>
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                The public API is rate limited to ensure fair usage. Please
-                respect reasonable request frequencies and implement appropriate
-                caching in your applications.
+                The public API is rate limited to 100 requests per minute to
+                ensure fair usage. Please respect reasonable request frequencies
+                and implement appropriate caching in your applications.
               </p>
             </div>
 

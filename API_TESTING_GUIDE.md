@@ -63,19 +63,7 @@
   - `deviceId`: Filter stats for a specific device
 - **Example**: `{{baseUrl}}/api/stats?yourWord=joy&deviceId=test-device`
 
-### 4. Submit Emotion
 
-- **Method**: POST
-- **URL**: `{{baseUrl}}/api/submit`
-- **Headers**: `Content-Type: application/json`
-- **Body**:
-
-```json
-{
-  "word": "joy",
-  "deviceId": "550e8400-e29b-41d4-a716-446655440000"
-}
-```
 
 ### 5. Get Color for Word
 
@@ -109,19 +97,7 @@
 }
 ```
 
-### 7. Flag Content
 
-- **Method**: POST
-- **URL**: `{{baseUrl}}/api/flag`
-- **Headers**: `Content-Type: application/json`
-- **Body**:
-
-```json
-{
-  "word": "inappropriate-word",
-  "reason": "This word is inappropriate"
-}
-```
 
 ## 🧪 Testing Checklist
 
@@ -162,10 +138,7 @@ curl https://api.worldfeel.org/api/color?word=joy
 # Search emotions
 curl "https://api.worldfeel.org/api/emotions/search?q=joy&limit=3"
 
-# Submit emotion (POST)
-curl -X POST https://api.worldfeel.org/api/submit \
-  -H "Content-Type: application/json" \
-  -d '{"word": "joy", "deviceId": "550e8400-e29b-41d4-a716-446655440000"}'
+
 ```
 
 ## 📊 Rate Limits
