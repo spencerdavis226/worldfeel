@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { submissionRequestSchema } from '@worldfeel/shared';
-import { Submission, type SubmissionDocument } from '../models/Submission.js';
+import { Submission } from '../models/Submission.js';
 import { hashIp, getClientIp } from '../utils/crypto.js';
 import { containsProfanity } from '../utils/profanity.js';
 import { getStats, invalidateStatsCache } from './stats.js';
@@ -12,32 +11,7 @@ const router = Router();
 interface SubmitRequest extends Request {
   body: {
     word: string;
-    deviceId?: string;
   };
-}
-
-const EDIT_WINDOW_MINUTES = 5;
-
-function getCooldownRemainingSeconds(lastCreatedAt?: Date): number {
-  if (!lastCreatedAt) return 0;
-
-  // Use shorter cooldown for development/testing
-  const cooldownSeconds =
-    env.NODE_ENV === 'production' ? env.SUBMIT_COOLDOWN_SECONDS : 15; // 15 seconds for development
-
-  const elapsedMs = Date.now() - new Date(lastCreatedAt).getTime();
-  const remainingMs = cooldownSeconds * 1000 - elapsedMs;
-  return Math.max(0, Math.ceil(remainingMs / 1000));
-}
-
-async function findLatestSubmission(
-  ipHash: string,
-  deviceId?: string
-): Promise<SubmissionDocument | null> {
-  // Prioritize deviceId over ipHash for better device-specific behavior
-  // Only fall back to ipHash if no deviceId is provided
-  const filter = deviceId ? { deviceId } : { ipHash };
-  return Submission.findOne(filter).sort({ createdAt: -1 }).exec();
 }
 
 router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
@@ -55,7 +29,6 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     }
 
     const { word } = validationResult.data;
-    let { deviceId } = validationResult.data;
 
     // Check for profanity
     if (containsProfanity(word)) {
@@ -67,57 +40,15 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       return;
     }
 
-    // Generate device ID if not provided
-    if (!deviceId) {
-      deviceId = uuidv4();
-
-      // Set device ID cookie
-      res.cookie('hwf.sid', deviceId, {
-        httpOnly: false, // Client needs to read this
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
-        path: '/',
-      });
-    }
-
-    // Validate device ID format
-    if (deviceId && typeof deviceId === 'string') {
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const fingerprintUuidRegex =
-        /^[a-z0-9]+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-      if (!uuidRegex.test(deviceId) && !fingerprintUuidRegex.test(deviceId)) {
-        console.warn('Invalid device ID format:', deviceId);
-        deviceId = uuidv4(); // Generate a new one
-      }
-    }
-
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
-    // Log device identification for debugging
+    // Log submission for debugging
     if (env.NODE_ENV === 'development') {
       console.log('Submission attempt:', {
-        deviceId: deviceId ? `${deviceId.substring(0, 8)}...` : 'none',
         ipHash: `${ipHash.substring(0, 8)}...`,
         word,
       });
-    }
-
-    // Enforce cooldown: check latest submission by deviceId or ipHash
-    const latest = await findLatestSubmission(ipHash, deviceId);
-    const remaining = getCooldownRemainingSeconds(latest?.createdAt as any);
-    if (remaining > 0) {
-      res.status(429).json({
-        success: false,
-        error: 'Cooldown active',
-        message: `You can submit again in ${remaining} seconds`,
-        remainingSeconds: remaining,
-        nextSubmitAt: new Date(Date.now() + remaining * 1000).toISOString(),
-      });
-      return;
     }
 
     // Existing-submission edit flow is currently disabled (simplified global model)
@@ -128,7 +59,6 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
     const submission = new Submission({
       word,
       ipHash,
-      deviceId,
       createdAt: now,
       expiresAt: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 24 hours
     });
@@ -148,7 +78,7 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       data: stats,
       message: 'Thank you for sharing how you feel!',
       canEdit: true,
-      editWindowMinutes: EDIT_WINDOW_MINUTES,
+      editWindowMinutes: 5,
     });
   } catch (error) {
     console.error('Submit error:', error);
@@ -156,45 +86,6 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
       success: false,
       error: 'Internal server error',
       message: 'Something went wrong. Please try again.',
-    });
-  }
-});
-
-// Status endpoint to check if user can submit based on cooldown
-router.get('/status', async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Prefer explicit deviceId query; fallback to cookie
-    const deviceIdQuery =
-      (req.query.deviceId as string | undefined) || undefined;
-    const deviceIdCookie = (req as any).cookies?.['hwf.sid'] as
-      | string
-      | undefined;
-    const deviceId = deviceIdQuery || deviceIdCookie;
-
-    const clientIp = getClientIp(req);
-    const ipHash = hashIp(clientIp);
-
-    // Use the same device-specific logic as the submission endpoint
-    const latest = await findLatestSubmission(ipHash, deviceId);
-    const remaining = getCooldownRemainingSeconds(latest?.createdAt as any);
-    const canSubmit = remaining === 0;
-
-    res.json({
-      success: true,
-      data: {
-        canSubmit,
-        remainingSeconds: remaining,
-        nextSubmitAt: canSubmit
-          ? null
-          : new Date(Date.now() + remaining * 1000).toISOString(),
-      },
-    });
-  } catch (error) {
-    console.error('Submit status error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-      message: 'Unable to determine submission status',
     });
   }
 });

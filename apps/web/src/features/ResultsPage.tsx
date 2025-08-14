@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UniversalBackground } from '@components/UniversalBackground';
 import { AnimatedValue } from '@components/AnimatedValue';
-import { getDeviceId } from '@lib/deviceId';
+
 import { useStats } from '@hooks/useStats';
 import { usePageTitle } from '@hooks/usePageTitle';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
@@ -41,16 +41,8 @@ export function ResultsPage() {
     }
   }, []);
 
-  const deviceId = useMemo(() => {
-    try {
-      return getDeviceId();
-    } catch {
-      return undefined as unknown as string;
-    }
-  }, []);
-
   const { stats, loading, error } = useStats(
-    { ...(yourWord ? { yourWord } : {}), ...(deviceId ? { deviceId } : {}) },
+    { ...(yourWord ? { yourWord } : {}) },
     {
       autoRefresh: true,
       refreshInterval: 15000,

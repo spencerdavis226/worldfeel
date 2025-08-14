@@ -23,10 +23,7 @@ const submissionSchema = new Schema<SubmissionDocument>(
       required: true,
       length: 64, // SHA256 hash length
     },
-    deviceId: {
-      type: String,
-      default: undefined,
-    },
+
     createdAt: {
       type: Date,
       default: Date.now,
@@ -47,8 +44,8 @@ const submissionSchema = new Schema<SubmissionDocument>(
 // TTL Index - MongoDB will automatically delete expired documents
 submissionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-// Compound index for deduplication (sparse to allow multiple docs with same ipHash but different deviceId)
-submissionSchema.index({ ipHash: 1, deviceId: 1 }, { sparse: true });
+// Index for IP-based queries
+submissionSchema.index({ ipHash: 1 });
 
 // Query optimization indexes
 submissionSchema.index({ word: 1 });

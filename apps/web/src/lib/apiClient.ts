@@ -5,7 +5,6 @@ import type {
   Stats,
   StatsQuery,
   ColorResult,
-  SubmitStatus,
 } from '@worldfeel/shared';
 import { getApiBaseUrl } from '@lib/env.js';
 
@@ -67,22 +66,10 @@ class ApiClient {
     });
   }
 
-  async getSubmitStatus(
-    params: {
-      deviceId?: string;
-    } = {}
-  ): Promise<ApiResponse<SubmitStatus>> {
-    const sp = new URLSearchParams();
-    if (params.deviceId) sp.set('deviceId', params.deviceId);
-    const qs = sp.toString();
-    return this.request(`/submit/status${qs ? `?${qs}` : ''}`);
-  }
-
   async getStats(params: StatsQuery = {}): Promise<ApiResponse<Stats>> {
     const searchParams = new URLSearchParams();
 
     if (params.yourWord) searchParams.set('yourWord', params.yourWord);
-    if (params.deviceId) searchParams.set('deviceId', String(params.deviceId));
 
     const query = searchParams.toString();
     const endpoint = `/stats${query ? `?${query}` : ''}`;

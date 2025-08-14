@@ -2,7 +2,6 @@ export interface Submission {
   _id?: string;
   word: string;
   ipHash: string;
-  deviceId?: string;
   createdAt: Date;
   expiresAt: Date;
 }
@@ -29,7 +28,6 @@ export interface Stats {
 
 export interface SubmissionRequest {
   word: string;
-  deviceId?: string;
 }
 
 export interface StatsQuery {

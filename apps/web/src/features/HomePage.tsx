@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UniversalBackground } from '@components/UniversalBackground';
-import { getDeviceId } from '@lib/deviceId';
+
 import { apiClient } from '@lib/apiClient';
 import { lettersOnly } from '@worldfeel/shared';
 import { navigateWithViewTransition } from '@lib/viewTransitions';
@@ -45,32 +45,12 @@ export function HomePage() {
   const navigate = useNavigate();
   const [cooldownVisible, setCooldownVisible] = useState<boolean>(false);
 
-  // Check submit cooldown status once on mount
+  // No cooldown check needed
   useEffect(() => {
-    (async () => {
-      try {
-        const deviceId = getDeviceId();
-        const resp = await apiClient.getSubmitStatus({ deviceId });
-        if (resp.success && resp.data) {
-          setCanSubmit(resp.data.canSubmit);
-          setRemainingSeconds(resp.data.remainingSeconds || 0);
-          setCooldownVisible(
-            !resp.data.canSubmit && (resp.data.remainingSeconds || 0) > 0
-          );
-        } else {
-          setCanSubmit(true);
-          setRemainingSeconds(0);
-          setCooldownVisible(false);
-        }
-      } catch {
-        // Fail open
-        setCanSubmit(true);
-        setRemainingSeconds(0);
-        setCooldownVisible(false);
-      } finally {
-        setCheckingExisting(false);
-      }
-    })();
+    setCanSubmit(true);
+    setRemainingSeconds(0);
+    setCooldownVisible(false);
+    setCheckingExisting(false);
   }, []);
 
   // Countdown tick while locked
@@ -125,12 +105,9 @@ export function HomePage() {
       setError('');
 
       try {
-        const deviceId = getDeviceId();
         const response = await apiClient.submitWord({
           // Submit the selected emotion; keep the visible input in sync when selecting
           word: word.trim().toLowerCase(),
-          deviceId,
-          // No location data for MVP
         });
 
         if (response.success) {
@@ -146,30 +123,7 @@ export function HomePage() {
           setError(response.error || 'Something went wrong');
         }
       } catch (err) {
-        // Handle cooldown errors more gracefully
-        if (err instanceof Error && err.message.includes('429')) {
-          try {
-            const status = await apiClient.getSubmitStatus({
-              deviceId: getDeviceId(),
-            });
-            if (status.success && status.data) {
-              setCanSubmit(status.data.canSubmit);
-              setRemainingSeconds(status.data.remainingSeconds || 0);
-              setCooldownVisible(
-                !status.data.canSubmit &&
-                  (status.data.remainingSeconds || 0) > 0
-              );
-              setError(''); // Clear any existing error
-              return;
-            }
-          } catch (statusErr) {
-            // If status check fails, show generic cooldown message
-            setError('Please wait before submitting again');
-            return;
-          }
-        }
-
-        // Handle other errors
+        // Handle errors
         if (err instanceof Error) setError(err.message);
         else setError('Something went wrong. Please try again.');
       } finally {
