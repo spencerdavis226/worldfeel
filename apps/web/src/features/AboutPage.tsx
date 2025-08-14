@@ -11,11 +11,11 @@ export function AboutPage() {
   const [avatarSrc, setAvatarSrc] = useState<string>('/spencer.png');
   return (
     <UniversalBackground hueCycle={true} hueDurationMs={120000}>
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 pt-20 sm:pt-24">
+      <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 pt-20 sm:pt-24">
         {/* Main content */}
-        <div className="w-full max-w-3xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-4 sm:space-y-6 lg:space-y-8">
-          {/* Header with optimized spacing */}
-          <div className="space-y-3 sm:space-y-4 lg:space-y-5">
+        <div className="w-full max-w-3xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-6 sm:space-y-8">
+          {/* Header with proper spacing */}
+          <div className="space-y-4 sm:space-y-5 pt-4 sm:pt-6">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight">
               About worldfeel.org
             </h1>
@@ -315,8 +315,8 @@ export function AboutPage() {
           </section>
         </div>
 
-        {/* Footer with minimal spacing */}
-        <div className="w-full text-center pb-3 sm:pb-4 lg:pb-6 px-4 pt-3 sm:pt-4 lg:pt-6 mt-auto">
+        {/* Footer with proper spacing */}
+        <div className="w-full text-center pb-4 sm:pb-6 px-4 pt-4 sm:pt-6">
           <p className="text-xs text-gray-500">
             A global emotional snapshot of today
           </p>
