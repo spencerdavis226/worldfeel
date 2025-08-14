@@ -3,7 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
+// TODO: Re-enable when rate limiting is restored
+// import rateLimit from 'express-rate-limit';
 import { env } from './config/env.js';
 import routes from './routes/index.js';
 
@@ -57,24 +58,25 @@ app.use(
   })
 );
 
+// TODO: Re-enable rate limiting when cooldown is restored
 // Rate limiting: 60 requests per minute per IP
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 60, // limit each IP to 60 requests per windowMs
-  message: {
-    success: false,
-    error: 'Too many requests',
-    message: 'Please slow down and try again later',
-  },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  skip: (req) => {
-    // Skip rate limiting for health checks in development
-    return env.NODE_ENV === 'development' && req.path === '/api/health';
-  },
-});
+// const limiter = rateLimit({
+//   windowMs: 60 * 1000, // 1 minute
+//   max: 60, // limit each IP to 60 requests per windowMs
+//   message: {
+//     success: false,
+//     error: 'Too many requests',
+//     message: 'Please slow down and try again later',
+//   },
+//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+//   skip: (req) => {
+//     // Skip rate limiting for health checks in development
+//     return env.NODE_ENV === 'development' && req.path === '/api/health';
+//   },
+// });
 
-app.use(limiter);
+// app.use(limiter);
 
 // Request parsing
 app.use(express.json({ limit: '10mb' }));
