@@ -204,66 +204,69 @@ export function ResultsPage() {
             >
               {stats?.yourWord ? (
                 <div
-                  className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                  className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4"
                   aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
                 >
-                  <div className="flex items-center justify-center sm:justify-start gap-3">
-                    <span className="text-sm text-gray-800">
-                      You feel{' '}
-                      <AnimatedValue
-                        className="font-bold text-gray-900"
-                        value={stats.yourWord.word}
-                        fadeOutMs={160}
-                        fadeInMs={240}
-                      />
-                    </span>
-                    <span className="h-4 w-px bg-white/50" />
-                    <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
-                      <AnimatedValue
-                        value={formatPercent(
-                          stats.yourWord.count,
-                          stats.total || 0
-                        )}
-                        fadeOutMs={160}
-                        fadeInMs={240}
-                      />{' '}
-                      match
-                    </span>
-                  </div>
-                  {/* HEX token */}
-                  <button
-                    type="button"
-                    onClick={handleCopyTopHex}
-                    title="Copy HEX"
-                    className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
-                  >
-                    <span
-                      className="inline-block w-3 h-3 rounded-full"
-                      style={{
-                        backgroundColor:
-                          getEmotionColor(stats.yourWord.word) ||
-                          '#6DCFF6',
-                      }}
-                      aria-hidden
-                    />
-                    <span
-                      className="inline-block w-[8ch] text-left leading-none"
-                      aria-live="polite"
-                    >
-                      {topHexCopied ? (
-                        'COPIED'
-                      ) : (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center justify-center sm:justify-start gap-3">
+                      <span className="text-sm text-gray-800">
+                        You feel{' '}
                         <AnimatedValue
-                          value={(
-                            getEmotionColor(stats.yourWord.word) ||
-                            '#6DCFF6'
-                          ).toUpperCase()}
-                          fadeOutMs={120}
-                          fadeInMs={200}
+                          className="font-bold text-gray-900"
+                          value={stats.yourWord.word}
+                          fadeOutMs={160}
+                          fadeInMs={240}
                         />
-                      )}
-                    </span>
-                  </button>
+                      </span>
+                      <span className="h-4 w-px bg-white/50" />
+                      <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
+                        <AnimatedValue
+                          value={formatPercent(
+                            stats.yourWord.count,
+                            stats.total || 0
+                          )}
+                          fadeOutMs={160}
+                          fadeInMs={240}
+                        />{' '}
+                        match
+                      </span>
+                    </div>
+                    {/* HEX token */}
+                    <div className="flex justify-center sm:justify-end">
+                      <button
+                        type="button"
+                        onClick={handleCopyTopHex}
+                        title="Copy HEX"
+                        className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
+                      >
+                        <span
+                          className="inline-block w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor:
+                              getEmotionColor(stats.yourWord.word) || '#6DCFF6',
+                          }}
+                          aria-hidden
+                        />
+                        <span
+                          className="inline-block w-[8ch] text-left leading-none"
+                          aria-live="polite"
+                        >
+                          {topHexCopied ? (
+                            'COPIED'
+                          ) : (
+                            <AnimatedValue
+                              value={(
+                                getEmotionColor(stats.yourWord.word) ||
+                                '#6DCFF6'
+                              ).toUpperCase()}
+                              fadeOutMs={120}
+                              fadeInMs={200}
+                            />
+                          )}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 text-sm text-gray-700 text-center">
