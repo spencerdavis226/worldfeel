@@ -266,8 +266,6 @@ export function ApiDocsPage() {
                   </div>
                 </div>
 
-
-
                 {/* Search Emotions Endpoint */}
                 <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg p-4 sm:p-6">
                   <div className="flex items-center gap-3 mb-3">
@@ -320,8 +318,6 @@ export function ApiDocsPage() {
                     </div>
                   </div>
                 </div>
-
-
               </div>
             </div>
 
