@@ -133,16 +133,16 @@ export function ResultsPage() {
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
-        {/* Main content - moved up significantly */}
+        {/* Main content - Apple-like centered layout */}
         <div
           className={[
-            'w-full max-w-xl mx-auto text-center px-4 sm:px-2 -mt-32 sm:-mt-40',
+            'w-full max-w-xl mx-auto text-center px-4 sm:px-2 apple-center',
             isFirstMount && showContainer ? 'animate-seq-container' : '',
           ].join(' ')}
         >
           {/* Hero section with main emotion */}
           <div
-            className={`mb-10 md:mb-20 lg:mb-28 ${isFirstMount && showContainer ? 'wf-enter wf-hero wf-d0' : ''}`}
+            className={`mb-8 sm:mb-12 md:mb-16 lg:mb-20 ${isFirstMount && showContainer ? 'wf-enter wf-hero wf-d0' : ''}`}
             aria-live="polite"
           >
             <div className="text-center space-y-4 md:space-y-6">
@@ -192,7 +192,7 @@ export function ResultsPage() {
           </div>
 
           {/* Results Panel - grouped glass chips centered as a unit */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Your contribution chip */}
             <div
               className={`${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
@@ -389,8 +389,8 @@ export function ResultsPage() {
           )}
 
           {/* Footer content moved to main area */}
-          <div 
-            className={`mt-8 md:mt-12 space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
+          <div
+            className={`mt-6 sm:mt-8 md:mt-10 space-y-3 sm:space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
           >
             {stats?.colorHex && stats?.top?.word !== 'silent' ? (
               <div className="flex items-center justify-center">
