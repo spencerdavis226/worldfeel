@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900;
+    @apply text-gray-900;
     min-height: 100vh;
     min-height: 100svh;
     min-height: 100dvh;
@@ -45,9 +45,8 @@
 
     /* iOS-specific footer positioning to ensure visibility */
     .ios-footer-fix {
-      /* Ensure footer is always visible on iOS */
-      position: relative;
-      z-index: 10;
+      /* Ensure footer is always visible on iOS without creating stacking context issues */
+      /* Removed position: relative and z-index to prevent layering conflicts */
     }
 
     /* iOS-specific layout adjustments for better viewport handling */
