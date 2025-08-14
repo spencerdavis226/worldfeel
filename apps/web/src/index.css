@@ -130,17 +130,19 @@
     overflow: visible;
   }
 
-  /* Simple, elegant iPhone positioning */
+  /* Simple iPhone positioning */
   @supports (-webkit-touch-callout: none) {
-    /* Modern iPhones - position content higher and use more width */
+    /* Modern iPhones - position content higher */
     @media screen and (max-aspect-ratio: 9/16) {
-      .max-w-2xl {
-        max-width: 92vw !important;
-      }
-
       .flex.flex-col.justify-center {
         justify-content: flex-start !important;
-        padding-top: calc(8vh + env(safe-area-inset-top)) !important;
+        padding-top: calc(6vh + env(safe-area-inset-top)) !important;
+      }
+
+      /* Force chips to use full width */
+      .bg-white\/20.backdrop-blur-sm {
+        width: 100% !important;
+        max-width: 100% !important;
       }
     }
   }

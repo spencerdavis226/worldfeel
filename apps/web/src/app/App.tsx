@@ -4,16 +4,22 @@ import { Navigation } from '@components/Navigation';
 
 // Lazy load pages for better performance
 const HomePage = lazy(() =>
-  import('@features/HomePage').then((m) => ({ default: m.HomePage }))
+  import('@features/HomePage').then((module) => ({ default: module.HomePage }))
 );
 const ResultsPage = lazy(() =>
-  import('@features/ResultsPage').then((m) => ({ default: m.ResultsPage }))
+  import('@features/ResultsPage').then((module) => ({
+    default: module.ResultsPage,
+  }))
 );
 const AboutPage = lazy(() =>
-  import('@features/AboutPage').then((m) => ({ default: m.AboutPage }))
+  import('@features/AboutPage').then((module) => ({
+    default: module.AboutPage,
+  }))
 );
 const ApiDocsPage = lazy(() =>
-  import('@features/ApiDocsPage').then((m) => ({ default: m.ApiDocsPage }))
+  import('@features/ApiDocsPage').then((module) => ({
+    default: module.ApiDocsPage,
+  }))
 );
 
 export function App() {
