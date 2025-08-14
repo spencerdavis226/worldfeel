@@ -46,6 +46,10 @@
       padding-right: env(safe-area-inset-right);
       /* Ensure background remains transparent */
       background: transparent;
+      /* iOS 17+ specific fixes */
+      min-height: -webkit-fill-available;
+      /* Prevent white background flash */
+      background-color: transparent !important;
     }
 
     /* Fix for iOS Safari dynamic viewport issues */
@@ -111,6 +115,58 @@
     /* Ensure proper flex behavior on iOS */
     display: flex;
     flex-direction: column;
+  }
+
+  /* iOS 17+ specific viewport fixes */
+  @supports (-webkit-touch-callout: none) and (min-height: 100dvh) {
+    html {
+      /* Force transparent background for iOS 17+ */
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    body {
+      /* iOS 17+ dynamic viewport handling */
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+      /* Ensure no white background */
+      background: transparent !important;
+      background-color: transparent !important;
+      /* Prevent any default browser background */
+      -webkit-background-clip: content-box;
+      background-clip: content-box;
+    }
+  }
+
+  /* iOS 18+ specific fixes for enhanced PWA support */
+  @supports (-webkit-touch-callout: none) and (min-height: 100dvh) and
+    (display: standalone) {
+    html {
+      /* iOS 18 PWA background handling */
+      background: transparent !important;
+      background-color: transparent !important;
+      /* Prevent any system background from showing */
+      -webkit-background-clip: padding-box;
+      background-clip: padding-box;
+    }
+
+    body {
+      /* iOS 18 enhanced viewport handling */
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+      /* Force transparent background for iOS 18 PWA mode */
+      background: transparent !important;
+      background-color: transparent !important;
+      /* Enhanced background clip for iOS 18 */
+      -webkit-background-clip: content-box;
+      background-clip: content-box;
+      /* iOS 18 specific safe area handling */
+      padding-bottom: max(env(safe-area-inset-bottom), 0px);
+    }
   }
 
   /* Apple-like centered content utility */
