@@ -152,9 +152,7 @@ export function AboutPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-800 font-medium">Spencer Davis</p>
-                    <p className="text-gray-600 text-sm">
-                      Design, code, and color system
-                    </p>
+                    <p className="text-gray-600 text-sm">Design and code</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <a
@@ -237,9 +235,7 @@ export function AboutPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-gray-800 font-medium">Spencer Davis</p>
-                      <p className="text-gray-600 text-sm">
-                        Design, code, and color system
-                      </p>
+                      <p className="text-gray-600 text-sm">Design and code</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-3">
