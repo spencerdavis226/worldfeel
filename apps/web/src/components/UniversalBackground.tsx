@@ -39,59 +39,152 @@ export function UniversalBackground({
   };
 
   // Smooth crossfade between background color changes
-  const [displayCenterHex, setDisplayCenterHex] =
+  const [currentCenterHex, setCurrentCenterHex] =
     useState<string>(centerColorHex);
-  const [displayEdgeHex, setDisplayEdgeHex] = useState<string | undefined>(
+  const [currentEdgeHex, setCurrentEdgeHex] = useState<string | undefined>(
     edgeColorHex
   );
-  const [fadeCenterHex, setFadeCenterHex] = useState<string | null>(null);
-  const [fadeEdgeHex, setFadeEdgeHex] = useState<string | null>(null);
-  const [fadeIn, setFadeIn] = useState(false);
+  const [nextCenterHex, setNextCenterHex] = useState<string | null>(null);
+  const [nextEdgeHex, setNextEdgeHex] = useState<string | null>(null);
+  const [crossfadeProgress, setCrossfadeProgress] = useState<number>(0);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  const targetCenterHexRef = useRef<string>(centerColorHex);
-  const targetEdgeHexRef = useRef<string | undefined>(edgeColorHex);
+  const transitionRef = useRef<number | null>(null);
 
   // Mouse parallax effect for subtle interactivity
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const backgroundRef = useRef<HTMLDivElement>(null);
 
-  // Handle center color transitions
+  // Handle center color transitions with smooth crossfade
   useEffect(() => {
-    if (centerColorHex === displayCenterHex) return;
-    targetCenterHexRef.current = centerColorHex;
-    setFadeCenterHex(centerColorHex);
-    // next frame to ensure transition kicks in
-    const id = requestAnimationFrame(() => setFadeIn(true));
-    return () => cancelAnimationFrame(id);
-  }, [centerColorHex, displayCenterHex]);
+    if (centerColorHex === currentCenterHex && edgeColorHex === currentEdgeHex)
+      return;
 
-  // Handle edge color transitions
-  useEffect(() => {
-    if (edgeColorHex === displayEdgeHex) return;
-    targetEdgeHexRef.current = edgeColorHex;
-    setFadeEdgeHex(edgeColorHex || null);
-    // next frame to ensure transition kicks in
-    const id = requestAnimationFrame(() => setFadeIn(true));
-    return () => cancelAnimationFrame(id);
-  }, [edgeColorHex, displayEdgeHex]);
+    // If we're already transitioning, queue the next change
+    if (isTransitioning) {
+      // Cancel current transition and start new one
+      if (transitionRef.current) {
+        cancelAnimationFrame(transitionRef.current);
+      }
+      setCrossfadeProgress(0);
+    }
+
+    setNextCenterHex(centerColorHex);
+    setNextEdgeHex(edgeColorHex || null);
+    setIsTransitioning(true);
+
+    const startTime = performance.now();
+    const duration = transitionDurationMs;
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Use ease-in-out curve for smoother transition
+      const easedProgress =
+        progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      setCrossfadeProgress(easedProgress);
+
+      if (progress < 1) {
+        transitionRef.current = requestAnimationFrame(animate);
+      } else {
+        // Transition complete
+        setCurrentCenterHex(centerColorHex);
+        setCurrentEdgeHex(edgeColorHex);
+        setNextCenterHex(null);
+        setNextEdgeHex(null);
+        setCrossfadeProgress(0);
+        setIsTransitioning(false);
+        transitionRef.current = null;
+      }
+    };
+
+    transitionRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (transitionRef.current) {
+        cancelAnimationFrame(transitionRef.current);
+        transitionRef.current = null;
+      }
+    };
+  }, [
+    centerColorHex,
+    edgeColorHex,
+    currentCenterHex,
+    currentEdgeHex,
+    isTransitioning,
+    transitionDurationMs,
+  ]);
 
   // Convert colors to RGB
-  const centerRgb = useMemo(
-    () => hexToRgb(displayCenterHex),
-    [displayCenterHex]
+  const currentCenterRgb = useMemo(
+    () => hexToRgb(currentCenterHex),
+    [currentCenterHex]
   );
-  const edgeRgb = useMemo(
-    () => (displayEdgeHex ? hexToRgb(displayEdgeHex) : null),
-    [displayEdgeHex]
+  const currentEdgeRgb = useMemo(
+    () => (currentEdgeHex ? hexToRgb(currentEdgeHex) : null),
+    [currentEdgeHex]
   );
-  const fadeCenterRgb = useMemo(
-    () => hexToRgb(fadeCenterHex || displayCenterHex),
-    [fadeCenterHex, displayCenterHex]
+  const nextCenterRgb = useMemo(
+    () => (nextCenterHex ? hexToRgb(nextCenterHex) : null),
+    [nextCenterHex]
   );
-  const fadeEdgeRgb = useMemo(
-    () => (fadeEdgeHex ? hexToRgb(fadeEdgeHex) : null),
-    [fadeEdgeHex]
+  const nextEdgeRgb = useMemo(
+    () => (nextEdgeHex ? hexToRgb(nextEdgeHex) : null),
+    [nextEdgeHex]
   );
+
+  // Interpolate between current and next colors
+  const interpolateColor = (
+    current: number,
+    next: number | null,
+    progress: number
+  ) => {
+    if (next === null) return current;
+    return current + (next - current) * progress;
+  };
+
+  const displayCenterRgb = {
+    r: interpolateColor(
+      currentCenterRgb.r,
+      nextCenterRgb?.r || null,
+      crossfadeProgress
+    ),
+    g: interpolateColor(
+      currentCenterRgb.g,
+      nextCenterRgb?.g || null,
+      crossfadeProgress
+    ),
+    b: interpolateColor(
+      currentCenterRgb.b,
+      nextCenterRgb?.b || null,
+      crossfadeProgress
+    ),
+  };
+
+  const displayEdgeRgb =
+    currentEdgeRgb && nextEdgeRgb
+      ? {
+          r: interpolateColor(
+            currentEdgeRgb.r,
+            nextEdgeRgb.r,
+            crossfadeProgress
+          ),
+          g: interpolateColor(
+            currentEdgeRgb.g,
+            nextEdgeRgb.g,
+            crossfadeProgress
+          ),
+          b: interpolateColor(
+            currentEdgeRgb.b,
+            nextEdgeRgb.b,
+            crossfadeProgress
+          ),
+        }
+      : currentEdgeRgb;
 
   // Create organic, asymmetric gradient backgrounds with multiple layers
   const createOrganicGradient = (
@@ -188,29 +281,16 @@ export function UniversalBackground({
     `;
   };
 
-  const baseGradient = createOrganicGradient(
-    centerRgb.r,
-    centerRgb.g,
-    centerRgb.b,
-    edgeRgb?.r,
-    edgeRgb?.g,
-    edgeRgb?.b,
+  const currentGradient = createOrganicGradient(
+    displayCenterRgb.r,
+    displayCenterRgb.g,
+    displayCenterRgb.b,
+    displayEdgeRgb?.r,
+    displayEdgeRgb?.g,
+    displayEdgeRgb?.b,
     mousePosition.x,
     mousePosition.y
   );
-
-  const fadeGradient = createOrganicGradient(
-    fadeCenterRgb.r,
-    fadeCenterRgb.g,
-    fadeCenterRgb.b,
-    fadeEdgeRgb?.r,
-    fadeEdgeRgb?.g,
-    fadeEdgeRgb?.b,
-    mousePosition.x,
-    mousePosition.y
-  );
-
-  const transitionStyle = `all ${transitionDurationMs}ms cubic-bezier(0.22, 1, 0.36, 1)`;
 
   // Handle mouse movement for subtle parallax
   useEffect(() => {
@@ -237,17 +317,24 @@ export function UniversalBackground({
     };
   }, []);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (transitionRef.current) {
+        cancelAnimationFrame(transitionRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] relative overflow-hidden">
       {/* Fixed background container - pinned to viewport */}
       <div ref={backgroundRef} className="fixed inset-0 w-full h-full z-0">
-        {/* Base layer (fades out) */}
+        {/* Single background layer with interpolated colors */}
         <div
           className="absolute inset-0 w-full h-full"
           style={{
-            opacity: fadeCenterHex || fadeEdgeHex ? (fadeIn ? 0 : 1) : 1,
-            transition: transitionStyle,
-            background: baseGradient,
+            background: currentGradient,
             ...(hueCycle
               ? {
                   animation: `wf-hue-rotate ${hueDurationMs}ms linear infinite`,
@@ -261,40 +348,6 @@ export function UniversalBackground({
                 }),
           }}
         />
-
-        {/* Fade-in layer (fades in to new color) */}
-        {(fadeCenterHex || fadeEdgeHex) && (
-          <div
-            className="absolute inset-0 w-full h-full"
-            onTransitionEnd={(e) => {
-              if (e.propertyName !== 'opacity') return;
-              if (fadeIn) {
-                // Fade-in reached; swap base to the new colors while overlay is at max opacity
-                setDisplayCenterHex(fadeCenterHex || centerColorHex);
-                setDisplayEdgeHex(fadeEdgeHex || edgeColorHex);
-                // Then start fading overlay out next frame
-                requestAnimationFrame(() => setFadeIn(false));
-              } else {
-                // Fade-out completed; remove overlay to avoid any stacking
-                setFadeCenterHex(null);
-                setFadeEdgeHex(null);
-              }
-            }}
-            style={{
-              opacity: fadeIn ? 1 : 0,
-              transition: transitionStyle,
-              background: fadeGradient,
-              ...(hueCycle
-                ? {
-                    animation: `wf-hue-rotate ${hueDurationMs}ms linear infinite`,
-                    ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
-                    filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
-                    willChange: 'filter',
-                  }
-                : {}),
-            }}
-          />
-        )}
 
         {/* Animated organic shapes layer */}
         <div
