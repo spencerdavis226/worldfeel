@@ -60,16 +60,6 @@
 }
 
 @layer components {
-  /* Navigation Bar - Apple-like frosted glass */
-  .nav-glass {
-    @apply backdrop-blur-xl bg-white/70 border-b border-white/20 shadow-sm;
-    /* Ensure proper rendering on iOS Safari */
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-    /* Support for older browsers */
-    background-color: rgba(255, 255, 255, 0.85);
-  }
-
   /* Navigation link styles for better touch targets */
   .nav-link {
     @apply px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring;
@@ -82,11 +72,25 @@
   }
 
   .nav-link-active {
-    @apply text-gray-900 bg-white/50 shadow-sm;
+    @apply text-gray-900 font-semibold;
+    position: relative;
+  }
+
+  .nav-link-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: currentColor;
+    border-radius: 50%;
+    opacity: 0.6;
   }
 
   .nav-link-inactive {
-    @apply text-gray-600 hover:text-gray-800 hover:bg-white/30;
+    @apply text-gray-600 hover:text-gray-800 hover:font-medium;
   }
 
   /* Glass Panel - Used in HomePage dropdown and other components */
@@ -111,6 +115,16 @@
       transparent
     );
     border-radius: 20px 20px 0 0;
+  }
+
+  /* Navigation bar variant - no top line, full width */
+  .glass-panel.nav-bar {
+    border-radius: 0;
+    box-shadow: 0 2px 12px 0 rgba(31, 38, 135, 0.15);
+  }
+
+  .glass-panel.nav-bar::before {
+    display: none;
   }
 
   /* Compact frosted token chip - Used in StatsPanel */
