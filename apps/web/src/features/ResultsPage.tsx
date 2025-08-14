@@ -3,10 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { GlassyBackground } from '@components/GlassyBackground';
 import { AnimatedValue } from '@components/AnimatedValue';
 import { getDeviceId } from '@lib/deviceId';
-import { StatsPanel } from '@components/StatsPanel';
 import { useStats } from '@hooks/useStats';
 import { useBackgroundColor } from '@hooks/useEmotionBackground';
 import { usePageTitle } from '@hooks/usePageTitle';
+import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
+import {
+  getReadableTextColorSync,
+  getTextShadowForContrastSync,
+} from '@lib/colorContrastLazy';
+import { timeFunction } from '@lib/performance';
+
+function formatPercent(count: number, total: number): string {
+  if (!Number.isFinite(total) || total <= 0) return '0%';
+  if (!Number.isFinite(count) || count <= 0) return '0%';
+  const pct = (count / total) * 100;
+  if (pct > 0 && pct < 1) return '<1%';
+  return `${Math.round(pct)}%`;
+}
 
 export function ResultsPage() {
   // Set page title
@@ -115,26 +128,244 @@ export function ResultsPage() {
     <GlassyBackground colorHex={stats?.colorHex}>
       <div
         className={[
-          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4 pt-20 sm:pt-24 ios-layout-fix',
+          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center p-4 pt-20 sm:pt-24 ios-layout-fix',
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
-        {/* Top spacer */}
-        <div></div>
+        {/* Top spacer to push content to center */}
+        <div className="flex-1"></div>
 
-        {/* Main content - centered */}
+        {/* Main content - centered vertically */}
         <div
           className={[
             'w-full max-w-xl mx-auto text-center px-4 sm:px-2',
             isFirstMount && showContainer ? 'animate-seq-container' : '',
           ].join(' ')}
         >
-          <StatsPanel
-            stats={stats}
-            loading={loading}
-            error={error}
-            isFirstMount={isFirstMount && showContainer}
-          />
+          {/* Hero section with main emotion */}
+          <div
+            className={`mb-10 md:mb-20 lg:mb-28 ${isFirstMount && showContainer ? 'wf-enter wf-hero wf-d0' : ''}`}
+            aria-live="polite"
+          >
+            <div className="text-center space-y-4 md:space-y-6">
+              <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
+                The world feels
+              </h1>
+              <div
+                className="relative mx-auto inline-block"
+                style={{ minHeight: '1em' }}
+              >
+                <AnimatedValue
+                  className="block font-semibold tracking-[-0.015em] leading-none text-[clamp(3rem,8vw,7rem)]"
+                  value={stats?.top?.word || '\u00A0'}
+                  fadeOutMs={200}
+                  fadeInMs={300}
+                  animateInitial={false}
+                  variant="fade"
+                  render={(val) => (
+                    <span
+                      style={(() => {
+                        const originalColor =
+                          getEmotionColor(stats?.top?.word || '') || '#6DCFF6';
+                        return timeFunction(
+                          'color-contrast-calculation',
+                          () => ({
+                            color: getReadableTextColorSync(originalColor, {
+                              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                              isLargeText: true,
+                              preserveVibrancy: true,
+                              maxDarkening: 0.5,
+                            }),
+                            textShadow: getTextShadowForContrastSync(
+                              originalColor,
+                              'subtle'
+                            ),
+                          }),
+                          10 // Log if takes longer than 10ms
+                        );
+                      })()}
+                    >
+                      {val as string}
+                    </span>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Glass chips group - centered as a unit */}
+          <div className="space-y-4">
+            {/* Your contribution chip */}
+            <div
+              className={`${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
+            >
+              <div className="w-full flex justify-center px-0">
+                {stats?.yourWord ? (
+                  <div className="w-full">
+                    <div
+                      className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-5 md:px-7 py-3 md:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 min-w-0"
+                      aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
+                    >
+                      <div className="w-full flex items-center justify-center sm:justify-between gap-2 sm:gap-3 min-w-0">
+                        {/* Left cluster: label + divider + percent (single line) */}
+                        <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 min-w-0 sm:flex-1">
+                          <span className="text-sm text-gray-800 truncate min-w-0 text-center sm:text-left">
+                            You feel{' '}
+                            <AnimatedValue
+                              className="font-bold text-gray-900"
+                              value={stats.yourWord.word}
+                              fadeOutMs={160}
+                              fadeInMs={240}
+                            />
+                          </span>
+                          <span className="h-4 w-px bg-white/50" />
+                          <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
+                            <AnimatedValue
+                              value={formatPercent(
+                                stats.yourWord.count,
+                                stats.total || 0
+                              )}
+                              fadeOutMs={160}
+                              fadeInMs={240}
+                            />{' '}
+                            match
+                          </span>
+                        </div>
+                        {/* HEX token on desktop/tablet (right side) */}
+                        <button
+                          type="button"
+                          onClick={handleCopyTopHex}
+                          title="Copy HEX"
+                          className="hidden sm:inline-flex glass-token items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
+                        >
+                          <span
+                            className="inline-block w-2 h-2 rounded-[3px]"
+                            style={{
+                              backgroundColor:
+                                getEmotionColor(stats.yourWord.word) ||
+                                '#6DCFF6',
+                            }}
+                            aria-hidden
+                          />
+                          <span
+                            className="inline-block w-[8ch] text-left leading-none"
+                            aria-live="polite"
+                          >
+                            {topHexCopied ? (
+                              'COPIED'
+                            ) : (
+                              <AnimatedValue
+                                value={(
+                                  getEmotionColor(stats.yourWord.word) ||
+                                  '#6DCFF6'
+                                ).toUpperCase()}
+                                fadeOutMs={120}
+                                fadeInMs={200}
+                              />
+                            )}
+                          </span>
+                        </button>
+                      </div>
+                      {/* HEX token on mobile (second row) */}
+                      <div className="mt-1 sm:hidden w-full flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={handleCopyTopHex}
+                          title="Copy HEX"
+                          className="glass-token inline-flex items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap"
+                        >
+                          <span
+                            className="inline-block w-2 h-2 rounded-[3px]"
+                            style={{
+                              backgroundColor:
+                                getEmotionColor(stats.yourWord.word) ||
+                                '#6DCFF6',
+                            }}
+                            aria-hidden
+                          />
+                          <span
+                            className="inline-block w-[8ch] text-left leading-none"
+                            aria-live="polite"
+                          >
+                            {topHexCopied ? (
+                              'COPIED'
+                            ) : (
+                              <AnimatedValue
+                                value={(
+                                  getEmotionColor(stats.yourWord.word) ||
+                                  '#6DCFF6'
+                                ).toUpperCase()}
+                                fadeOutMs={120}
+                                fadeInMs={200}
+                              />
+                            )}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full sm:w-full md:max-w-md lg:max-w-md bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-4 py-3 text-sm text-gray-700 text-center">
+                    Share one word to see your color today.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Top emotions stats chip */}
+            {stats?.top10 && stats.top10.length > 0 && (
+              <div
+                className={`px-5 py-4 md:px-6 md:py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
+              >
+                <div className="space-y-1.5">
+                  {stats.top10.slice(0, 3).map((item, index) => (
+                    <div
+                      key={`rank-${index}`}
+                      className="flex items-center justify-between py-2 md:py-2.5 px-1"
+                    >
+                      <div className="grid grid-cols-[max-content,0.75rem,1fr] items-center gap-x-3 min-w-0">
+                        <div className="text-[11px] font-medium text-gray-500 tabular-nums text-left">
+                          #{index + 1}
+                        </div>
+                        <AnimatedValue
+                          value={item.word}
+                          animateInitial={false}
+                          fadeOutMs={160}
+                          fadeInMs={260}
+                          render={(word) => (
+                            <div
+                              className="w-3 h-3 rounded-full justify-self-center"
+                              style={{
+                                backgroundColor:
+                                  getEmotionColor(String(word)) || '#6DCFF6',
+                              }}
+                            />
+                          )}
+                        />
+                        <span className="text-[13px] font-medium text-gray-800 truncate">
+                          <AnimatedValue
+                            value={item.word}
+                            animateInitial={false}
+                            fadeOutMs={180}
+                            fadeInMs={280}
+                          />
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-gray-700 tabular-nums w-12 text-right">
+                        <AnimatedValue
+                          value={formatPercent(item.count, stats.total || 0)}
+                          animateInitial={false}
+                          fadeOutMs={160}
+                          fadeInMs={260}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Show message when no entries exist */}
           {!loading && stats?.top?.word === 'silent' && (
             <div className="text-center space-y-4 md:space-y-6">
@@ -160,10 +391,13 @@ export function ResultsPage() {
           )}
         </div>
 
-        {/* Footer - bottom of viewport with iOS safe area consideration */}
+        {/* Bottom spacer to push footer down */}
+        <div className="flex-1"></div>
+
+        {/* Footer - positioned higher up with generous spacing */}
         <div
           className={[
-            'w-full text-center pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4 ios-footer-fix',
+            'w-full text-center mb-8 px-4 ios-footer-fix',
             isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
           ].join(' ')}
         >

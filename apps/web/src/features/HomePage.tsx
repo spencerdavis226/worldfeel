@@ -330,11 +330,11 @@ export function HomePage() {
 
   return (
     <GlassyBackground colorHex={accentHex} hueCycle={false}>
-      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-between p-4 pt-20 sm:pt-24 ios-layout-fix">
-        {/* Top spacer */}
-        <div></div>
+      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center p-4 pt-20 sm:pt-24 ios-layout-fix">
+        {/* Top spacer to push content to center */}
+        <div className="flex-1"></div>
 
-        {/* Main content - centered (animate only content, keep footer static) */}
+        {/* Main content - centered vertically */}
         <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in">
           {/* Main prompt */}
           <div className="mb-12 md:mb-16">
@@ -533,9 +533,12 @@ export function HomePage() {
           </form>
         </div>
 
-        {/* Footer - bottom of viewport with iOS safe area consideration */}
+        {/* Bottom spacer to push footer down */}
+        <div className="flex-1"></div>
+
+        {/* Footer - positioned higher up with generous spacing */}
         <div
-          className={`w-full text-center pb-[max(1.5rem,env(safe-area-inset-bottom))] px-4 transition-opacity ios-footer-fix ${
+          className={`w-full text-center mb-8 px-4 transition-opacity ios-footer-fix ${
             showSuggestions && suggestions.length > 0
               ? 'duration-150 ease-out'
               : 'duration-500 ease-in'

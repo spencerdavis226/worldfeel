@@ -48,8 +48,6 @@
       /* Ensure footer is always visible on iOS */
       position: relative;
       z-index: 10;
-      /* Add extra padding for iOS safe areas */
-      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
     }
 
     /* iOS-specific layout adjustments for better viewport handling */
@@ -62,6 +60,15 @@
       /* Ensure proper flex behavior on iOS */
       display: flex;
       flex-direction: column;
+      /* Prevent content from being clipped on iOS */
+      overflow: visible;
+    }
+
+    /* Additional iOS Safari viewport handling for flex layouts */
+    .ios-layout-fix > .flex-1 {
+      /* Ensure flex-1 content doesn't get clipped */
+      min-height: 0;
+      flex-shrink: 1;
     }
   }
 
