@@ -6,7 +6,8 @@ A real-time emotion collection app that gathers one-word feelings from around th
 
 - **Daily Emotion Collection**: Submit one word describing how you feel
 - **Real-time Global Stats**: See what the world is feeling right now
-- **Privacy-First Design**: Anonymous submissions with device-based cooldowns
+- **Device-Specific Privacy**: Each device has its own submission cooldown (no cross-device lockouts)
+- **Smart Device Identification**: Advanced fingerprinting ensures reliable device tracking
 - **Auto-Expiring Data**: Submissions automatically expire after 24 hours
 - **Responsive Glass UI**: Modern, Apple-inspired interface with liquid glass effects
 - **Color-Coded Emotions**: Each emotion gets a unique color representation
@@ -47,7 +48,7 @@ Configure the environment variables:
 MONGODB_URI=mongodb://localhost:27017/worldfeel
 DAY_SALT_SECRET=your-32-character-secret-key
 WEB_ORIGIN=http://localhost:3000
-SUBMIT_COOLDOWN_SECONDS=86400  # 24 hours in production
+SUBMIT_COOLDOWN_SECONDS=3600  # 1 hour per device in production
 
 # Web (.env)
 VITE_API_BASE=http://localhost:8080/api
@@ -107,6 +108,7 @@ worldfeel/
 - **Styling**: Tailwind CSS with custom glass-morphism effects
 - **Routing**: React Router for SPA navigation
 - **State Management**: React hooks and context
+- **Device Identification**: Advanced fingerprinting with localStorage backup
 
 ### Backend (Express + MongoDB)
 
@@ -115,6 +117,7 @@ worldfeel/
 - **Security**: Rate limiting, CORS, Helmet
 - **Validation**: Zod schemas for runtime validation
 - **Caching**: In-memory stats caching (5-second TTL)
+- **Device Tracking**: Device-specific cooldown enforcement
 
 ### Shared Package
 

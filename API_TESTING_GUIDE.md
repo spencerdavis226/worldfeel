@@ -63,9 +63,7 @@
   - `deviceId`: Filter stats for a specific device
 - **Example**: `{{baseUrl}}/api/stats?yourWord=joy&deviceId=test-device`
 
-
-
-### 5. Get Color for Word
+### 4. Get Color for Word
 
 - **Method**: GET
 - **URL**: `{{baseUrl}}/api/color?word=joy`
@@ -81,7 +79,7 @@
 }
 ```
 
-### 6. Search Emotions
+### 5. Search Emotions
 
 - **Method**: GET
 - **URL**: `{{baseUrl}}/api/emotions/search?q=joy&limit=10`
@@ -96,8 +94,6 @@
   "data": ["joyful", "content", "shy"]
 }
 ```
-
-
 
 ## 🧪 Testing Checklist
 
@@ -114,12 +110,14 @@
 - [ ] Invalid emotion words return 404
 - [ ] Missing required parameters return 400
 - [ ] Rate limiting works (try rapid requests)
+- [ ] Cooldown errors return 429 with remaining time
 
 ### Edge Cases
 
 - [ ] Empty search query returns empty array
 - [ ] Search with no results returns empty array
 - [ ] Invalid JSON in POST requests returns 400
+- [ ] Device ID persistence across requests
 
 ## 🔧 Testing with cURL
 
@@ -137,8 +135,6 @@ curl https://api.worldfeel.org/api/color?word=joy
 
 # Search emotions
 curl "https://api.worldfeel.org/api/emotions/search?q=joy&limit=3"
-
-
 ```
 
 ## 📊 Rate Limits

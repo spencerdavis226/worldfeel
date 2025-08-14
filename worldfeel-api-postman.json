@@ -80,7 +80,6 @@
       },
       "response": []
     },
-
     {
       "name": "Get Color for Word",
       "request": {
@@ -127,7 +126,6 @@
         "description": "Search for emotions by query string"
       },
       "response": []
-    },
-
+    }
   ]
 }

@@ -212,7 +212,8 @@ export function ApiDocsPage() {
 
                   <p className="text-gray-700 text-sm mb-4">
                     Get current statistics about submitted emotions. Supports
-                    optional query parameters for filtering.
+                    optional query parameters for filtering and device-specific
+                    data.
                   </p>
 
                   <div className="space-y-3">
@@ -223,6 +224,13 @@ export function ApiDocsPage() {
                       <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
                         {`yourWord=joy&deviceId=550e8400-e29b-41d4-a716-446655440000`}
                       </div>
+                      <p className="text-gray-600 text-xs mt-2">
+                        <strong>yourWord</strong>: Filter stats for a specific
+                        emotion
+                        <br />
+                        <strong>deviceId</strong>: Get device-specific
+                        statistics
+                      </p>
                     </div>
 
                     <div>
