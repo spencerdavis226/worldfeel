@@ -501,7 +501,18 @@ export function HomePage() {
 
           {/* Footer content moved to main area */}
           <div className="mt-8 md:mt-12">
-            <p className="text-sm text-gray-500 text-center">
+            <p
+              className={`text-sm text-gray-500 text-center transition-opacity ${
+                showSuggestions && suggestions.length > 0
+                  ? 'duration-150 ease-out'
+                  : 'duration-500 ease-in'
+              } ${
+                showSuggestions && suggestions.length > 0
+                  ? 'opacity-0 pointer-events-none'
+                  : 'opacity-100'
+              }`}
+              aria-hidden={showSuggestions && suggestions.length > 0}
+            >
               A global emotional snapshot of today
             </p>
           </div>
