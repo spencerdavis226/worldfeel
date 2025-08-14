@@ -175,8 +175,8 @@ export function ApiDocsPage() {
         </div>
 
         {/* Footer with proper spacing */}
-        <div className="w-full text-center pb-16 sm:pb-20 px-4 pt-4 sm:pt-6">
-          <p className="text-xs text-gray-500">
+        <div className="w-full text-center pb-16 sm:pb-20 px-4 pt-8 sm:pt-12">
+          <p className="text-sm text-gray-500">
             Real-time global emotional data
           </p>
         </div>
