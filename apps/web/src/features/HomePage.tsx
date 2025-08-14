@@ -330,12 +330,9 @@ export function HomePage() {
 
   return (
     <GlassyBackground colorHex={accentHex} hueCycle={false}>
-      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center p-4 pt-20 sm:pt-24 ios-layout-fix">
-        {/* Top spacer to push content to center */}
-        <div className="flex-1"></div>
-
-        {/* Main content - centered vertically */}
-        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in">
+      <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4 ios-layout-fix">
+        {/* Main content - moved up significantly */}
+        <div className="w-full max-w-xl mx-auto text-center px-4 sm:px-2 animate-fade-in -mt-32 sm:-mt-40">
           {/* Main prompt */}
           <div className="mb-12 md:mb-16">
             <h1 className="text-4xl sm:text-4xl md:text-5xl font-medium text-gray-800 leading-tight md:whitespace-nowrap">
@@ -533,12 +530,9 @@ export function HomePage() {
           </form>
         </div>
 
-        {/* Bottom spacer to push footer down */}
-        <div className="flex-1"></div>
-
-        {/* Footer - positioned higher up with generous spacing */}
+        {/* Footer - positioned at bottom with generous spacing */}
         <div
-          className={`w-full text-center mb-8 px-4 transition-opacity ios-footer-fix ${
+          className={`w-full text-center mb-12 px-4 transition-opacity ios-footer-fix absolute bottom-0 left-0 right-0 ${
             showSuggestions && suggestions.length > 0
               ? 'duration-150 ease-out'
               : 'duration-500 ease-in'

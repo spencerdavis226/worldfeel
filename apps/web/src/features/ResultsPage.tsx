@@ -128,17 +128,14 @@ export function ResultsPage() {
     <GlassyBackground colorHex={stats?.colorHex}>
       <div
         className={[
-          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center p-4 pt-20 sm:pt-24 ios-layout-fix',
+          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4 ios-layout-fix',
           showContainer ? '' : 'invisible',
         ].join(' ')}
       >
-        {/* Top spacer to push content to center */}
-        <div className="flex-1"></div>
-
-        {/* Main content - centered vertically */}
+        {/* Main content - moved up significantly */}
         <div
           className={[
-            'w-full max-w-xl mx-auto text-center px-4 sm:px-2',
+            'w-full max-w-xl mx-auto text-center px-4 sm:px-2 -mt-32 sm:-mt-40',
             isFirstMount && showContainer ? 'animate-seq-container' : '',
           ].join(' ')}
         >
@@ -193,7 +190,7 @@ export function ResultsPage() {
             </div>
           </div>
 
-          {/* Glass chips group - centered as a unit */}
+          {/* Results Panel - grouped glass chips centered as a unit */}
           <div className="space-y-4">
             {/* Your contribution chip */}
             <div
@@ -391,13 +388,10 @@ export function ResultsPage() {
           )}
         </div>
 
-        {/* Bottom spacer to push footer down */}
-        <div className="flex-1"></div>
-
-        {/* Footer - positioned higher up with generous spacing */}
+        {/* Footer - positioned at bottom with generous spacing */}
         <div
           className={[
-            'w-full text-center mb-8 px-4 ios-footer-fix',
+            'w-full text-center mb-12 px-4 ios-footer-fix absolute bottom-0 left-0 right-0',
             isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
           ].join(' ')}
         >
