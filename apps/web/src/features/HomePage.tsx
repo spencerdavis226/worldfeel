@@ -498,24 +498,13 @@ export function HomePage() {
               </div>
             )}
           </form>
-        </div>
 
-        {/* Footer - positioned at bottom with generous spacing */}
-        <div
-          className={`w-full text-center mb-16 sm:mb-24 md:mb-32 px-4 transition-opacity ios-footer-fix absolute bottom-0 left-0 right-0 ${
-            showSuggestions && suggestions.length > 0
-              ? 'duration-150 ease-out'
-              : 'duration-500 ease-in'
-          } ${
-            showSuggestions && suggestions.length > 0
-              ? 'opacity-0 pointer-events-none'
-              : 'opacity-100'
-          }`}
-          aria-hidden={showSuggestions && suggestions.length > 0}
-        >
-          <p className="text-sm text-gray-500">
-            A global emotional snapshot of today
-          </p>
+          {/* Footer content moved to main area */}
+          <div className="mt-8 md:mt-12">
+            <p className="text-sm text-gray-500 text-center">
+              A global emotional snapshot of today
+            </p>
+          </div>
         </div>
       </div>
     </UniversalBackground>

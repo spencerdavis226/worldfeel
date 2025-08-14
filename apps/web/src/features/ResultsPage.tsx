@@ -387,65 +387,60 @@ export function ResultsPage() {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Footer - positioned at bottom with generous spacing */}
-        <div
-          className={[
-            'w-full text-center mb-16 sm:mb-24 md:mb-32 px-4 ios-footer-fix absolute bottom-0 left-0 right-0',
-            isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : '',
-          ].join(' ')}
-        >
-          {stats?.colorHex && stats?.top?.word !== 'silent' ? (
-            <div className="flex items-center justify-center mb-4">
-              <button
-                type="button"
-                onClick={handleCopyTopHex}
-                title="Copy top color HEX"
-                className="glass-token inline-flex items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:text-gray-800 transition-colors"
-                aria-label={`Top color ${topHexCopied ? 'copied' : (stats.colorHex || '').toUpperCase()}`}
-              >
-                <span
-                  className="inline-block w-2 h-2 rounded-[3px]"
-                  style={{ backgroundColor: stats.colorHex }}
-                  aria-hidden
-                />
-                <span
-                  className="inline-block w-[8ch] text-left leading-none"
-                  aria-live="polite"
+          {/* Footer content moved to main area */}
+          <div className="mt-8 md:mt-12 space-y-4">
+            {stats?.colorHex && stats?.top?.word !== 'silent' ? (
+              <div className="flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={handleCopyTopHex}
+                  title="Copy top color HEX"
+                  className="glass-token inline-flex items-center h-7 px-2 gap-1.5 text-[10px] font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:text-gray-800 transition-colors"
+                  aria-label={`Top color ${topHexCopied ? 'copied' : (stats.colorHex || '').toUpperCase()}`}
                 >
-                  {topHexCopied ? (
-                    'COPIED'
-                  ) : (
-                    <AnimatedValue
-                      value={(stats.colorHex || '').toUpperCase()}
-                      fadeOutMs={140}
-                      fadeInMs={220}
-                    />
-                  )}
-                </span>
-              </button>
-            </div>
-          ) : null}
-          <p className="text-sm text-gray-500 mb-2">
-            {stats?.top?.word === 'silent' ? (
-              'No feelings shared yet today'
-            ) : (
-              <>
-                <AnimatedValue
-                  value={(stats?.total ?? 0).toLocaleString()}
-                  fadeOutMs={160}
-                  fadeInMs={240}
-                />{' '}
-                <AnimatedValue
-                  value={(stats?.total || 0) === 1 ? 'feeling' : 'feelings'}
-                  fadeOutMs={120}
-                  fadeInMs={200}
-                />{' '}
-                shared today
-              </>
-            )}
-          </p>
+                  <span
+                    className="inline-block w-2 h-2 rounded-[3px]"
+                    style={{ backgroundColor: stats.colorHex }}
+                    aria-hidden
+                  />
+                  <span
+                    className="inline-block w-[8ch] text-left leading-none"
+                    aria-live="polite"
+                  >
+                    {topHexCopied ? (
+                      'COPIED'
+                    ) : (
+                      <AnimatedValue
+                        value={(stats.colorHex || '').toUpperCase()}
+                        fadeOutMs={140}
+                        fadeInMs={220}
+                      />
+                    )}
+                  </span>
+                </button>
+              </div>
+            ) : null}
+            <p className="text-sm text-gray-500 text-center">
+              {stats?.top?.word === 'silent' ? (
+                'No feelings shared yet today'
+              ) : (
+                <>
+                  <AnimatedValue
+                    value={(stats?.total ?? 0).toLocaleString()}
+                    fadeOutMs={160}
+                    fadeInMs={240}
+                  />{' '}
+                  <AnimatedValue
+                    value={(stats?.total || 0) === 1 ? 'feeling' : 'feelings'}
+                    fadeOutMs={120}
+                    fadeInMs={200}
+                  />{' '}
+                  shared today
+                </>
+              )}
+            </p>
+          </div>
         </div>
       </div>
     </UniversalBackground>
