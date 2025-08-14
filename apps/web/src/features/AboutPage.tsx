@@ -59,7 +59,7 @@ export function AboutPage() {
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-[2px] text-sm">3</span>
                   <span>
-                    Stats update every 10 seconds. One submission per hour,
+                    Stats update every 15 seconds. One submission per hour,
                     entries expire in 24 hours.
                   </span>
                 </li>

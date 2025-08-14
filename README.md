@@ -1,12 +1,18 @@
 # WorldFeel 🌍💭
 
-A real-time MERN application that collects one-word emotions from around the world and visualizes global feelings with a Liquid Glass UI.
+A real-time emotion collection app that gathers one-word feelings from around the world and visualizes global sentiment with a beautiful glass-morphism interface.
 
-## Current Status
+## ✨ Features
 
-Production-ready application with auto-expiring data, privacy-first design, and modern React architecture. Collects daily emotions with 24-hour TTL, provides real-time stats, and features a responsive Liquid Glass interface.
+- **Daily Emotion Collection**: Submit one word describing how you feel
+- **Real-time Global Stats**: See what the world is feeling right now
+- **Privacy-First Design**: Anonymous submissions with device-based cooldowns
+- **Auto-Expiring Data**: Submissions automatically expire after 24 hours
+- **Responsive Glass UI**: Modern, Apple-inspired interface with liquid glass effects
+- **Color-Coded Emotions**: Each emotion gets a unique color representation
+- **Live Updates**: Real-time statistics with 15-second refresh intervals
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -22,27 +28,64 @@ cd worldfeel
 npm install
 ```
 
-### Environment Variables
+### Environment Setup
+
+Create environment files for both server and web apps:
+
+```bash
+# Server environment
+cp apps/server/.env.example apps/server/.env
+
+# Web environment
+cp apps/web/.env.example apps/web/.env
+```
+
+Configure the environment variables:
 
 ```bash
 # Server (.env)
 MONGODB_URI=mongodb://localhost:27017/worldfeel
-DAY_SALT_SECRET=your-32-char-secret
+DAY_SALT_SECRET=your-32-character-secret-key
 WEB_ORIGIN=http://localhost:3000
+SUBMIT_COOLDOWN_SECONDS=86400  # 24 hours in production
 
 # Web (.env)
 VITE_API_BASE=http://localhost:8080/api
 ```
 
-### Run Commands
+### Development
 
 ```bash
-npm run dev          # Start both server and web
-npm run build        # Build all packages
-npm run start        # Start production server
+npm run dev          # Start both server and web apps
 ```
 
-## Scripts
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:8080/api
+
+## 📁 Project Structure
+
+```
+worldfeel/
+├── apps/
+│   ├── server/          # Express API with MongoDB
+│   │   └── src/
+│   │       ├── config/      # Environment and DB config
+│   │       ├── models/      # Mongoose schemas
+│   │       ├── routes/      # API endpoints
+│   │       └── utils/       # Crypto, validation helpers
+│   └── web/             # React frontend with Vite
+│       └── src/
+│           ├── app/         # App entry and routing
+│           ├── components/  # Reusable UI components
+│           ├── features/    # Page components
+│           ├── hooks/       # Custom React hooks
+│           ├── lib/         # Utilities and API clients
+│           └── types/       # TypeScript definitions
+└── packages/
+    └── shared/          # Shared types and validation
+```
+
+## 🛠️ Available Scripts
 
 | Script              | Purpose                       |
 | ------------------- | ----------------------------- |
@@ -55,63 +98,87 @@ npm run start        # Start production server
 | `npm run depcheck`  | Check for unused dependencies |
 | `npm run tsprune`   | Find unused exports           |
 
-## Project Layout
+## 🏗️ Architecture
 
-```
-apps/
-├── server/          # Express API with MongoDB
-│   └── src/
-│       ├── config/      # Environment and DB config
-│       ├── models/      # Mongoose schemas
-│       ├── routes/      # API endpoints
-│       └── utils/       # Crypto, validation helpers
-├── web/             # React frontend with Vite
-│   └── src/
-│       ├── app/         # App entry and routing
-│       ├── components/  # Reusable UI components
-│       ├── features/    # Page components
-│       ├── hooks/       # Custom React hooks
-│       ├── lib/         # Utilities and API clients
-│       ├── types/       # TypeScript definitions
-│       └── styles/      # Global styles
-└── packages/
-    └── shared/      # Shared types and validation
-```
+### Frontend (React + Vite)
 
-## Coding Standards
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development
+- **Styling**: Tailwind CSS with custom glass-morphism effects
+- **Routing**: React Router for SPA navigation
+- **State Management**: React hooks and context
 
-### Imports
+### Backend (Express + MongoDB)
+
+- **Framework**: Express.js with TypeScript
+- **Database**: MongoDB with Mongoose ODM
+- **Security**: Rate limiting, CORS, Helmet
+- **Validation**: Zod schemas for runtime validation
+- **Caching**: In-memory stats caching (5-second TTL)
+
+### Shared Package
+
+- **Types**: Common TypeScript interfaces
+- **Validation**: Zod schemas for API validation
+- **Utilities**: Shared helper functions
+
+## 🔧 Development Guidelines
+
+### Code Organization
 
 - Use path aliases: `@components/`, `@lib/`, `@features/`
-- Group: external → internal aliased → relative → types
+- Group imports: external → internal aliased → relative → types
 - Import types explicitly: `import type { Stats }`
 
-### Types
+### Naming Conventions
 
-- Strict TypeScript with `noUnusedLocals`
+- **Components**: PascalCase (`UniversalBackground`)
+- **Hooks**: camelCase with `use` prefix (`useStats`)
+- **Files**: camelCase for utilities, PascalCase for components
+
+### TypeScript
+
+- Strict TypeScript configuration
 - Zod schemas for runtime validation
 - Shared types in `packages/shared`
 
-### Naming
+## 🚀 Deployment
 
-- Components: PascalCase (`GlassyBackground`)
-- Hooks: camelCase with `use` prefix (`useStats`)
-- Files: camelCase for utilities, PascalCase for components
+### Frontend (Vercel)
 
-## Run All Checks
+- Framework: Vite
+- Build Command: `npm run build`
+- Output Directory: `dist`
 
-```bash
-npm run lint && npm run typecheck && npm run test && npm run depcheck && npm run tsprune
-```
+### Backend (Render/Railway)
 
-## Troubleshooting
+- Build Command: `npm run build`
+- Start Command: `npm start`
+- Environment: Production Node.js
 
-**Port conflicts**: Change ports in `vite.config.ts` and server config
-**MongoDB connection**: Check `MONGODB_URI` and network access
-**Build errors**: Clear `node_modules` and reinstall dependencies
-**Type errors**: Run `npm run typecheck` to see specific issues
-**Lint errors**: Use `npm run lint:fix` for auto-fixable issues
-**Missing dependencies**: Run `npm run depcheck` to identify unused packages
-**Bundle size**: Check `npm run build:check` for size analysis
-**Environment variables**: Ensure all required vars are set in `.env` files
-**Hot reload not working**: Check file watchers and restart dev server
+### Database
+
+- MongoDB Atlas (recommended)
+- Whitelist `0.0.0.0/0` for serverless deployments
+
+## 🔍 API Endpoints
+
+### Public API (Read-only)
+
+- `GET /api/health` - Health check
+- `GET /api/public/emotion-of-the-day` - Get current emotion and color of the day
+- `GET /api/stats` - Get global statistics (supports `yourWord` and `deviceId` query params)
+- `GET /api/color?word=<emotion>` - Get color hex for a specific emotion
+- `GET /api/emotions/search?q=<query>&limit=<number>` - Search emotions with fuzzy matching
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run all checks: `npm run lint && npm run typecheck && npm run test`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
