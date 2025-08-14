@@ -62,7 +62,7 @@
 @layer components {
   /* Navigation link styles for better touch targets */
   .nav-link {
-    @apply px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring;
+    @apply px-3 sm:px-4 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring;
     /* Ensure minimum touch target size for mobile */
     min-height: 44px;
     min-width: 44px;

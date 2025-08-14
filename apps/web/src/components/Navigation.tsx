@@ -18,40 +18,46 @@ export function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <nav className="fixed top-0 left-0 right-0 z-50">
       <div className="glass-panel nav-bar">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3">
+        <div className="flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16">
           {/* Logo/Brand */}
           <Link
             to="/"
             onClick={handleLogoClick}
-            className="text-lg sm:text-xl font-medium text-gray-800 hover:text-gray-900 transition-all duration-200 focus-visible-ring rounded-lg px-3 py-2 -ml-2"
+            className="text-lg sm:text-xl font-medium text-gray-800 hover:text-gray-900 transition-all duration-200 focus-visible-ring"
           >
             worldfeel.org
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-1 sm:space-x-2">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             <Link
               to="/results"
-              className={`nav-link ${
-                isActive('/results') ? 'nav-link-active' : 'nav-link-inactive'
+              className={`text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring ${
+                isActive('/results')
+                  ? 'text-gray-900 font-semibold'
+                  : 'text-gray-600 hover:text-gray-800 hover:font-medium'
               }`}
             >
               Results
             </Link>
             <Link
               to="/about"
-              className={`nav-link ${
-                isActive('/about') ? 'nav-link-active' : 'nav-link-inactive'
+              className={`text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring ${
+                isActive('/about')
+                  ? 'text-gray-900 font-semibold'
+                  : 'text-gray-600 hover:text-gray-800 hover:font-medium'
               }`}
             >
               About
             </Link>
             <Link
               to="/api"
-              className={`nav-link ${
-                isActive('/api') ? 'nav-link-active' : 'nav-link-inactive'
+              className={`text-sm sm:text-base font-medium transition-all duration-200 focus-visible-ring ${
+                isActive('/api')
+                  ? 'text-gray-900 font-semibold'
+                  : 'text-gray-600 hover:text-gray-800 hover:font-medium'
               }`}
             >
               API
