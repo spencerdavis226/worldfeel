@@ -59,7 +59,7 @@ export function ApiDocsPage() {
                       GET
                     </span>
                     <code className="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">
-                      /public/emotion-of-the-day
+                      /api/public/emotion-of-the-day
                     </code>
                   </div>
 
@@ -92,7 +92,7 @@ export function ApiDocsPage() {
                         Example Request
                       </h4>
                       <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
-                        {`curl ${apiBaseUrl}/public/emotion-of-the-day`}
+                        {`curl ${apiBaseUrl}/api/public/emotion-of-the-day`}
                       </div>
                     </div>
 
@@ -109,6 +109,87 @@ export function ApiDocsPage() {
     "count": 23,
     "total": 89,
     "timestamp": "2024-01-15T10:30:00.000Z"
+  }
+}`}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Health Check Endpoint */}
+                <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg p-4 sm:p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                      GET
+                    </span>
+                    <code className="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">
+                      /api/health
+                    </code>
+                  </div>
+
+                  <p className="text-gray-700 text-sm mb-4">
+                    Check if the API server is running and healthy.
+                  </p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Request
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`curl ${apiBaseUrl}/api/health`}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Response
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`{
+  "success": true,
+  "message": "Server is running",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}`}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Get Color Endpoint */}
+                <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg p-4 sm:p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                      GET
+                    </span>
+                    <code className="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">
+                      /api/color?word=joy
+                    </code>
+                  </div>
+
+                  <p className="text-gray-700 text-sm mb-4">
+                    Get the color hex code for a specific emotion word.
+                  </p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Request
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`curl "${apiBaseUrl}/api/color?word=joy"`}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        Example Response
+                      </h4>
+                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
+                        {`{
+  "success": true,
+  "data": {
+    "hex": "#FFEE58"
   }
 }`}
                       </div>
