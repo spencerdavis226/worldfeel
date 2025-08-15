@@ -49,8 +49,9 @@ export function ResultsPage() {
     }
   );
 
-  // Check if database is empty or if we're in an error state (show silent as fallback)
-  const isEmpty = !loading && (stats?.top?.word === 'silent' || error);
+  // Check if we have valid stats data (either real or fallback)
+  // Only show empty state if we have no stats and there's a real error
+  const isEmpty = !loading && !stats && error;
 
   // Copy handlers
   async function handleCopyYourHex(): Promise<void> {
@@ -188,7 +189,7 @@ export function ResultsPage() {
               >
                 <AnimatedValue
                   className="block font-semibold tracking-[-0.015em] leading-none text-[clamp(3rem,8vw,7rem)]"
-                  value={stats?.top?.word || (error ? 'silent' : '\u00A0')}
+                  value={stats?.top?.word || (isEmpty ? 'silent' : '\u00A0')}
                   fadeOutMs={200}
                   fadeInMs={300}
                   animateInitial={false}
@@ -198,7 +199,7 @@ export function ResultsPage() {
                       style={(() => {
                         const originalColor =
                           getEmotionColor(
-                            stats?.top?.word || (error ? 'silent' : '')
+                            stats?.top?.word || (isEmpty ? 'silent' : '')
                           ) || '#6DCFF6';
                         return timeFunction(
                           'color-contrast-calculation',
@@ -226,13 +227,12 @@ export function ResultsPage() {
             </div>
           </div>
 
-          {/* Empty state message */}
+          {/* Empty state message - only show if we have no stats and a real error */}
           {isEmpty && (
             <div className="text-center space-y-4 md:space-y-6 mb-8">
               <p className="text-lg text-gray-600 max-w-md mx-auto">
-                {error
-                  ? 'Unable to connect to the server. Please check your connection and try again.'
-                  : 'No one has shared their feelings yet today. Be the first to break the silence.'}
+                Unable to connect to the server. Please check your connection
+                and try again.
               </p>
               <div className="pt-4">
                 <button
@@ -245,14 +245,14 @@ export function ResultsPage() {
             </div>
           )}
 
-          {/* Results Panel - Only show when not empty */}
-          {!isEmpty && (
+          {/* Results Panel - Show when we have stats (real or fallback) */}
+          {stats && !isEmpty && (
             <div className="space-y-4 max-w-3xl mx-auto w-full">
               {/* Your contribution chip */}
               <div
                 className={`w-full ${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
               >
-                {stats?.yourWord ? (
+                {stats.yourWord ? (
                   <div
                     className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4"
                     aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
@@ -326,7 +326,7 @@ export function ResultsPage() {
               </div>
 
               {/* Top emotions stats chip */}
-              {stats?.top10 && stats.top10.length > 0 && (
+              {stats.top10 && stats.top10.length > 0 && (
                 <div
                   className={`w-full px-6 py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
                 >
@@ -417,25 +417,23 @@ export function ResultsPage() {
             ) : null}
             <p className="text-sm text-gray-500 text-center">
               {isEmpty ? (
-                error ? (
-                  'Connection error'
-                ) : (
-                  'No feelings shared yet today'
-                )
-              ) : (
+                'Connection error'
+              ) : stats ? (
                 <>
                   <AnimatedValue
-                    value={(stats?.total ?? 0).toLocaleString()}
+                    value={(stats.total ?? 0).toLocaleString()}
                     fadeOutMs={160}
                     fadeInMs={240}
                   />{' '}
                   <AnimatedValue
-                    value={(stats?.total || 0) === 1 ? 'feeling' : 'feelings'}
+                    value={(stats.total || 0) === 1 ? 'feeling' : 'feelings'}
                     fadeOutMs={120}
                     fadeInMs={200}
                   />{' '}
                   shared today
                 </>
+              ) : (
+                'Loading...'
               )}
             </p>
           </div>

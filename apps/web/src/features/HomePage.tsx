@@ -125,7 +125,8 @@ export function HomePage() {
           setError(response.error || 'Something went wrong');
         }
       } catch (err) {
-        // Handle errors
+        // Handle errors - but the API client should handle fallback internally
+        // This catch block should only trigger for unexpected errors
         if (err instanceof Error) setError(err.message);
         else setError('Something went wrong. Please try again.');
       } finally {
@@ -166,7 +167,9 @@ export function HomePage() {
         setSuggestions(resp.data);
       }
     } catch {
-      // Ignore errors for suggestions
+      // Ignore errors for suggestions - API client handles fallback
+      // If we reach here, it means there's an unexpected error
+      console.warn('Unexpected error fetching suggestions');
     }
   }, []);
 
