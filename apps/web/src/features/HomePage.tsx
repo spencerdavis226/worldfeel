@@ -107,10 +107,13 @@ export function HomePage() {
       setError('');
 
       try {
-        const response = await apiClient.submitWord({
-          // Submit the selected emotion; keep the visible input in sync when selecting
-          word: word.trim().toLowerCase(),
-        });
+        const response = await apiClient.submitWord(
+          {
+            // Submit the selected emotion; keep the visible input in sync when selecting
+            word: word.trim().toLowerCase(),
+          },
+          { timeout: 8000 } // 8 second timeout for submission
+        );
 
         if (response.success) {
           // Persist your word locally for stats personalization
@@ -160,16 +163,18 @@ export function HomePage() {
     try {
       const resp = await timeAsyncFunction(
         `emotion-search-${q}`,
-        () => apiClient.searchEmotions(q, 12),
+        () => apiClient.searchEmotions(q, 12, { timeout: 1000 }), // 1 second timeout
         50 // Log if takes longer than 50ms
       );
       if (resp.success && Array.isArray(resp.data)) {
         setSuggestions(resp.data);
       }
-    } catch {
+    } catch (error) {
       // Ignore errors for suggestions - API client handles fallback
       // If we reach here, it means there's an unexpected error
-      console.warn('Unexpected error fetching suggestions');
+      console.warn('Unexpected error fetching suggestions:', error);
+      // Clear suggestions on error to prevent hanging state
+      setSuggestions([]);
     }
   }, []);
 

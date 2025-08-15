@@ -45,13 +45,29 @@ export function ResultsPage() {
     { ...(yourWord ? { yourWord } : {}) },
     {
       autoRefresh: true,
-      refreshInterval: 15000,
+      refreshInterval: 30000, // Increased from 15s to 30s
+      requestTimeout: 6000, // 6 second timeout for faster fallback
     }
   );
 
   // Check if we have valid stats data (either real or fallback)
   // Only show empty state if we have no stats and there's a real error
   const isEmpty = !loading && !stats && error;
+
+  // Add a timeout for loading state to prevent indefinite hanging
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      const timeout = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 8000); // 8 second timeout for loading
+
+      return () => clearTimeout(timeout);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [loading]);
 
   // Copy handlers
   async function handleCopyYourHex(): Promise<void> {
@@ -240,6 +256,24 @@ export function ResultsPage() {
                   className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 >
                   Share Your Feelings
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Loading timeout message */}
+          {loadingTimeout && loading && (
+            <div className="text-center space-y-4 md:space-y-6 mb-8">
+              <p className="text-lg text-gray-600 max-w-md mx-auto">
+                Taking longer than usual to connect. The server might be
+                starting up.
+              </p>
+              <div className="pt-4">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                >
+                  Try Again
                 </button>
               </div>
             </div>
