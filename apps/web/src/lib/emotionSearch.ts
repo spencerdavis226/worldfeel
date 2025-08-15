@@ -51,15 +51,10 @@ export function searchEmotions(query: string): string[] {
   const results: string[] = [];
   const queryLower = query.toLowerCase();
 
-  // Search through all terms (canonical + aliases) to find matches
-  const matchingTerms = ALL_SEARCH_TERMS.filter((word) =>
-    word.toLowerCase().includes(queryLower)
-  );
-
-  // Resolve all matches to canonical emotions and deduplicate
+  // Resolve all terms to canonical emotions and deduplicate
   const canonicalMatches = new Set<string>();
 
-  for (const term of matchingTerms) {
+  for (const term of ALL_SEARCH_TERMS) {
     const canonical = resolveEmotionKey(term);
     if (canonical) {
       canonicalMatches.add(canonical);
@@ -116,5 +111,6 @@ export function searchEmotions(query: string): string[] {
     ...substringMatches,
     ...fuzzyWords
   );
+
   return results.slice(0, 12);
 }
