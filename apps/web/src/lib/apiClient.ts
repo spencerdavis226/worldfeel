@@ -24,6 +24,9 @@ let serverStatus = {
   spinUpTime: 70000, // 70 seconds estimated spin-up time
 };
 
+// Temporary testing flag - set to true to force offline mode
+const FORCE_OFFLINE_MODE = false; // Set to true to test offline mode
+
 // Track pending submissions to submit when server comes back online
 let pendingSubmissions: SubmissionRequest[] = [];
 
@@ -117,6 +120,11 @@ class ApiClient {
     endpoint: string,
     options: RequestOptions = {}
   ): Promise<ApiResponse<T>> {
+    // Force offline mode for testing
+    if (FORCE_OFFLINE_MODE) {
+      throw new Error('Forced offline mode for testing');
+    }
+
     const url = `${this.baseUrl}/api${endpoint}`;
 
     const config: RequestOptions = {

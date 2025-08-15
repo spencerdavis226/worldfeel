@@ -1,66 +1,11 @@
 import { Stats, WordCount, YourWordStats } from '@worldfeel/shared';
-import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
+import {
+  getEmotionColor,
+  getSearchTerms,
+} from '@worldfeel/shared/emotion-color-map';
 
-// Common emotion words for realistic mock data
-const EMOTION_WORDS = [
-  'happy',
-  'sad',
-  'excited',
-  'anxious',
-  'peaceful',
-  'stressed',
-  'joyful',
-  'worried',
-  'grateful',
-  'frustrated',
-  'hopeful',
-  'tired',
-  'energized',
-  'calm',
-  'nervous',
-  'content',
-  'angry',
-  'loved',
-  'lonely',
-  'confident',
-  'scared',
-  'proud',
-  'ashamed',
-  'curious',
-  'bored',
-  'inspired',
-  'overwhelmed',
-  'relaxed',
-  'tense',
-  'optimistic',
-  'pessimistic',
-  'motivated',
-  'defeated',
-  'accomplished',
-  'embarrassed',
-  'relieved',
-  'disappointed',
-  'surprised',
-  'confused',
-  'focused',
-  'distracted',
-  'creative',
-  'stuck',
-  'free',
-  'trapped',
-  'powerful',
-  'helpless',
-  'strong',
-  'weak',
-  'brave',
-  'cowardly',
-  'kind',
-  'mean',
-  'generous',
-  'selfish',
-  'patient',
-  'impatient',
-];
+// Get all available emotion words from the emotion system
+const EMOTION_WORDS = getSearchTerms();
 
 // Generate a random emotion word
 function getRandomEmotion(): string {
@@ -158,17 +103,17 @@ export function generateMockStats(yourWord?: string): Stats {
   };
 }
 
-// Generate mock emotion search results
+// Generate mock emotion search results using the full emotion system
 export function generateMockEmotions(query: string): string[] {
   const results: string[] = [];
   const queryLower = query.toLowerCase();
 
-  // Add exact matches first
+  // Add exact matches first (canonical emotions)
   const exactMatches = EMOTION_WORDS.filter((word) =>
     word.toLowerCase().includes(queryLower)
   );
 
-  // Add partial matches
+  // Add partial matches (aliases and variants)
   const partialMatches = EMOTION_WORDS.filter(
     (word) =>
       word.toLowerCase().startsWith(queryLower) && !exactMatches.includes(word)
