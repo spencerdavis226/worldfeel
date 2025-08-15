@@ -39,16 +39,12 @@ export function useStats(
 
       if (mountedRef.current && response.success && response.data) {
         setStats(response.data);
-        // Clear error if we successfully got data (even if it's fallback data)
         setError(null);
       } else if (mountedRef.current && !response.success) {
         setError(response.error || 'Failed to fetch stats');
       }
     } catch (err) {
       if (mountedRef.current) {
-        // Only set error if we're not using fallback data
-        // The API client will handle fallback internally, so if we reach here,
-        // it means there's a real error that couldn't be handled by fallback
         setError(err instanceof Error ? err.message : 'Failed to fetch stats');
       }
     } finally {
@@ -88,7 +84,7 @@ export function useStats(
 
   // Cleanup on unmount
   useEffect(() => {
-    mountedRef.current = true; // Ensure it's set to true on mount
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       if (intervalRef.current) {

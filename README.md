@@ -172,7 +172,6 @@ worldfeel/
 - `GET /api/public/emotion-of-the-day` - Get current emotion and color of the day
 - `GET /api/stats` - Get global statistics (supports `yourWord` and `deviceId` query params)
 - `GET /api/color?word=<emotion>` - Get color hex for a specific emotion
-- `GET /api/emotions/search?q=<query>&limit=<number>` - Search emotions with fuzzy matching
 
 ## 🤝 Contributing
 

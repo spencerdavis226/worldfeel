@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { UniversalBackground } from '@components/UniversalBackground';
 
 import { apiClient } from '@lib/apiClient';
-import { lettersOnly } from '@worldfeel/shared';
 import { navigateWithViewTransition } from '@lib/viewTransitions';
 import {
   resolveEmotionKey,
@@ -85,8 +84,8 @@ export function HomePage() {
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      // Allow only letters and limit length, or allow empty string for backspacing
-      if ((newValue === '' || lettersOnly(newValue)) && newValue.length <= 20) {
+      // Allow any input for search, limit length
+      if (newValue.length <= 20) {
         setWord(newValue);
         if (error) setError(''); // Clear error when user types
         setShowSuggestions(true);

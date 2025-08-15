@@ -7,7 +7,8 @@ import type {
   ColorResult,
 } from '@worldfeel/shared';
 import { getApiBaseUrl } from '@lib/env.js';
-import { generateMockStats, generateMockEmotions } from './mockData.js';
+import { generateMockStats } from './mockData.js';
+import { searchEmotions } from './emotionSearch.js';
 
 // Type for fetch request options
 type RequestOptions = {
@@ -164,11 +165,11 @@ class ApiClient {
   }
 
   async searchEmotions(query: string): Promise<ApiResponse<string[]>> {
-    // Always use mock data - no server needed
-    const mockResults = generateMockEmotions(query);
+    // Use client-side search - no server needed
+    const results = searchEmotions(query);
     return {
       success: true,
-      data: mockResults,
+      data: results,
     };
   }
 
@@ -195,15 +196,6 @@ class ApiClient {
         error: 'Server unavailable',
       };
     }
-  }
-
-  // Utility methods
-  getPendingSubmissionsCount(): number {
-    return pendingSubmissions.length;
-  }
-
-  clearCachedMockData(): void {
-    cachedMockStats = null;
   }
 }
 

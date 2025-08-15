@@ -13,10 +13,6 @@ const submissionSchema = new Schema<SubmissionDocument>(
       lowercase: true,
       trim: true,
       maxlength: 20,
-      validate: {
-        validator: (v: string) => /^[\p{L}]{1,20}$/u.test(v),
-        message: 'Word must contain only letters and be 1-20 characters long',
-      },
     },
     ipHash: {
       type: String,

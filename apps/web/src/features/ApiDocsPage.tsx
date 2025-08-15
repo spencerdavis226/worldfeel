@@ -273,59 +273,6 @@ export function ApiDocsPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Search Emotions Endpoint */}
-                <div className="backdrop-blur-lg bg-white/[0.28] border border-white/40 rounded-2xl shadow-lg p-4 sm:p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
-                      GET
-                    </span>
-                    <code className="text-sm font-mono text-gray-800 bg-gray-100 px-2 py-1 rounded">
-                      /api/emotions/search?q=joy&limit=10
-                    </code>
-                  </div>
-
-                  <p className="text-gray-700 text-sm mb-4">
-                    Search for emotions by query string. Supports fuzzy matching
-                    and returns up to 100 results.
-                  </p>
-
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                        Query Parameters
-                      </h4>
-                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
-                        {`q=joy&limit=10`}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                        Example Request
-                      </h4>
-                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
-                        {`curl "${apiBaseUrl}/api/emotions/search?q=joy&limit=3"`}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                        Example Response
-                      </h4>
-                      <div className="backdrop-blur-lg bg-gray-900/[0.9] border border-gray-700/40 rounded-lg p-4 font-mono text-xs text-gray-100 overflow-x-auto">
-                        {`{
-  "success": true,
-  "data": [
-    "joyful",
-    "content",
-    "shy"
-  ]
-}`}
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 

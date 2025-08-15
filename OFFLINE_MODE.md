@@ -90,8 +90,8 @@ When in offline mode, the browser console shows helpful debugging information (o
 // Generates realistic, randomized stats
 const stats = generateMockStats('happy');
 
-// Provides emotion search results
-const suggestions = generateMockEmotions('hap');
+// Provides emotion search results (client-side, always available)
+const suggestions = searchEmotions('hap');
 ```
 
 #### Enhanced API Client with Submission Queuing

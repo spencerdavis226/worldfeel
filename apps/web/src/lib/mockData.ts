@@ -17,35 +17,7 @@ function getRandomCount(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Generate a random color hex
-function getRandomColorHex(): string {
-  const colors = [
-    '#FF6B6B',
-    '#4ECDC4',
-    '#45B7D1',
-    '#96CEB4',
-    '#FFEAA7',
-    '#DDA0DD',
-    '#98D8C8',
-    '#F7DC6F',
-    '#BB8FCE',
-    '#85C1E9',
-    '#F8C471',
-    '#82E0AA',
-    '#F1948A',
-    '#85C1E9',
-    '#D7BDE2',
-    '#FAD7A0',
-    '#A9DFBF',
-    '#F5B7B1',
-    '#AED6F1',
-    '#F9E79F',
-    '#ABEBC6',
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-// Generate mock stats with randomization
+// Generate mock stats for results page fallback
 export function generateMockStats(yourWord?: string): Stats {
   const total = getRandomCount(50, 500);
   const topWord = getRandomEmotion();
@@ -85,11 +57,11 @@ export function generateMockStats(yourWord?: string): Stats {
 
   // Generate color palette
   const topPalette = [
-    getRandomColorHex(),
-    getRandomColorHex(),
-    getRandomColorHex(),
-    getRandomColorHex(),
-    getRandomColorHex(),
+    getEmotionColor(getRandomEmotion()) || '#6DCFF6',
+    getEmotionColor(getRandomEmotion()) || '#4ECDC4',
+    getEmotionColor(getRandomEmotion()) || '#45B7D1',
+    getEmotionColor(getRandomEmotion()) || '#96CEB4',
+    getEmotionColor(getRandomEmotion()) || '#FFEAA7',
   ];
 
   return {
@@ -98,28 +70,7 @@ export function generateMockStats(yourWord?: string): Stats {
     top5: top10.slice(0, 5),
     top10,
     yourWord: yourWordStats,
-    colorHex: getEmotionColor(top10[0]?.word) || getRandomColorHex(),
+    colorHex: getEmotionColor(top10[0]?.word) || '#6DCFF6',
     topPalette,
   };
-}
-
-// Generate mock emotion search results using the full emotion system
-export function generateMockEmotions(query: string): string[] {
-  const results: string[] = [];
-  const queryLower = query.toLowerCase();
-
-  // Add exact matches first (canonical emotions)
-  const exactMatches = EMOTION_WORDS.filter((word) =>
-    word.toLowerCase().includes(queryLower)
-  );
-
-  // Add partial matches (aliases and variants)
-  const partialMatches = EMOTION_WORDS.filter(
-    (word) =>
-      word.toLowerCase().startsWith(queryLower) && !exactMatches.includes(word)
-  );
-
-  // Combine and limit results
-  results.push(...exactMatches, ...partialMatches);
-  return results.slice(0, 12);
 }

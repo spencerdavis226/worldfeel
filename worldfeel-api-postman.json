@@ -100,32 +100,6 @@
         "description": "Get the color hex code for a specific emotion word"
       },
       "response": []
-    },
-    {
-      "name": "Search Emotions",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/emotions/search?q=joy&limit=10",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "emotions", "search"],
-          "query": [
-            {
-              "key": "q",
-              "value": "joy",
-              "description": "Search query for emotions"
-            },
-            {
-              "key": "limit",
-              "value": "10",
-              "description": "Maximum number of results (1-100)"
-            }
-          ]
-        },
-        "description": "Search for emotions by query string"
-      },
-      "response": []
     }
   ]
 }

@@ -2,7 +2,6 @@ import { Router, Request, Response } from 'express';
 import { submissionRequestSchema } from '@worldfeel/shared';
 import { Submission } from '../models/Submission.js';
 import { hashIp, getClientIp } from '../utils/crypto.js';
-import { containsProfanity } from '../utils/profanity.js';
 import { getStats, invalidateStatsCache } from './stats.js';
 import { env } from '../config/env.js';
 
@@ -30,16 +29,6 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
 
     const { word } = validationResult.data;
 
-    // Check for profanity
-    if (containsProfanity(word)) {
-      res.status(400).json({
-        success: false,
-        error: 'Inappropriate content',
-        message: 'Please choose a different word',
-      });
-      return;
-    }
-
     const clientIp = getClientIp(req);
     const ipHash = hashIp(clientIp);
 
@@ -50,8 +39,6 @@ router.post('/', async (req: SubmitRequest, res: Response): Promise<void> => {
         word,
       });
     }
-
-    // Existing-submission edit flow is currently disabled (simplified global model)
 
     const now = new Date();
 

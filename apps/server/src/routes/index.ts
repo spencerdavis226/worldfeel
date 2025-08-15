@@ -2,8 +2,6 @@ import { Router } from 'express';
 import submitRouter from './submit.js';
 import statsRouter from './stats.js';
 import colorRouter from './color.js';
-import emotionsRouter from './emotions.js';
-import { UnknownEmotion } from '../models/UnknownEmotion.js';
 import { getStats } from './stats.js';
 import rateLimit from 'express-rate-limit';
 
@@ -13,7 +11,6 @@ const router = Router();
 router.use('/submit', submitRouter);
 router.use('/stats', statsRouter);
 router.use('/color', colorRouter);
-router.use('/emotions', emotionsRouter);
 // router.use('/flag', flagRouter); // DISABLED - POST endpoint
 
 // Health check endpoint
@@ -71,19 +68,5 @@ router.get(
     }
   }
 );
-
-// Simple admin endpoint to view recent unknown emotions (no auth for now; up to 100)
-router.get('/admin/unknown-emotions', async (_req, res) => {
-  try {
-    const items = await UnknownEmotion.find()
-      .sort({ lastSeenAt: -1 })
-      .limit(100)
-      .lean();
-    res.json({ success: true, data: items });
-  } catch (error) {
-    console.error('Unknown emotions fetch error:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
 
 export default router;
