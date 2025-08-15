@@ -64,6 +64,27 @@ export function useStats(
     setLoading(true);
   }, []);
 
+  // Listen for pending submission processing
+  useEffect(() => {
+    const handlePendingSubmissionsProcessed = () => {
+      // When pending submissions are processed, refresh stats to show real data
+      if (mountedRef.current) {
+        console.info(
+          '🌐 [WorldFeel] Pending submissions processed, refreshing stats'
+        );
+        refresh();
+      }
+    };
+
+    apiClient.setOnPendingSubmissionsProcessed(
+      handlePendingSubmissionsProcessed
+    );
+
+    return () => {
+      apiClient.setOnPendingSubmissionsProcessed(() => {});
+    };
+  }, [refresh]);
+
   // Initial fetch and setup auto-refresh
   useEffect(() => {
     fetchStats();

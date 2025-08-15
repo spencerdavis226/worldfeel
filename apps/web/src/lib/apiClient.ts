@@ -27,11 +27,37 @@ let cachedMockStats: Stats | null = null;
 // Track pending submissions
 let pendingSubmissions: SubmissionRequest[] = [];
 
+// Add callback for when pending submissions are processed
+let onPendingSubmissionsProcessed: (() => void) | null = null;
+
 class ApiClient {
   private baseUrl: string;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
+  }
+
+  // Add method to get pending submissions count
+  getPendingSubmissionsCount(): number {
+    return pendingSubmissions.length;
+  }
+
+  // Add method to set callback for pending submissions processed
+  setOnPendingSubmissionsProcessed(callback: () => void): void {
+    onPendingSubmissionsProcessed = callback;
+  }
+
+  // Add method to get server status
+  getServerStatus(): {
+    isOnline: boolean;
+    lastCheck: number;
+    spinUpTime: number;
+  } {
+    return {
+      isOnline: pendingSubmissions.length === 0, // Simple heuristic
+      lastCheck: Date.now(),
+      spinUpTime: 70000, // 70 seconds for Render free tier
+    };
   }
 
   private async request<T>(
@@ -75,6 +101,10 @@ class ApiClient {
         const submissionsToProcess = [...pendingSubmissions];
         pendingSubmissions = [];
 
+        console.info(
+          `🌐 [WorldFeel] Server back online - submitting ${submissionsToProcess.length} pending submissions`
+        );
+
         for (const submission of submissionsToProcess) {
           try {
             await this.request<Stats>('/submit', {
@@ -82,11 +112,20 @@ class ApiClient {
               body: JSON.stringify(submission),
             });
             console.info(
-              `🌐 [WorldFeel] Submitted pending word: ${submission.word}`
+              `🌐 [WorldFeel] Successfully submitted pending word: ${submission.word}`
             );
           } catch (error) {
+            // If submission fails, add it back to pending
             pendingSubmissions.push(submission);
+            console.warn(
+              `🌐 [WorldFeel] Failed to submit pending word: ${submission.word}, will retry later`
+            );
           }
+        }
+
+        // Notify that pending submissions have been processed
+        if (onPendingSubmissionsProcessed) {
+          onPendingSubmissionsProcessed();
         }
       }
 
@@ -98,19 +137,36 @@ class ApiClient {
 
   async submitWord(data: SubmissionRequest): Promise<SubmissionResponse> {
     try {
-      return await this.request<Stats>('/submit', {
+      const response = await this.request<Stats>('/submit', {
         method: 'POST',
         body: JSON.stringify(data),
       });
+
+      // Save word to localStorage on successful submission (both online and offline)
+      try {
+        localStorage.setItem('wf.yourWord', data.word.trim().toLowerCase());
+        console.info(`🌐 [WorldFeel] Saved word to localStorage: ${data.word}`);
+      } catch {
+        // Ignore localStorage errors
+        console.warn('🌐 [WorldFeel] Failed to save word to localStorage');
+      }
+
+      return response;
     } catch (error) {
       // Add to pending submissions
       pendingSubmissions.push(data);
 
+      console.info(
+        `🌐 [WorldFeel] Server offline - queuing submission: ${data.word} (${pendingSubmissions.length} pending)`
+      );
+
       // Save locally
       try {
         localStorage.setItem('wf.yourWord', data.word.trim().toLowerCase());
+        console.info(`🌐 [WorldFeel] Saved word to localStorage: ${data.word}`);
       } catch {
         // Ignore localStorage errors
+        console.warn('🌐 [WorldFeel] Failed to save word to localStorage');
       }
 
       // Return mock data
@@ -135,6 +191,10 @@ class ApiClient {
 
       return await this.request<Stats>(endpoint);
     } catch (error) {
+      console.info(
+        `🌐 [WorldFeel] Server offline - using fallback data for /stats (yourWord: ${params.yourWord || 'none'})`
+      );
+
       // Use cached mock stats for consistency
       if (!cachedMockStats) {
         cachedMockStats = generateMockStats(params.yourWord);
