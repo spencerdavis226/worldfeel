@@ -19,9 +19,6 @@ export function HomePage() {
   const [word, setWord] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [checkingExisting, setCheckingExisting] = useState(true);
-  const [canSubmit, setCanSubmit] = useState<boolean>(true);
-  // const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
@@ -37,64 +34,14 @@ export function HomePage() {
   });
   const [placeholderVisible, setPlaceholderVisible] = useState<boolean>(true);
   const rotateRef = useRef<number | null>(null);
-  // TODO: Re-enable cooldown when needed
-  // const cooldownTimerRef = useRef<number | null>(null);
-  // const cooldownFadeTimeoutRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
   const navigate = useNavigate();
-  // const [cooldownVisible, setCooldownVisible] = useState<boolean>(false);
 
   // No cooldown check needed
   useEffect(() => {
-    setCanSubmit(true);
-    // setRemainingSeconds(0);
-    // setCooldownVisible(false);
-    setCheckingExisting(false);
+    // Component is ready immediately
   }, []);
-
-  // TODO: Re-enable cooldown countdown when needed
-  // // Countdown tick while locked
-  // useEffect(() => {
-  //   if (!canSubmit && remainingSeconds > 0) {
-  //     if (cooldownTimerRef.current) {
-  //       window.clearInterval(cooldownTimerRef.current);
-  //       cooldownTimerRef.current = null;
-  //     }
-  //     setCooldownVisible(true);
-  //     cooldownTimerRef.current = window.setInterval(() => {
-  //       setRemainingSeconds((s) => {
-  //         if (s <= 1) {
-  //           if (cooldownTimerRef.current) {
-  //             window.clearInterval(cooldownTimerRef.current);
-  //             cooldownTimerRef.current = null;
-  //           }
-  //           setCanSubmit(true);
-  //           // Trigger fade out; keep visible briefly during transition
-  //           if (cooldownFadeTimeoutRef.current) {
-  //             window.clearTimeout(cooldownFadeTimeoutRef.current);
-  //             cooldownFadeTimeoutRef.current = null;
-  //           }
-  //           cooldownFadeTimeoutRef.current = window.setTimeout(() => {
-  //             setCooldownVisible(false);
-  //           }, 650);
-  //           return 0;
-  //         }
-  //         return s - 1;
-  //       });
-  //     }, 1000);
-  //   }
-  //   return () => {
-  //     if (cooldownTimerRef.current) {
-  //       window.clearInterval(cooldownTimerRef.current);
-  //       cooldownTimerRef.current = null;
-  //     }
-  //     if (cooldownFadeTimeoutRef.current) {
-  //       window.clearTimeout(cooldownFadeTimeoutRef.current);
-  //       cooldownFadeTimeoutRef.current = null;
-  //     }
-  //   };
-  // }, [canSubmit, remainingSeconds]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -157,7 +104,7 @@ export function HomePage() {
       return;
     }
     try {
-      const resp = await apiClient.searchEmotions(q, 12);
+      const resp = await apiClient.searchEmotions(q);
       if (resp.success && Array.isArray(resp.data)) {
         setSuggestions(resp.data);
       }
@@ -281,7 +228,7 @@ export function HomePage() {
   // No hue cycling; background color driven by placeholder or valid input
 
   // Show loading state while checking for existing submissions
-  if (checkingExisting) {
+  if (loading) {
     return (
       <UniversalBackground centerColorHex={accentHex} hueCycle={false}>
         <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4">
@@ -336,7 +283,7 @@ export function HomePage() {
               )}
 
               {/* Submit button with smooth crossfade transitions */}
-              {canSubmit && selectedKey && (
+              {selectedKey && (
                 <button
                   type="submit"
                   disabled={loading}

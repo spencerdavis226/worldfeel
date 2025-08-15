@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { Navigation } from '@components/Navigation';
-import { ServerStatusIndicator } from '@components/ServerStatusIndicator';
 
 // Lazy load pages for better performance
 const HomePage = lazy(() =>
@@ -28,7 +27,6 @@ export function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div id="route-root">
         <Navigation />
-        <ServerStatusIndicator />
         <Suspense
           fallback={
             <div className="flex items-center justify-center min-h-[100vh] min-h-[100svh] min-h-[100dvh]">

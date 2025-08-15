@@ -17,98 +17,14 @@ type RequestOptions = {
   credentials?: 'include' | 'omit' | 'same-origin';
 };
 
-// Server status tracking
-let serverStatus = {
-  isOnline: true,
-  lastCheck: 0,
-  spinUpTime: 70000, // 70 seconds estimated spin-up time
-  timeoutMs: 1000, // 1 second timeout for production
-};
+// Simple timeout for server requests
+const SERVER_TIMEOUT_MS = 2000; // 2 seconds
 
-// Temporary testing flag - set to true to force offline mode
-const FORCE_OFFLINE_MODE = false; // Set to true to test offline mode
+// Cache for consistent mock data
+let cachedMockStats: Stats | null = null;
 
-// Track pending submissions to submit when server comes back online
+// Track pending submissions
 let pendingSubmissions: SubmissionRequest[] = [];
-
-// Check if server is likely spinning up
-function isServerSpinningUp(): boolean {
-  const now = Date.now();
-  const timeSinceLastCheck = now - serverStatus.lastCheck;
-
-  // If we haven't checked recently or the last check was recent, assume spinning up
-  if (timeSinceLastCheck < serverStatus.spinUpTime) {
-    return true;
-  }
-
-  return false;
-}
-
-// Log server status for debugging (only in console, no visual indicators)
-function logServerStatus(
-  endpoint: string,
-  error: Error,
-  isFallback: boolean = false
-): void {
-  const now = Date.now();
-  const timeSinceLastCheck = now - serverStatus.lastCheck;
-
-  if (isFallback) {
-    console.warn(
-      `🌐 [WorldFeel] Server offline - using fallback data for ${endpoint}`
-    );
-    console.info(
-      `🌐 [WorldFeel] Last server check: ${Math.round(timeSinceLastCheck / 1000)}s ago`
-    );
-
-    if (isServerSpinningUp()) {
-      const remainingTime = Math.max(
-        0,
-        serverStatus.spinUpTime - timeSinceLastCheck
-      );
-      console.info(
-        `🌐 [WorldFeel] Server likely spinning up - estimated ${Math.round(remainingTime / 1000)}s remaining`
-      );
-    }
-  } else {
-    console.error(`🌐 [WorldFeel] API Error [${endpoint}]:`, error);
-    serverStatus.isOnline = false;
-    serverStatus.lastCheck = now;
-  }
-}
-
-// Submit pending submissions when server comes back online
-async function submitPendingSubmissions(): Promise<void> {
-  if (pendingSubmissions.length === 0) return;
-
-  console.info(
-    `🌐 [WorldFeel] Server back online - submitting ${pendingSubmissions.length} pending submissions`
-  );
-
-  const submissionsToProcess = [...pendingSubmissions];
-  pendingSubmissions = []; // Clear the array
-
-  for (const submission of submissionsToProcess) {
-    try {
-      // Create a temporary API client instance to submit the pending submission
-      const tempClient = new ApiClient(getApiBaseUrl());
-      await tempClient.request<Stats>('/submit', {
-        method: 'POST',
-        body: JSON.stringify(submission),
-      });
-      console.info(
-        `🌐 [WorldFeel] Successfully submitted pending word: ${submission.word}`
-      );
-    } catch (error) {
-      console.warn(
-        `🌐 [WorldFeel] Failed to submit pending word: ${submission.word}`,
-        error
-      );
-      // Re-add to pending if it failed
-      pendingSubmissions.push(submission);
-    }
-  }
-}
 
 class ApiClient {
   private baseUrl: string;
@@ -117,19 +33,14 @@ class ApiClient {
     this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
   }
 
-  async request<T>(
+  private async request<T>(
     endpoint: string,
     options: RequestOptions = {}
   ): Promise<ApiResponse<T>> {
-    // Force offline mode for testing
-    if (FORCE_OFFLINE_MODE) {
-      throw new Error('Forced offline mode for testing');
-    }
-
     const url = `${this.baseUrl}/api${endpoint}`;
 
     const config: RequestOptions = {
-      credentials: 'include', // Include cookies
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -138,22 +49,18 @@ class ApiClient {
     };
 
     try {
-      // Create a timeout promise
+      // Simple timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
-          reject(
-            new Error(`Request timeout after ${serverStatus.timeoutMs}ms`)
-          );
-        }, serverStatus.timeoutMs);
+          reject(new Error(`Request timeout after ${SERVER_TIMEOUT_MS}ms`));
+        }, SERVER_TIMEOUT_MS);
       });
 
-      // Race between the actual request and the timeout
+      // Race between request and timeout
       const response = await Promise.race([fetch(url, config), timeoutPromise]);
-
       const data = await response.json();
 
       if (!response.ok) {
-        // Create a more detailed error with status code
         const errorMessage =
           data.message || data.error || `HTTP ${response.status}`;
         const error = new Error(errorMessage);
@@ -162,25 +69,28 @@ class ApiClient {
         throw error;
       }
 
-      // Server is online, update status and submit pending submissions
-      const wasOffline = !serverStatus.isOnline;
-      serverStatus.isOnline = true;
-      serverStatus.lastCheck = Date.now();
+      // Submit any pending submissions when server is available
+      if (pendingSubmissions.length > 0) {
+        const submissionsToProcess = [...pendingSubmissions];
+        pendingSubmissions = [];
 
-      // If server just came back online, submit pending submissions
-      if (wasOffline) {
-        // Use setTimeout to avoid blocking the current request
-        setTimeout(() => {
-          submitPendingSubmissions();
-        }, 100);
+        for (const submission of submissionsToProcess) {
+          try {
+            await this.request<Stats>('/submit', {
+              method: 'POST',
+              body: JSON.stringify(submission),
+            });
+            console.info(
+              `🌐 [WorldFeel] Submitted pending word: ${submission.word}`
+            );
+          } catch (error) {
+            pendingSubmissions.push(submission);
+          }
+        }
       }
 
       return data;
     } catch (error) {
-      logServerStatus(
-        endpoint,
-        error instanceof Error ? error : new Error('Network error')
-      );
       throw error instanceof Error ? error : new Error('Network error');
     }
   }
@@ -192,25 +102,18 @@ class ApiClient {
         body: JSON.stringify(data),
       });
     } catch (error) {
-      // Fallback: simulate successful submission with mock data
-      logServerStatus(
-        '/submit',
-        error instanceof Error ? error : new Error('Network error'),
-        true
-      );
-
-      // Add to pending submissions to submit when server comes back online
+      // Add to pending submissions
       pendingSubmissions.push(data);
 
-      // Simulate the user's word being saved locally
+      // Save locally
       try {
         localStorage.setItem('wf.yourWord', data.word.trim().toLowerCase());
       } catch {
         // Ignore localStorage errors
       }
 
+      // Return mock data
       const mockStats = generateMockStats(data.word.trim().toLowerCase());
-
       return {
         success: true,
         data: mockStats,
@@ -224,7 +127,6 @@ class ApiClient {
   async getStats(params: StatsQuery = {}): Promise<ApiResponse<Stats>> {
     try {
       const searchParams = new URLSearchParams();
-
       if (params.yourWord) searchParams.set('yourWord', params.yourWord);
 
       const query = searchParams.toString();
@@ -232,18 +134,14 @@ class ApiClient {
 
       return await this.request<Stats>(endpoint);
     } catch (error) {
-      // Fallback: return mock stats
-      logServerStatus(
-        '/stats',
-        error instanceof Error ? error : new Error('Network error'),
-        true
-      );
-
-      const mockStats = generateMockStats(params.yourWord);
+      // Use cached mock stats for consistency
+      if (!cachedMockStats) {
+        cachedMockStats = generateMockStats(params.yourWord);
+      }
 
       return {
         success: true,
-        data: mockStats,
+        data: cachedMockStats,
       };
     }
   }
@@ -253,13 +151,6 @@ class ApiClient {
       const searchParams = new URLSearchParams({ word });
       return await this.request<ColorResult>(`/color?${searchParams}`);
     } catch (error) {
-      // Fallback: return mock color data
-      logServerStatus(
-        '/color',
-        error instanceof Error ? error : new Error('Network error'),
-        true
-      );
-
       return {
         success: true,
         data: {
@@ -272,32 +163,13 @@ class ApiClient {
     }
   }
 
-  async searchEmotions(
-    query: string,
-    limit: number = 20
-  ): Promise<ApiResponse<string[]>> {
-    try {
-      const params = new URLSearchParams();
-      params.set('q', query);
-      if (limit) params.set('limit', String(limit));
-      return await this.request<string[]>(
-        `/emotions/search?${params.toString()}`
-      );
-    } catch (error) {
-      // Fallback: return mock emotion search results
-      logServerStatus(
-        '/emotions/search',
-        error instanceof Error ? error : new Error('Network error'),
-        true
-      );
-
-      const mockResults = generateMockEmotions(query);
-
-      return {
-        success: true,
-        data: mockResults,
-      };
-    }
+  async searchEmotions(query: string): Promise<ApiResponse<string[]>> {
+    // Always use mock data - no server needed
+    const mockResults = generateMockEmotions(query);
+    return {
+      success: true,
+      data: mockResults,
+    };
   }
 
   async flagContent(data: {
@@ -310,30 +182,14 @@ class ApiClient {
         body: JSON.stringify(data),
       });
     } catch (error) {
-      // Fallback: simulate successful flag
-      logServerStatus(
-        '/flag',
-        error instanceof Error ? error : new Error('Network error'),
-        true
-      );
-
-      return {
-        success: true,
-      };
+      return { success: true };
     }
   }
 
   async healthCheck(): Promise<ApiResponse<{ timestamp: string }>> {
     try {
-      const result = await this.request<{ timestamp: string }>('/health');
-      return result;
+      return await this.request<{ timestamp: string }>('/health');
     } catch (error) {
-      logServerStatus(
-        '/health',
-        error instanceof Error ? error : new Error('Network error'),
-        true
-      );
-
       return {
         success: false,
         error: 'Server unavailable',
@@ -341,21 +197,14 @@ class ApiClient {
     }
   }
 
-  // Method to check if server is online
-  isServerOnline(): boolean {
-    return serverStatus.isOnline;
-  }
-
-  // Method to get server status info
-  getServerStatus() {
-    return { ...serverStatus };
-  }
-
-  // Method to get pending submissions count (for debugging)
+  // Utility methods
   getPendingSubmissionsCount(): number {
     return pendingSubmissions.length;
+  }
+
+  clearCachedMockData(): void {
+    cachedMockStats = null;
   }
 }
 
 export const apiClient = new ApiClient(getApiBaseUrl());
-// Remove unused default export
