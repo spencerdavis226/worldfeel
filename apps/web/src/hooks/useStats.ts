@@ -5,7 +5,6 @@ import type { Stats, StatsQuery } from '@worldfeel/shared';
 interface UseStatsOptions {
   autoRefresh?: boolean;
   refreshInterval?: number;
-  requestTimeout?: number;
 }
 
 interface UseStatsReturn {
@@ -16,18 +15,14 @@ interface UseStatsReturn {
   setFilters: (filters: StatsQuery) => void;
 }
 
-const DEFAULT_REFRESH_INTERVAL = 30000; // 30 seconds (increased from 15s)
-const DEFAULT_REQUEST_TIMEOUT = 8000; // 8 seconds for stats requests
+const DEFAULT_REFRESH_INTERVAL = 10000; // 10 seconds
 
 export function useStats(
   initialFilters: StatsQuery = {},
   options: UseStatsOptions = {}
 ): UseStatsReturn {
-  const {
-    autoRefresh = true,
-    refreshInterval = DEFAULT_REFRESH_INTERVAL,
-    requestTimeout = DEFAULT_REQUEST_TIMEOUT,
-  } = options;
+  const { autoRefresh = true, refreshInterval = DEFAULT_REFRESH_INTERVAL } =
+    options;
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,23 +31,11 @@ export function useStats(
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mountedRef = useRef(true);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchStats = useCallback(async () => {
-    // Cancel any ongoing request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
     try {
       setError(null);
-
-      // Create a new AbortController for this request
-      abortControllerRef.current = new AbortController();
-
-      const response = await apiClient.getStats(filters, {
-        timeout: requestTimeout,
-      });
+      const response = await apiClient.getStats(filters);
 
       if (mountedRef.current && response.success && response.data) {
         setStats(response.data);
@@ -71,10 +54,9 @@ export function useStats(
     } finally {
       if (mountedRef.current) {
         setLoading(false);
-        abortControllerRef.current = null;
       }
     }
-  }, [filters, requestTimeout]);
+  }, [filters]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -101,9 +83,6 @@ export function useStats(
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
     };
   }, [fetchStats, autoRefresh, refreshInterval]);
 
@@ -114,9 +93,6 @@ export function useStats(
       mountedRef.current = false;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
       }
     };
   }, []);

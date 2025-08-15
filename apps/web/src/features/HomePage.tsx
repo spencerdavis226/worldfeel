@@ -11,7 +11,6 @@ import {
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
 import { usePageTitle } from '@hooks/usePageTitle';
-import { timeAsyncFunction } from '@lib/performance';
 
 export function HomePage() {
   // Set page title for main page
@@ -107,13 +106,10 @@ export function HomePage() {
       setError('');
 
       try {
-        const response = await apiClient.submitWord(
-          {
-            // Submit the selected emotion; keep the visible input in sync when selecting
-            word: word.trim().toLowerCase(),
-          },
-          { timeout: 5000 } // 5 second timeout for faster fallback
-        );
+        const response = await apiClient.submitWord({
+          // Submit the selected emotion; keep the visible input in sync when selecting
+          word: word.trim().toLowerCase(),
+        });
 
         if (response.success) {
           // Persist your word locally for stats personalization
@@ -161,20 +157,14 @@ export function HomePage() {
       return;
     }
     try {
-      const resp = await timeAsyncFunction(
-        `emotion-search-${q}`,
-        () => apiClient.searchEmotions(q, 12, { timeout: 1000 }), // 1 second timeout
-        50 // Log if takes longer than 50ms
-      );
+      const resp = await apiClient.searchEmotions(q, 12);
       if (resp.success && Array.isArray(resp.data)) {
         setSuggestions(resp.data);
       }
-    } catch (error) {
-      // Ignore errors for suggestions - API client handles fallback
+    } catch {
+      // Ignore errors for suggestions - API client handles fallback with timeout
       // If we reach here, it means there's an unexpected error
-      console.warn('Unexpected error fetching suggestions:', error);
-      // Clear suggestions on error to prevent hanging state
-      setSuggestions([]);
+      console.warn('Unexpected error fetching suggestions');
     }
   }, []);
 

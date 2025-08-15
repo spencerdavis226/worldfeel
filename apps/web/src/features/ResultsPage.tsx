@@ -45,8 +45,7 @@ export function ResultsPage() {
     { ...(yourWord ? { yourWord } : {}) },
     {
       autoRefresh: true,
-      refreshInterval: 30000, // Increased from 15s to 30s
-      requestTimeout: 6000, // 6 second timeout for faster fallback
+      refreshInterval: 15000,
     }
   );
 

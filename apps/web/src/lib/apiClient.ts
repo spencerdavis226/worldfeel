@@ -15,7 +15,6 @@ type RequestOptions = {
   headers?: Record<string, string>;
   body?: string;
   credentials?: 'include' | 'omit' | 'same-origin';
-  timeout?: number;
 };
 
 // Server status tracking
@@ -23,6 +22,7 @@ let serverStatus = {
   isOnline: true,
   lastCheck: 0,
   spinUpTime: 70000, // 70 seconds estimated spin-up time
+  timeoutMs: 1000, // 1 second timeout before falling back to offline mode
 };
 
 // Temporary testing flag - set to true to force offline mode
@@ -30,9 +30,6 @@ const FORCE_OFFLINE_MODE = false; // Set to true to test offline mode
 
 // Track pending submissions to submit when server comes back online
 let pendingSubmissions: SubmissionRequest[] = [];
-
-// Default timeout for requests (important for Render.com cold starts)
-const DEFAULT_REQUEST_TIMEOUT = 10000; // 10 seconds
 
 // Check if server is likely spinning up
 function isServerSpinningUp(): boolean {
@@ -130,13 +127,6 @@ class ApiClient {
     }
 
     const url = `${this.baseUrl}/api${endpoint}`;
-    const timeout = options.timeout || DEFAULT_REQUEST_TIMEOUT;
-
-    // Create AbortController for timeout handling
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, timeout);
 
     const config: RequestOptions = {
       credentials: 'include', // Include cookies
@@ -148,12 +138,18 @@ class ApiClient {
     };
 
     try {
-      const response = await fetch(url, {
-        ...config,
-        signal: controller.signal,
+      // Create a timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(`Request timeout after ${serverStatus.timeoutMs}ms`)
+          );
+        }, serverStatus.timeoutMs);
       });
 
-      clearTimeout(timeoutId);
+      // Race between the actual request and the timeout
+      const response = await Promise.race([fetch(url, config), timeoutPromise]);
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -181,15 +177,6 @@ class ApiClient {
 
       return data;
     } catch (error) {
-      clearTimeout(timeoutId);
-
-      // Handle timeout/abort specifically
-      if (error instanceof Error && error.name === 'AbortError') {
-        const timeoutError = new Error(`Request timeout after ${timeout}ms`);
-        logServerStatus(endpoint, timeoutError);
-        throw timeoutError;
-      }
-
       logServerStatus(
         endpoint,
         error instanceof Error ? error : new Error('Network error')
@@ -198,15 +185,11 @@ class ApiClient {
     }
   }
 
-  async submitWord(
-    data: SubmissionRequest,
-    options: { timeout?: number } = {}
-  ): Promise<SubmissionResponse> {
+  async submitWord(data: SubmissionRequest): Promise<SubmissionResponse> {
     try {
       return await this.request<Stats>('/submit', {
         method: 'POST',
         body: JSON.stringify(data),
-        ...options,
       });
     } catch (error) {
       // Fallback: simulate successful submission with mock data
@@ -238,10 +221,7 @@ class ApiClient {
     }
   }
 
-  async getStats(
-    params: StatsQuery = {},
-    options: { timeout?: number } = {}
-  ): Promise<ApiResponse<Stats>> {
+  async getStats(params: StatsQuery = {}): Promise<ApiResponse<Stats>> {
     try {
       const searchParams = new URLSearchParams();
 
@@ -250,7 +230,7 @@ class ApiClient {
       const query = searchParams.toString();
       const endpoint = `/stats${query ? `?${query}` : ''}`;
 
-      return await this.request<Stats>(endpoint, options);
+      return await this.request<Stats>(endpoint);
     } catch (error) {
       // Fallback: return mock stats
       logServerStatus(
@@ -294,16 +274,14 @@ class ApiClient {
 
   async searchEmotions(
     query: string,
-    limit: number = 20,
-    options: { timeout?: number } = {}
+    limit: number = 20
   ): Promise<ApiResponse<string[]>> {
     try {
       const params = new URLSearchParams();
       params.set('q', query);
       if (limit) params.set('limit', String(limit));
       return await this.request<string[]>(
-        `/emotions/search?${params.toString()}`,
-        options
+        `/emotions/search?${params.toString()}`
       );
     } catch (error) {
       // Fallback: return mock emotion search results
