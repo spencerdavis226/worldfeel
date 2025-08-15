@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UniversalBackground } from '@components/UniversalBackground';
 import { AnimatedValue } from '@components/AnimatedValue';
@@ -6,6 +6,7 @@ import { AnimatedValue } from '@components/AnimatedValue';
 import { useStats } from '@hooks/useStats';
 import { usePageTitle } from '@hooks/usePageTitle';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
+import { apiClient } from '@lib/apiClient';
 import {
   getReadableTextColorSync,
   getTextShadowForContrastSync,
@@ -32,13 +33,33 @@ export function ResultsPage() {
   const topHexCopyTimerRef = useRef<number | null>(null);
   const hasShownOnceRef = useRef(false);
 
-  // Get user's word and device ID
-  const yourWord = useMemo(() => {
+  // Get user's word and device ID - read from localStorage on mount and when server comes back online
+  const [yourWord, setYourWord] = useState<string | undefined>(() => {
     try {
       return localStorage.getItem('wf.yourWord') || undefined;
     } catch {
       return undefined;
     }
+  });
+
+  // Update yourWord when pending submissions are processed (server comes back online)
+  useEffect(() => {
+    const handlePendingSubmissionsProcessed = () => {
+      try {
+        const newWord = localStorage.getItem('wf.yourWord') || undefined;
+        setYourWord(newWord);
+      } catch {
+        // Ignore localStorage errors
+      }
+    };
+
+    apiClient.setOnPendingSubmissionsProcessed(
+      handlePendingSubmissionsProcessed
+    );
+
+    return () => {
+      apiClient.setOnPendingSubmissionsProcessed(() => {});
+    };
   }, []);
 
   const { stats, loading, error } = useStats(

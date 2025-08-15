@@ -29,8 +29,23 @@ export function useStats(
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<StatsQuery>(initialFilters);
 
+  // Update filters when initialFilters change
+  useEffect(() => {
+    const newFiltersString = JSON.stringify(initialFilters);
+
+    if (prevInitialFiltersRef.current !== newFiltersString) {
+      prevInitialFiltersRef.current = newFiltersString;
+      setFilters(initialFilters);
+      // Trigger a refresh when filters actually change
+      if (mountedRef.current) {
+        setLoading(true);
+      }
+    }
+  }, [initialFilters]);
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mountedRef = useRef(true);
+  const prevInitialFiltersRef = useRef<string>('');
 
   const fetchStats = useCallback(async () => {
     try {
