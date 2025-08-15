@@ -112,7 +112,7 @@ export function HomePage() {
             // Submit the selected emotion; keep the visible input in sync when selecting
             word: word.trim().toLowerCase(),
           },
-          { timeout: 8000 } // 8 second timeout for submission
+          { timeout: 5000 } // 5 second timeout for faster fallback
         );
 
         if (response.success) {

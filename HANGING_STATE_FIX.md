@@ -33,7 +33,7 @@ The Results page and input field were experiencing hanging states where nothing 
 - Default timeout: 10 seconds for general requests
 - Stats requests: 6-8 seconds for faster fallback
 - Emotion search: 1 second for quick suggestions
-- Submit requests: 8 seconds for user submissions
+- Submit requests: 5 seconds for user submissions
 
 ### 2. Improved Error Handling
 
@@ -107,7 +107,7 @@ The timeouts can be adjusted in the following locations:
 - **General API timeout**: `DEFAULT_REQUEST_TIMEOUT` in `apiClient.ts` (10s)
 - **Stats timeout**: `requestTimeout` option in `useStats` hook (6s)
 - **Search timeout**: `timeout` parameter in `searchEmotions` calls (3s)
-- **Submit timeout**: `timeout` parameter in `submitWord` calls (8s)
+- **Submit timeout**: `timeout` parameter in `submitWord` calls (5s)
 - **Loading timeout**: `setTimeout` in `ResultsPage` (8s)
 
 ## Future Improvements
