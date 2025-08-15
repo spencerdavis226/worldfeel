@@ -22,7 +22,7 @@ let serverStatus = {
   isOnline: true,
   lastCheck: 0,
   spinUpTime: 70000, // 70 seconds estimated spin-up time
-  timeoutMs: 1000, // 1 second timeout before falling back to offline mode
+  timeoutMs: 1000, // 1 second timeout for production
 };
 
 // Temporary testing flag - set to true to force offline mode
