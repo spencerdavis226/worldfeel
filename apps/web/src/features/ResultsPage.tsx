@@ -90,7 +90,7 @@ export function ResultsPage() {
     };
   }, [yourWord]);
 
-  const { stats, loading, error, refresh } = useStats(
+  const { stats, loading, error } = useStats(
     { ...(yourWord ? { yourWord } : {}) },
     {
       autoRefresh: true,
