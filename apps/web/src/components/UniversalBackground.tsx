@@ -328,7 +328,7 @@ export function UniversalBackground({
   }, []);
 
   return (
-    <div className="min-h-screen md:h-screen relative md:overflow-hidden">
+    <div className="min-h-screen relative">
       {/* Background container - moves with content */}
       <div className="absolute inset-0 w-full min-h-full z-0">
         {/* Single background layer with interpolated colors */}

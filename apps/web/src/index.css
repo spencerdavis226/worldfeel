@@ -30,18 +30,18 @@
     min-height: 100%;
   }
 
-  /* Prevent scrolling on desktop only */
+  /* No-scroll utility for specific pages on desktop */
   @media (min-width: 768px) {
-    html {
+    .no-scroll-desktop html {
       height: 100%;
     }
     
-    body {
+    .no-scroll-desktop body {
       height: 100%;
       overflow: hidden;
     }
     
-    #root {
+    .no-scroll-desktop #root {
       height: 100%;
     }
   }

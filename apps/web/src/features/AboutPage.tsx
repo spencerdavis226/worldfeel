@@ -11,7 +11,7 @@ export function AboutPage() {
   const [avatarSrc, setAvatarSrc] = useState<string>('/spencer.png');
   return (
     <UniversalBackground hueCycle={true} hueDurationMs={120000}>
-      <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 pt-20 sm:pt-24">
+      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 pt-20 sm:pt-24 pb-8">
         {/* Main content */}
         <div className="w-full max-w-3xl mx-auto text-center px-4 sm:px-6 animate-fade-in space-y-6 sm:space-y-8">
           {/* Header with proper spacing */}

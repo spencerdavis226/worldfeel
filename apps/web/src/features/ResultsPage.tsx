@@ -5,6 +5,7 @@ import { AnimatedValue } from '@components/AnimatedValue';
 
 import { useStats } from '@hooks/useStats';
 import { usePageTitle } from '@hooks/usePageTitle';
+import { useNoScrollDesktop } from '@hooks/useNoScrollDesktop';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import { apiClient } from '@lib/apiClient';
 import {
@@ -23,6 +24,9 @@ function formatPercent(count: number, total: number): string {
 
 export function ResultsPage() {
   usePageTitle('Results');
+  
+  // Prevent scrolling on desktop for this page
+  useNoScrollDesktop();
 
   const navigate = useNavigate();
   const [isContentVisible, setIsContentVisible] = useState(false);

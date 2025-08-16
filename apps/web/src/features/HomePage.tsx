@@ -10,10 +10,14 @@ import {
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
 import { usePageTitle } from '@hooks/usePageTitle';
+import { useNoScrollDesktop } from '@hooks/useNoScrollDesktop';
 
 export function HomePage() {
   // Set page title for main page
   usePageTitle('', true);
+  
+  // Prevent scrolling on desktop for this page
+  useNoScrollDesktop();
 
   const [word, setWord] = useState('');
   const [loading, setLoading] = useState(false);
