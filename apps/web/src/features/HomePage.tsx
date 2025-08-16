@@ -237,153 +237,153 @@ export function HomePage() {
         {/* Account for fixed navigation */}
         <div className="h-14 sm:h-16 flex-shrink-0" />
         
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-5xl mx-auto text-center space-y-12">
-            {/* Hero text */}
-            <div>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-medium text-gray-800 leading-tight tracking-tight md:whitespace-nowrap">
-                How are you feeling today?
-              </h1>
+        {/* Main content - simple and centered */}
+        <div className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="w-full max-w-7xl text-center space-y-12">
+            {/* Hero text - simple responsive sizing */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-gray-800 leading-tight tracking-tight px-4 lg:whitespace-nowrap">
+              How are you feeling today?
+            </h1>
+
+            {/* Input form - constrained width */}
+            <div className="max-w-lg mx-auto">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="relative">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={word}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    id="feeling"
+                    name="feeling"
+                    placeholder=""
+                    className="w-full px-6 py-4 text-lg text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/40 transition-all duration-200 shadow-lg"
+                    disabled={loading}
+                    autoComplete="off"
+                    spellCheck="false"
+                    maxLength={20}
+                    aria-autocomplete="list"
+                    aria-expanded={showSuggestions}
+                    aria-controls="emotion-suggestions"
+                  />
+                  
+                  {/* Rotating placeholder */}
+                  {word.trim() === '' && (
+                    <div
+                      className={`pointer-events-none absolute inset-0 flex items-center justify-center text-gray-500 select-none transition-opacity duration-300 ${
+                        placeholderVisible ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      {placeholderWord}
+                    </div>
+                  )}
+
+                  {/* Submit button */}
+                  {selectedKey && (
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 glass-submit-button flex items-center justify-center focus-visible-ring"
+                      aria-label="Submit emotion"
+                    >
+                      {loading ? (
+                        <div className="w-4 h-4 border-2 border-gray-800/30 border-t-gray-800 rounded-full animate-spin" />
+                      ) : (
+                        <svg
+                          className="w-4 h-4 text-gray-800"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 7l5 5m0 0l-5 5m5-5H6"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Suggestions dropdown */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div
+                      id="emotion-suggestions"
+                      role="listbox"
+                      className="absolute left-0 right-0 top-full mt-3 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-lg animate-pop-in origin-top"
+                    >
+                      <div className="max-h-64 overflow-auto custom-scrollbar space-y-1 p-0.5">
+                        {suggestions.map((s, idx) => {
+                          const hex = getEmotionColor(s) || '#6DCFF6';
+                          const isActive = idx === highlightIndex;
+                          return (
+                            <button
+                              type="button"
+                              key={`${s}-${idx}`}
+                              role="option"
+                              aria-selected={isActive}
+                              onMouseDown={(ev) => ev.preventDefault()}
+                              onClick={() => {
+                                const resolved = resolveEmotionKey(s);
+                                if (!resolved) return;
+                                setWord(s);
+                                setSelectedKey(resolved);
+                                setShowSuggestions(false);
+                                setSuggestions([]);
+                              }}
+                              className={`w-full text-left px-4 py-3 rounded-xl border transition-all focus-visible-ring backdrop-blur-sm ${
+                                isActive
+                                  ? 'bg-white/60 border-white/40'
+                                  : 'bg-white/35 hover:bg-white/45 active:bg-white/55 border-white/30'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <span
+                                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                    style={{ backgroundColor: hex }}
+                                  />
+                                  <span className="text-gray-800 text-base truncate">
+                                    {s}
+                                  </span>
+                                </div>
+                                {isActive && (
+                                  <svg
+                                    className="w-4 h-4 text-gray-600 flex-shrink-0"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-7.364 7.364a1 1 0 01-1.414 0L3.293 9.536a1 1 0 011.414-1.414l3.222 3.222 6.657-6.657a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Error message */}
+                {error && (
+                  <div className="text-red-600 text-sm bg-red-50/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                    {error}
+                  </div>
+                )}
+              </form>
             </div>
 
-            {/* Input form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={word}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  id="feeling"
-                  name="feeling"
-                  placeholder=""
-                  className="w-full px-6 py-5 text-xl text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/40 transition-all duration-200 shadow-lg"
-                  disabled={loading}
-                  autoComplete="off"
-                  spellCheck="false"
-                  maxLength={20}
-                  aria-autocomplete="list"
-                  aria-expanded={showSuggestions}
-                  aria-controls="emotion-suggestions"
-                />
-                
-                {/* Rotating placeholder overlay (only when input is empty) */}
-                {word.trim() === '' && (
-                  <div
-                    className={`pointer-events-none absolute inset-0 flex items-center justify-center text-gray-500 select-none transition-opacity duration-300 ${
-                      placeholderVisible ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                    {placeholderWord}
-                  </div>
-                )}
-
-                {/* Submit button */}
-                {selectedKey && (
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 glass-submit-button flex items-center justify-center focus-visible-ring submit-button-enter"
-                    aria-label="Submit emotion"
-                  >
-                    {loading ? (
-                      <div className="w-5 h-5 border-2 border-gray-800/30 border-t-gray-800 rounded-full animate-spin" />
-                    ) : (
-                      <svg
-                        className="w-5 h-5 text-gray-800 drop-shadow-sm"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                )}
-
-                {/* Suggestions dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
-                  <div
-                    id="emotion-suggestions"
-                    role="listbox"
-                    className="absolute left-0 right-0 top-full mt-3 z-20 glass-panel no-top-line overflow-hidden p-1 shadow-lg animate-pop-in origin-top"
-                  >
-                    <div className="max-h-72 overflow-auto custom-scrollbar space-y-1 p-0.5">
-                      {suggestions.map((s, idx) => {
-                        const hex = getEmotionColor(s) || '#6DCFF6';
-                        const isActive = idx === highlightIndex;
-                        return (
-                          <button
-                            type="button"
-                            key={`${s}-${idx}`}
-                            role="option"
-                            aria-selected={isActive}
-                            onMouseDown={(ev) => ev.preventDefault()}
-                            onClick={() => {
-                              const resolved = resolveEmotionKey(s);
-                              if (!resolved) return;
-                              setWord(s);
-                              setSelectedKey(resolved);
-                              setShowSuggestions(false);
-                              setSuggestions([]);
-                            }}
-                            className={`w-full text-left px-4 py-3 rounded-xl border transition-all focus-visible-ring backdrop-blur-sm ${
-                              isActive
-                                ? 'bg-white/60 border-white/40'
-                                : 'bg-white/35 hover:bg-white/45 active:bg-white/55 border-white/30'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="flex items-center gap-3 min-w-0">
-                                <span
-                                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                                  style={{ backgroundColor: hex }}
-                                />
-                                <span className="text-gray-800 text-base truncate">
-                                  {s}
-                                </span>
-                              </div>
-                              {isActive && (
-                                <svg
-                                  className="w-4 h-4 text-gray-600 flex-shrink-0"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-7.364 7.364a1 1 0 01-1.414 0L3.293 9.536a1 1 0 011.414-1.414l3.222 3.222 6.657-6.657a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              )}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Error message */}
-              {error && (
-                <div className="text-red-600 text-sm bg-red-50/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-                  {error}
-                </div>
-              )}
-            </form>
-
             {/* Footer tagline */}
-            <div className="pt-4">
+            <div className="px-4">
               <p
-                className={`text-lg text-gray-500 text-center transition-opacity ${
+                className={`text-base text-gray-500 transition-opacity ${
                   showSuggestions && suggestions.length > 0
                     ? 'duration-150 ease-out opacity-0 pointer-events-none'
                     : 'duration-500 ease-in opacity-100'
