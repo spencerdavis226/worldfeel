@@ -9,10 +9,10 @@ export function useNoScrollDesktop(enabled: boolean = true) {
     if (!enabled) return;
 
     const htmlElement = document.documentElement;
-    
+
     // Add class to enable no-scroll on desktop
     htmlElement.classList.add('no-scroll-desktop');
-    
+
     return () => {
       // Remove class when component unmounts or effect cleans up
       htmlElement.classList.remove('no-scroll-desktop');

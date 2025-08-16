@@ -11,39 +11,17 @@
     background: transparent;
     scroll-behavior: smooth;
     overflow-x: hidden;
-    min-height: 100%;
   }
 
   body {
     @apply text-gray-900;
     background: transparent;
-    min-height: 100%;
     font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04';
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     -webkit-overflow-scrolling: touch;
     margin: 0;
     padding: 0;
-  }
-
-  #root {
-    min-height: 100%;
-  }
-
-  /* No-scroll utility for specific pages on desktop */
-  @media (min-width: 768px) {
-    .no-scroll-desktop html {
-      height: 100%;
-    }
-    
-    .no-scroll-desktop body {
-      height: 100%;
-      overflow: hidden;
-    }
-    
-    .no-scroll-desktop #root {
-      height: 100%;
-    }
   }
 
   /* View Transitions - route fades */
@@ -235,7 +213,7 @@
     border-radius: 12px;
     position: relative;
     overflow: hidden;
-    box-shadow: 
+    box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
@@ -259,7 +237,7 @@
 
   .glass-submit-button:hover {
     @apply bg-white/35 border-white/40;
-    box-shadow: 
+    box-shadow:
       0 4px 12px rgba(0, 0, 0, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.25);
     filter: brightness(1.05);
@@ -271,7 +249,7 @@
 
   .glass-submit-button:active {
     @apply bg-white/40 border-white/45;
-    box-shadow: 
+    box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.2),
       inset 0 1px 2px rgba(0, 0, 0, 0.1);
     filter: brightness(1.1);
@@ -295,7 +273,7 @@
   .glass-submit-button:disabled {
     @apply opacity-40 cursor-not-allowed;
     transform: none;
-    box-shadow: 
+    box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
@@ -453,113 +431,5 @@
   }
   .animate-pop-in {
     animation: wf-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  /* Very slow hue rotation cycle */
-  @keyframes wf-hue-rotate {
-    from {
-      filter: hue-rotate(var(--wf-hue-start));
-    }
-    to {
-      filter: hue-rotate(calc(var(--wf-hue-start) + 1turn));
-    }
-  }
-
-  /* Organic floating animation for background shapes */
-  @keyframes wf-organic-float {
-    0%,
-    100% {
-      transform: translate(0, 0) rotate(0deg) scale(1);
-    }
-    25% {
-      transform: translate(2px, -3px) rotate(0.5deg) scale(1.02);
-    }
-    50% {
-      transform: translate(-1px, 2px) rotate(-0.3deg) scale(0.98);
-    }
-    75% {
-      transform: translate(3px, 1px) rotate(0.2deg) scale(1.01);
-    }
-  }
-
-  /* Gentle breathing animation for wellness feel */
-  @keyframes wf-breathing {
-    0%,
-    100% {
-      opacity: 0.6;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.7;
-      transform: scale(1.05);
-    }
-  }
-
-  /* Subtle shimmer effect for premium feel */
-  @keyframes wf-shimmer {
-    0% {
-      transform: translateX(-100%) translateY(-100%) rotate(45deg);
-    }
-    100% {
-      transform: translateX(200%) translateY(200%) rotate(45deg);
-    }
-  }
-
-  /* Subtle color temperature shift for organic feel */
-  @keyframes wf-temperature-shift {
-    0%,
-    100% {
-      filter: hue-rotate(0deg) saturate(1.1);
-    }
-    50% {
-      filter: hue-rotate(3deg) saturate(1.15);
-    }
-  }
-
-  /* Organic shapes layer with flowing gradients */
-  .organic-shapes::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-      radial-gradient(
-        ellipse 60% 40% at 20% 30%,
-        rgba(255, 255, 255, 0.06) 0%,
-        transparent 70%
-      ),
-      radial-gradient(
-        ellipse 50% 35% at 80% 60%,
-        rgba(255, 255, 255, 0.04) 0%,
-        transparent 65%
-      ),
-      radial-gradient(
-        ellipse 30% 25% at 40% 80%,
-        rgba(255, 255, 255, 0.03) 0%,
-        transparent 60%
-      );
-    animation: wf-organic-float 25s ease-in-out infinite reverse;
-    will-change: transform;
-  }
-
-  .organic-shapes::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: conic-gradient(
-      from 120deg at 70% 20%,
-      transparent 0deg,
-      rgba(255, 255, 255, 0.02) 90deg,
-      transparent 180deg,
-      rgba(255, 255, 255, 0.015) 270deg,
-      transparent 360deg
-    );
-    animation: wf-organic-float 30s ease-in-out infinite;
-    will-change: transform;
   }
 }

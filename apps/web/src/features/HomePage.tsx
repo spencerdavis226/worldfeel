@@ -10,14 +10,10 @@ import {
   EmotionColorMap,
 } from '@worldfeel/shared/emotion-color-map';
 import { usePageTitle } from '@hooks/usePageTitle';
-import { useNoScrollDesktop } from '@hooks/useNoScrollDesktop';
 
 export function HomePage() {
   // Set page title for main page
   usePageTitle('', true);
-  
-  // Prevent scrolling on desktop for this page
-  useNoScrollDesktop();
 
   const [word, setWord] = useState('');
   const [loading, setLoading] = useState(false);
@@ -237,8 +233,8 @@ export function HomePage() {
   // Show loading state while checking for existing submissions
   if (loading) {
     return (
-      <UniversalBackground centerColorHex={accentHex} hueCycle={false}>
-        <div className="min-h-screen md:h-screen flex flex-col items-center justify-center p-4">
+      <UniversalBackground centerColorHex={accentHex}>
+        <div className="min-h-screen flex flex-col items-center justify-center p-4">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
         </div>
       </UniversalBackground>
@@ -246,13 +242,13 @@ export function HomePage() {
   }
 
   return (
-    <UniversalBackground centerColorHex={accentHex} hueCycle={false}>
-      <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+    <UniversalBackground centerColorHex={accentHex}>
+      <div className="min-h-screen flex flex-col">
         {/* Account for fixed navigation */}
         <div className="h-14 sm:h-16 flex-shrink-0" />
 
         {/* Main content - simple and centered */}
-        <div className="flex-1 flex items-center justify-center px-6 py-8 md:py-0">
+        <div className="flex-1 flex items-center justify-center px-6">
           <div
             className={`w-full max-w-7xl text-center space-y-12 transition-all duration-1000 ${
               isContentVisible

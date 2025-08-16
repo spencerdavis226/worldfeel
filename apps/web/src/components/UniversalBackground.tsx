@@ -5,12 +5,6 @@ interface UniversalBackgroundProps {
   centerColorHex?: string;
   /** Secondary color for the edges of the background (optional) */
   edgeColorHex?: string;
-  /** Enable slow hue cycling of the background */
-  hueCycle?: boolean;
-  /** Initial hue rotation in degrees for the cycle start */
-  hueStartDeg?: number;
-  /** Duration in ms for one full cycle */
-  hueDurationMs?: number;
   /** Duration in ms for color transitions (default: 800ms) */
   transitionDurationMs?: number;
   /** Children to render on top of the background */
@@ -20,9 +14,6 @@ interface UniversalBackgroundProps {
 export function UniversalBackground({
   centerColorHex = '#6DCFF6',
   edgeColorHex,
-  hueCycle = false,
-  hueStartDeg = 0,
-  hueDurationMs = 120000,
   transitionDurationMs = 800,
   children,
 }: UniversalBackgroundProps) {
@@ -336,29 +327,10 @@ export function UniversalBackground({
           className="absolute inset-0 w-full min-h-full"
           style={{
             background: currentGradient,
-            ...(hueCycle
-              ? ({
-                  animation: `wf-hue-rotate ${hueDurationMs}ms linear infinite`,
-                  '--wf-hue-start': `${hueStartDeg}deg`,
-                  filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
-                  willChange: 'filter',
-                } as React.CSSProperties)
-              : {
-                  animation: 'wf-temperature-shift 15s ease-in-out infinite',
-                  willChange: 'filter',
-                }),
           }}
         />
 
-        {/* Animated organic shapes layer */}
-        <div
-          className="absolute inset-0 w-full min-h-full organic-shapes"
-          style={{
-            animation: 'wf-breathing 8s ease-in-out infinite',
-          }}
-        />
-
-        {/* Subtle noise texture */}
+        {/* Static subtle texture overlay */}
         <div className="absolute inset-0 w-full min-h-full noise-overlay opacity-10" />
       </div>
 

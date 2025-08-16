@@ -5,7 +5,6 @@ import { AnimatedValue } from '@components/AnimatedValue';
 
 import { useStats } from '@hooks/useStats';
 import { usePageTitle } from '@hooks/usePageTitle';
-import { useNoScrollDesktop } from '@hooks/useNoScrollDesktop';
 import { getEmotionColor } from '@worldfeel/shared/emotion-color-map';
 import { apiClient } from '@lib/apiClient';
 import {
@@ -24,9 +23,6 @@ function formatPercent(count: number, total: number): string {
 
 export function ResultsPage() {
   usePageTitle('Results');
-  
-  // Prevent scrolling on desktop for this page
-  useNoScrollDesktop();
 
   const navigate = useNavigate();
   const [isContentVisible, setIsContentVisible] = useState(false);
@@ -221,12 +217,12 @@ export function ResultsPage() {
         stats?.yourWord?.word ? getEmotionColor(stats.yourWord.word) : undefined
       }
     >
-      <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+      <div className="min-h-screen flex flex-col">
         {/* Account for fixed navigation */}
         <div className="h-14 sm:h-16 flex-shrink-0" />
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-0">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
           <div
             className={`w-full max-w-4xl mx-auto text-center space-y-16 transition-all duration-1000 ${
               isContentVisible
