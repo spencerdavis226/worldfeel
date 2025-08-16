@@ -25,13 +25,11 @@ export function ResultsPage() {
   usePageTitle('Results');
 
   const navigate = useNavigate();
-  const [showContainer, setShowContainer] = useState(false);
   const [isFirstMount, setIsFirstMount] = useState(true);
   const [yourHexCopied, setYourHexCopied] = useState(false);
   const [topHexCopied, setTopHexCopied] = useState(false);
   const yourHexCopyTimerRef = useRef<number | null>(null);
   const topHexCopyTimerRef = useRef<number | null>(null);
-  const hasShownOnceRef = useRef(false);
 
   // Get user's word and device ID - read from localStorage on mount and when server comes back online
   const [yourWord, setYourWord] = useState<string | undefined>(() => {
@@ -190,20 +188,10 @@ export function ResultsPage() {
     }
   }
 
-  // Animation effects
+  // Animation effects - simplified
   useEffect(() => {
-    if (!loading) {
-      const id = requestAnimationFrame(() => {
-        setShowContainer(true);
-        if (isFirstMount) {
-          setTimeout(() => setIsFirstMount(false), 5000);
-        }
-        hasShownOnceRef.current = true;
-      });
-      return () => cancelAnimationFrame(id);
-    }
-    if (!hasShownOnceRef.current) {
-      setShowContainer(false);
+    if (!loading && isFirstMount) {
+      setTimeout(() => setIsFirstMount(false), 5000);
     }
   }, [loading, isFirstMount]);
 
@@ -223,38 +211,21 @@ export function ResultsPage() {
         stats?.yourWord?.word ? getEmotionColor(stats.yourWord.word) : undefined
       }
     >
-      <div
-        className={[
-          'min-h-[100vh] min-h-[100svh] min-h-[100dvh] flex flex-col items-center justify-center p-4 ios-layout-fix',
-          showContainer ? '' : 'invisible',
-        ].join(' ')}
-      >
-        <div
-          className={[
-            'w-full max-w-4xl mx-auto text-center px-4 sm:px-6 flex flex-col justify-center',
-            isFirstMount && showContainer ? 'animate-seq-container' : '',
-          ].join(' ')}
-          style={{
-            minHeight: 'calc(100vh - 4rem)',
-            paddingTop: 'env(safe-area-inset-top)',
-            paddingBottom: 'env(safe-area-inset-bottom)',
-          }}
-        >
-          {/* Main hero section */}
-          <div
-            className={`mb-8 sm:mb-12 md:mb-16 lg:mb-20 ${isFirstMount && showContainer ? 'wf-enter wf-hero wf-d0' : ''}`}
-            aria-live="polite"
-          >
-            <div className="text-center space-y-4 md:space-y-6">
-              <h1 className="font-medium text-gray-800 leading-tight md:whitespace-nowrap tracking-[-0.01em] text-[clamp(1.5rem,2.2vw,3rem)]">
+      <div className="min-h-screen flex flex-col">
+        {/* Account for fixed navigation */}
+        <div className="h-14 sm:h-16 flex-shrink-0" />
+        
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+          <div className="w-full max-w-4xl mx-auto text-center space-y-16">
+            {/* Main hero section */}
+            <div className="space-y-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-gray-800 leading-tight tracking-tight">
                 The world feels
               </h1>
-              <div
-                className="relative mx-auto inline-block"
-                style={{ minHeight: '1em' }}
-              >
+              <div className="relative">
                 <AnimatedValue
-                  className="block font-semibold tracking-[-0.015em] leading-none text-[clamp(3rem,8vw,7rem)]"
+                  className="block font-semibold text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] leading-none tracking-tight"
                   value={stats?.top?.word || (isEmpty ? 'silent' : '\u00A0')}
                   fadeOutMs={200}
                   fadeInMs={300}
@@ -291,235 +262,226 @@ export function ResultsPage() {
                 />
               </div>
             </div>
-          </div>
 
-          {/* Empty state message - only show if we have no stats and a real error */}
-          {isEmpty && (
-            <div className="text-center space-y-4 md:space-y-6 mb-8">
-              <p className="text-lg text-gray-600 max-w-md mx-auto">
-                Unable to connect to the server. Please check your connection
-                and try again.
-              </p>
-              <div className="pt-4">
+            {/* Empty state message */}
+            {isEmpty && (
+              <div className="space-y-6">
+                <p className="text-xl text-gray-600 max-w-md mx-auto">
+                  Unable to connect to the server. Please check your connection
+                  and try again.
+                </p>
                 <button
                   onClick={() => navigate('/')}
-                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-4 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 >
                   Share Your Feelings
                 </button>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Loading timeout message */}
-          {loadingTimeout && loading && (
-            <div className="text-center space-y-4 md:space-y-6 mb-8">
-              <p className="text-lg text-gray-600 max-w-md mx-auto">
-                Taking longer than usual to connect. The server might be
-                starting up.
-              </p>
-              <div className="pt-4">
+            {/* Loading timeout message */}
+            {loadingTimeout && loading && (
+              <div className="space-y-6">
+                <p className="text-xl text-gray-600 max-w-md mx-auto">
+                  Taking longer than usual to connect. The server might be
+                  starting up.
+                </p>
                 <button
                   onClick={() => window.location.reload()}
-                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-3 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-8 py-4 text-lg font-medium text-gray-800 hover:bg-white/30 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 >
                   Try Again
                 </button>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Results Panel - Show when we have stats (real or fallback) */}
-          {stats && !isEmpty && (
-            <div className="space-y-4 max-w-3xl mx-auto w-full">
-              {/* Your contribution chip */}
-              <div
-                className={`w-full ${isFirstMount && showContainer ? 'wf-enter wf-chip wf-d1' : ''}`}
-              >
-                {stats.yourWord ? (
-                  <div
-                    className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4"
-                    aria-label={`You feel ${stats.yourWord.word}. ${formatPercent(stats.yourWord.count, stats.total || 0)} match. Color ${getEmotionColor(stats.yourWord.word) || '#6DCFF6'}`}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex items-center justify-center sm:justify-start gap-3">
-                        <span className="text-sm text-gray-800">
-                          You feel{' '}
-                          <AnimatedValue
-                            className="font-bold text-gray-900"
-                            value={stats.yourWord.word}
-                            fadeOutMs={160}
-                            fadeInMs={240}
-                          />
-                        </span>
-                        <span className="h-4 w-px bg-white/50" />
-                        <span className="text-sm text-gray-800 tabular-nums whitespace-nowrap">
-                          <AnimatedValue
-                            value={formatPercent(
-                              stats.yourWord.count,
-                              stats.total || 0
-                            )}
-                            fadeOutMs={160}
-                            fadeInMs={240}
-                          />{' '}
-                          match
-                        </span>
-                      </div>
-                      <div className="flex justify-center sm:justify-end">
-                        <button
-                          type="button"
-                          onClick={handleCopyYourHex}
-                          title="Copy HEX"
-                          className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
-                        >
-                          <span
-                            className="inline-block w-3 h-3 rounded-full"
-                            style={{
-                              backgroundColor:
-                                getEmotionColor(stats.yourWord.word) ||
-                                '#6DCFF6',
-                            }}
-                            aria-hidden
-                          />
-                          <span
-                            className="inline-block w-[8ch] text-left leading-none"
-                            aria-live="polite"
-                          >
-                            {yourHexCopied ? (
-                              'COPIED'
-                            ) : (
-                              <AnimatedValue
-                                value={(
-                                  getEmotionColor(stats.yourWord.word) ||
-                                  '#6DCFF6'
-                                ).toUpperCase()}
-                                fadeOutMs={120}
-                                fadeInMs={200}
-                              />
-                            )}
+            {/* Results Panel */}
+            {stats && !isEmpty && (
+              <div className="space-y-6 max-w-3xl mx-auto w-full">
+                {/* Your contribution */}
+                <div className="w-full">
+                  {stats.yourWord ? (
+                    <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex items-center justify-center sm:justify-start gap-3">
+                          <span className="text-base text-gray-800">
+                            You feel{' '}
+                            <AnimatedValue
+                              className="font-bold text-gray-900"
+                              value={stats.yourWord.word}
+                              fadeOutMs={160}
+                              fadeInMs={240}
+                            />
                           </span>
-                        </button>
+                          <span className="h-4 w-px bg-white/50" />
+                          <span className="text-base text-gray-800 tabular-nums whitespace-nowrap">
+                            <AnimatedValue
+                              value={formatPercent(
+                                stats.yourWord.count,
+                                stats.total || 0
+                              )}
+                              fadeOutMs={160}
+                              fadeInMs={240}
+                            />{' '}
+                            match
+                          </span>
+                        </div>
+                        <div className="flex justify-center sm:justify-end">
+                          <button
+                            type="button"
+                            onClick={handleCopyYourHex}
+                            title="Copy HEX"
+                            className="glass-token inline-flex items-center h-9 px-4 gap-2 text-sm font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 whitespace-nowrap hover:bg-white/10 transition-colors"
+                          >
+                            <span
+                              className="inline-block w-3 h-3 rounded-full"
+                              style={{
+                                backgroundColor:
+                                  getEmotionColor(stats.yourWord.word) ||
+                                  '#6DCFF6',
+                              }}
+                              aria-hidden
+                            />
+                            <span
+                              className="inline-block w-[8ch] text-left leading-none"
+                              aria-live="polite"
+                            >
+                              {yourHexCopied ? (
+                                'COPIED'
+                              ) : (
+                                <AnimatedValue
+                                  value={(
+                                    getEmotionColor(stats.yourWord.word) ||
+                                    '#6DCFF6'
+                                  ).toUpperCase()}
+                                  fadeOutMs={120}
+                                  fadeInMs={200}
+                                />
+                              )}
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-4 text-sm text-gray-700 text-center">
-                    Share one word to see your color today.
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <div className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg px-6 py-5 text-base text-gray-700 text-center">
+                      Share one word to see your color today.
+                    </div>
+                  )}
+                </div>
 
-              {/* Top emotions stats chip */}
-              {stats.top10 && stats.top10.length > 0 && (
-                <div
-                  className={`w-full px-6 py-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg ${isFirstMount && showContainer ? 'wf-enter wf-stats wf-d2' : ''}`}
-                >
-                  <div className="space-y-2">
-                    {stats.top10.slice(0, 3).map((item, index) => (
-                      <div
-                        key={`rank-${index}`}
-                        className="flex items-center justify-between py-2.5 px-1"
-                      >
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <div className="text-xs font-medium text-gray-500 tabular-nums w-8 text-left">
-                            #{index + 1}
-                          </div>
-                          <AnimatedValue
-                            value={item.word}
-                            animateInitial={false}
-                            fadeOutMs={160}
-                            fadeInMs={260}
-                            render={(word) => (
-                              <div
-                                className="w-3 h-3 rounded-full flex-shrink-0"
-                                style={{
-                                  backgroundColor:
-                                    getEmotionColor(String(word)) || '#6DCFF6',
-                                }}
-                              />
-                            )}
-                          />
-                          <span className="text-sm font-medium text-gray-800 truncate">
+                {/* Top emotions stats */}
+                {stats.top10 && stats.top10.length > 0 && (
+                  <div className="w-full px-6 py-6 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg">
+                    <div className="space-y-3">
+                      {stats.top10.slice(0, 3).map((item, index) => (
+                        <div
+                          key={`rank-${index}`}
+                          className="flex items-center justify-between py-3 px-2"
+                        >
+                          <div className="flex items-center gap-4 min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-500 tabular-nums w-8 text-left">
+                              #{index + 1}
+                            </div>
                             <AnimatedValue
                               value={item.word}
                               animateInitial={false}
-                              fadeOutMs={180}
-                              fadeInMs={280}
+                              fadeOutMs={160}
+                              fadeInMs={260}
+                              render={(word) => (
+                                <div
+                                  className="w-3 h-3 rounded-full flex-shrink-0"
+                                  style={{
+                                    backgroundColor:
+                                      getEmotionColor(String(word)) ||
+                                      '#6DCFF6',
+                                  }}
+                                />
+                              )}
                             />
-                          </span>
+                            <span className="text-base font-medium text-gray-800 truncate">
+                              <AnimatedValue
+                                value={item.word}
+                                animateInitial={false}
+                                fadeOutMs={180}
+                                fadeInMs={280}
+                              />
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-700 tabular-nums w-12 text-right flex-shrink-0">
+                            <AnimatedValue
+                              value={formatPercent(
+                                item.count,
+                                stats.total || 0
+                              )}
+                              animateInitial={false}
+                              fadeOutMs={160}
+                              fadeInMs={260}
+                            />
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-700 tabular-nums w-12 text-right flex-shrink-0">
-                          <AnimatedValue
-                            value={formatPercent(item.count, stats.total || 0)}
-                            animateInitial={false}
-                            fadeOutMs={160}
-                            fadeInMs={260}
-                          />
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Footer */}
-          <div
-            className={`mt-8 md:mt-12 space-y-4 ${isFirstMount && showContainer ? 'wf-enter wf-footer wf-d3' : ''}`}
-          >
-            {stats?.colorHex && !isEmpty ? (
-              <div className="flex items-center justify-center">
-                <button
-                  type="button"
-                  onClick={handleCopyTopHex}
-                  title="Copy top color HEX"
-                  className="glass-token inline-flex items-center h-8 px-3 gap-2 text-xs font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:text-gray-800 transition-colors"
-                  aria-label={`Top color ${topHexCopied ? 'copied' : (stats.colorHex || '').toUpperCase()}`}
-                >
-                  <span
-                    className="inline-block w-3 h-3 rounded-full"
-                    style={{ backgroundColor: stats.colorHex }}
-                    aria-hidden
-                  />
-                  <span
-                    className="inline-block w-[8ch] text-left leading-none"
-                    aria-live="polite"
-                  >
-                    {topHexCopied ? (
-                      'COPIED'
-                    ) : (
-                      <AnimatedValue
-                        value={(stats.colorHex || '').toUpperCase()}
-                        fadeOutMs={140}
-                        fadeInMs={220}
-                      />
-                    )}
-                  </span>
-                </button>
+                )}
               </div>
-            ) : null}
-            <p className="text-sm text-gray-500 text-center">
-              {isEmpty ? (
-                'Connection error'
-              ) : stats ? (
-                <>
-                  <AnimatedValue
-                    value={(stats.total ?? 0).toLocaleString()}
-                    fadeOutMs={160}
-                    fadeInMs={240}
-                  />{' '}
-                  <AnimatedValue
-                    value={(stats.total || 0) === 1 ? 'feeling' : 'feelings'}
-                    fadeOutMs={120}
-                    fadeInMs={200}
-                  />{' '}
-                  shared today
-                </>
-              ) : (
-                'Loading...'
-              )}
-            </p>
+            )}
+
+            {/* Footer */}
+            <div className="space-y-4">
+              {stats?.colorHex && !isEmpty ? (
+                <div className="flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={handleCopyTopHex}
+                    title="Copy top color HEX"
+                    className="glass-token inline-flex items-center h-9 px-4 gap-2 text-sm font-mono tracking-normal text-gray-700 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:text-gray-800 transition-colors"
+                    aria-label={`Top color ${topHexCopied ? 'copied' : (stats.colorHex || '').toUpperCase()}`}
+                  >
+                    <span
+                      className="inline-block w-3 h-3 rounded-full"
+                      style={{ backgroundColor: stats.colorHex }}
+                      aria-hidden
+                    />
+                    <span
+                      className="inline-block w-[8ch] text-left leading-none"
+                      aria-live="polite"
+                    >
+                      {topHexCopied ? (
+                        'COPIED'
+                      ) : (
+                        <AnimatedValue
+                          value={(stats.colorHex || '').toUpperCase()}
+                          fadeOutMs={140}
+                          fadeInMs={220}
+                        />
+                      )}
+                    </span>
+                  </button>
+                </div>
+              ) : null}
+              <p className="text-base text-gray-500 text-center">
+                {isEmpty ? (
+                  'Connection error'
+                ) : stats ? (
+                  <>
+                    <AnimatedValue
+                      value={(stats.total ?? 0).toLocaleString()}
+                      fadeOutMs={160}
+                      fadeInMs={240}
+                    />{' '}
+                    <AnimatedValue
+                      value={(stats.total || 0) === 1 ? 'feeling' : 'feelings'}
+                      fadeOutMs={120}
+                      fadeInMs={200}
+                    />{' '}
+                    shared today
+                  </>
+                ) : (
+                  'Loading...'
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>

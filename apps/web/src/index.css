@@ -5,203 +5,17 @@
 @layer base {
   html {
     background: transparent;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply text-gray-900;
     background: transparent;
     min-height: 100vh;
-    min-height: 100svh;
-    min-height: 100dvh;
     font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04';
-    /* Avoid white gap during toolbar show/hide in iOS Chrome/Safari */
     overflow-x: hidden;
-    overflow-y: overlay;
-    /* Ensure proper safe area handling for iOS Safari */
-    padding-top: env(safe-area-inset-top);
-    /* Prevent iOS Safari from zooming on input focus */
     -webkit-text-size-adjust: 100%;
-    /* Smooth scrolling for iOS */
     -webkit-overflow-scrolling: touch;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* iOS Safari specific viewport fixes */
-  @supports (-webkit-touch-callout: none) {
-    /* iOS Safari specific styles */
-    body {
-      /* Prevent viewport issues on iOS Safari */
-      -webkit-overflow-scrolling: touch;
-      /* Ensure proper viewport calculation */
-      height: 100vh;
-      height: 100svh;
-      height: 100dvh;
-      /* Better safe area handling for iOS */
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
-      /* Ensure background remains transparent */
-      background: transparent;
-      /* iOS 17+ specific fixes */
-      min-height: -webkit-fill-available;
-      /* Prevent white background flash */
-      background-color: transparent !important;
-    }
-
-    /* Fix for iOS Safari dynamic viewport issues */
-    .min-h-\[100vh\],
-    .min-h-\[100svh\],
-    .min-h-\[100dvh\] {
-      min-height: 100vh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      /* Additional iOS Safari viewport fix */
-      min-height: -webkit-fill-available;
-    }
-
-    /* iOS-specific layout adjustments for better viewport handling */
-    .ios-layout-fix {
-      /* Use iOS-specific viewport units */
-      min-height: 100vh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      min-height: -webkit-fill-available;
-      /* Ensure proper flex behavior on iOS */
-      display: flex;
-      flex-direction: column;
-      /* Prevent content from being clipped on iOS */
-      overflow: visible;
-      /* Account for safe areas */
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    /* Additional iOS Safari viewport handling for flex layouts */
-    .ios-layout-fix > .flex-1 {
-      /* Ensure flex-1 content doesn't get clipped */
-      min-height: 0;
-      flex-shrink: 1;
-    }
-
-    /* Results page specific iOS optimizations */
-    .ios-layout-fix .flex.flex-col.justify-center {
-      /* Ensure content is properly centered on iOS */
-      justify-content: center;
-      align-items: center;
-      /* Prevent content from being cut off by dynamic viewport changes */
-      min-height: calc(
-        100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-      );
-      min-height: calc(
-        100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-      );
-      min-height: calc(
-        100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-      );
-    }
-  }
-
-  /* iOS Safari viewport utility class */
-  .ios-viewport-fix {
-    min-height: 100vh;
-    min-height: 100svh;
-    min-height: 100dvh;
-    /* iOS Safari specific viewport handling */
-    min-height: -webkit-fill-available;
-    /* Ensure proper flex behavior on iOS */
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* iOS 17+ specific viewport fixes */
-  @supports (-webkit-touch-callout: none) and (min-height: 100dvh) {
-    html {
-      /* Force transparent background for iOS 17+ */
-      background: transparent !important;
-      background-color: transparent !important;
-    }
-
-    body {
-      /* iOS 17+ dynamic viewport handling */
-      min-height: 100vh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      min-height: -webkit-fill-available;
-      /* Ensure no white background */
-      background: transparent !important;
-      background-color: transparent !important;
-      /* Prevent any default browser background */
-      -webkit-background-clip: content-box;
-      background-clip: content-box;
-    }
-  }
-
-  /* iOS 18+ specific fixes for enhanced PWA support */
-  @supports (-webkit-touch-callout: none) and (min-height: 100dvh) and
-    (display: standalone) {
-    html {
-      /* iOS 18 PWA background handling */
-      background: transparent !important;
-      background-color: transparent !important;
-      /* Prevent any system background from showing */
-      -webkit-background-clip: padding-box;
-      background-clip: padding-box;
-    }
-
-    body {
-      /* iOS 18 enhanced viewport handling */
-      min-height: 100vh;
-      min-height: 100svh;
-      min-height: 100dvh;
-      min-height: -webkit-fill-available;
-      /* Force transparent background for iOS 18 PWA mode */
-      background: transparent !important;
-      background-color: transparent !important;
-      /* Enhanced background clip for iOS 18 */
-      -webkit-background-clip: content-box;
-      background-clip: content-box;
-      /* iOS 18 specific safe area handling */
-      padding-bottom: max(env(safe-area-inset-bottom), 0px);
-    }
-  }
-
-  /* Apple-like centered content utility */
-  .apple-center {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(
-      100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-    );
-    min-height: calc(
-      100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-    );
-    min-height: calc(
-      100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-    );
-    /* Fallback for browsers that don't support env() */
-    min-height: 100vh;
-    /* iOS Safari specific optimizations */
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    /* Prevent content from being clipped during viewport changes */
-    overflow: visible;
-  }
-
-  /* Simple iPhone positioning */
-  @supports (-webkit-touch-callout: none) {
-    /* Modern iPhones - position content higher */
-    @media screen and (max-aspect-ratio: 9/16) {
-      .flex.flex-col.justify-center {
-        justify-content: flex-start !important;
-        padding-top: calc(6vh + env(safe-area-inset-top)) !important;
-      }
-    }
   }
 
   /* View Transitions - route fades */
@@ -501,13 +315,9 @@
     background-color: rgba(255, 255, 255, 0.2);
   }
 
-  /* Mobile-optimized dropdown container - Used in HomePage */
+  /* Mobile-optimized dropdown container */
   .dropdown-mobile-container {
-    /* Ensure dropdown doesn't extend beyond viewport on mobile */
     max-height: calc(100vh - 200px);
-    max-height: calc(100svh - 200px);
-    max-height: calc(100dvh - 200px);
-    /* Add subtle backdrop blur for better readability */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
@@ -541,142 +351,7 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
   }
 
-  /* Results page: mount sequence (Apple-like, calm) */
-  @keyframes wf-hero-in {
-    0% {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  @keyframes wf-chip-in {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  @keyframes wf-stats-in {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  .animate-hero-fade-in {
-    animation: wf-hero-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .animate-chip-fade-in {
-    animation: wf-chip-in 1200ms ease-out both;
-  }
-  .animate-stats-fade-in {
-    animation: wf-stats-in 1200ms ease-out both;
-  }
-
-  /* Stagger timings for sequence: hero -> your-chip -> stats -> footer */
-  .anim-delay-hero {
-    animation-delay: 0ms;
-  }
-  .anim-delay-chip {
-    animation-delay: 1400ms;
-  }
-  .anim-delay-stats {
-    animation-delay: 2600ms;
-  }
-  .anim-delay-footer {
-    animation-delay: 3600ms;
-  }
-
-  /* Container slight fade to avoid flash during first reveal */
-  @keyframes wf-container-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  .animate-seq-container {
-    animation: wf-container-in 400ms ease-out both;
-  }
-
-  /* New unified mount entrance system */
-  @keyframes wf-enter {
-    from {
-      opacity: 0;
-      transform: translateY(var(--wf-distance, 8px))
-        scale(var(--wf-scale, 0.985));
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-  .wf-enter {
-    animation: wf-enter var(--wf-duration, 1800ms)
-      cubic-bezier(0.22, 1, 0.36, 1) both;
-    will-change: opacity, transform;
-  }
-  .wf-d0 {
-    animation-delay: 0ms;
-  }
-  .wf-d1 {
-    animation-delay: 250ms;
-  }
-  .wf-d2 {
-    animation-delay: 500ms;
-  }
-  .wf-d3 {
-    animation-delay: 750ms;
-  }
-  .wf-hero {
-    --wf-distance: 8px;
-    --wf-scale: 0.985;
-    --wf-duration: 2200ms;
-  }
-  .wf-chip {
-    --wf-distance: 6px;
-    --wf-scale: 0.988;
-    --wf-duration: 1800ms;
-  }
-  .wf-stats {
-    --wf-distance: 6px;
-    --wf-scale: 0.988;
-    --wf-duration: 1800ms;
-  }
-  .wf-footer {
-    --wf-distance: 4px;
-    --wf-scale: 0.992;
-    --wf-duration: 1600ms;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .wf-enter {
-      animation-duration: 1ms !important;
-      animation-delay: 0ms !important;
-    }
-  }
-
-  /* Refresh (15s) micro fade for content blocks and background */
-  @keyframes wf-soft-fade-in {
-    from {
-      opacity: 0.6;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  .animate-soft-fade-in {
-    animation: wf-soft-fade-in 300ms ease-out both;
-  }
-
-  /* Animation utilities used across the app */
+  /* Simple fade-in animation */
   @keyframes wf-fade-in {
     from {
       opacity: 0;
@@ -689,6 +364,7 @@
     animation: wf-fade-in 1500ms ease-out both;
   }
 
+  /* Pop-in animation for dropdowns */
   @keyframes wf-pop-in {
     0% {
       opacity: 0;
@@ -701,11 +377,6 @@
   }
   .animate-pop-in {
     animation: wf-pop-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  /* Animation delay utilities - Only keeping the ones actually used */
-  .anim-delay-700 {
-    animation-delay: 700ms;
   }
 
   /* Very slow hue rotation cycle */
