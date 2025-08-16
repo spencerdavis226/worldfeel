@@ -3,19 +3,47 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
   html {
     background: transparent;
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    min-height: 100%;
   }
 
   body {
     @apply text-gray-900;
     background: transparent;
-    min-height: 100vh;
+    min-height: 100%;
     font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04';
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     -webkit-overflow-scrolling: touch;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    min-height: 100%;
+  }
+
+  /* Prevent scrolling on desktop only */
+  @media (min-width: 768px) {
+    html {
+      height: 100%;
+    }
+    
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    #root {
+      height: 100%;
+    }
   }
 
   /* View Transitions - route fades */

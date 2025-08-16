@@ -25,11 +25,11 @@ const ApiDocsPage = lazy(() =>
 export function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div id="route-root">
+      <div id="route-root" className="min-h-full md:h-full">
         <Navigation />
         <Suspense
           fallback={
-            <div className="flex items-center justify-center min-h-[100vh] min-h-[100svh] min-h-[100dvh]">
+            <div className="flex items-center justify-center min-h-screen md:h-screen">
               Loading...
             </div>
           }

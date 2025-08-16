@@ -217,12 +217,12 @@ export function ResultsPage() {
         stats?.yourWord?.word ? getEmotionColor(stats.yourWord.word) : undefined
       }
     >
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
         {/* Account for fixed navigation */}
         <div className="h-14 sm:h-16 flex-shrink-0" />
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-0">
           <div
             className={`w-full max-w-4xl mx-auto text-center space-y-16 transition-all duration-1000 ${
               isContentVisible
