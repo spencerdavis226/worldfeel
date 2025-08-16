@@ -5,6 +5,10 @@ interface UniversalBackgroundProps {
   centerColorHex?: string;
   /** Secondary color for the edges of the background (optional) */
   edgeColorHex?: string;
+  /** Enable gentle hue cycling for a calm, flowing experience */
+  enableHueCycle?: boolean;
+  /** Duration in ms for one full hue cycle (default: 180000ms = 3 minutes) */
+  hueCycleDurationMs?: number;
   /** Duration in ms for color transitions (default: 800ms) */
   transitionDurationMs?: number;
   /** Children to render on top of the background */
@@ -14,9 +18,13 @@ interface UniversalBackgroundProps {
 export function UniversalBackground({
   centerColorHex = '#6DCFF6',
   edgeColorHex,
+  enableHueCycle = false,
+  hueCycleDurationMs = 180000, // 3 minutes for very gentle cycling
   transitionDurationMs = 800,
   children,
 }: UniversalBackgroundProps) {
+  // Generate random starting hue on mount for variety
+  const [randomStartHue] = useState(() => Math.floor(Math.random() * 360));
   // Convert hex to RGB for CSS variables
   const hexToRgb = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -327,6 +335,10 @@ export function UniversalBackground({
           className="absolute inset-0 w-full min-h-full"
           style={{
             background: currentGradient,
+            ...(enableHueCycle && {
+              animation: `wf-gentle-hue-cycle ${hueCycleDurationMs}ms linear infinite`,
+              '--wf-hue-start': `${randomStartHue}deg`,
+            } as React.CSSProperties),
           }}
         />
 
