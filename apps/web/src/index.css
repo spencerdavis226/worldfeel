@@ -353,14 +353,16 @@
 
   /* Apple-like entrance animation utility */
   .apple-entrance {
-    transition: opacity 1000ms cubic-bezier(0.22, 1, 0.36, 1),
-                transform 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 1000ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1000ms cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
   }
 
   .apple-entrance-delayed {
-    transition: opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1),
-                transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: 200ms;
     will-change: opacity, transform;
   }

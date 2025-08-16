@@ -220,7 +220,7 @@ export function ResultsPage() {
       <div className="min-h-screen flex flex-col">
         {/* Account for fixed navigation */}
         <div className="h-14 sm:h-16 flex-shrink-0" />
-        
+
         {/* Main content area */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
           <div

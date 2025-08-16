@@ -236,7 +236,7 @@ export function HomePage() {
       <div className="min-h-screen flex flex-col">
         {/* Account for fixed navigation */}
         <div className="h-14 sm:h-16 flex-shrink-0" />
-        
+
         {/* Main content - simple and centered */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-7xl text-center space-y-12">
@@ -267,7 +267,7 @@ export function HomePage() {
                     aria-expanded={showSuggestions}
                     aria-controls="emotion-suggestions"
                   />
-                  
+
                   {/* Rotating placeholder */}
                   {word.trim() === '' && (
                     <div
