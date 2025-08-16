@@ -201,13 +201,17 @@
       );
   }
 
-  /* New consistent glass submit button - matches app's glass panel aesthetic */
+  /* Apple-inspired glass submit button */
   .glass-submit-button {
-    @apply backdrop-blur-xl bg-white/30 border border-white/40 shadow-lg;
+    @apply backdrop-blur-xl bg-white/25 border border-white/30;
     border-radius: 12px;
     position: relative;
     overflow: hidden;
-    transition: all 0.15s ease-out;
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    cursor: pointer;
   }
 
   .glass-submit-button::before {
@@ -216,35 +220,60 @@
     inset: 0;
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.1) 0%,
       transparent 50%
     );
     border-radius: 12px;
     pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .glass-submit-button:hover {
-    @apply bg-white/40 border-white/50;
-    box-shadow:
-      0 8px 25px rgba(0, 0, 0, 0.15),
-      0 2px 8px rgba(0, 0, 0, 0.1);
+    @apply bg-white/35 border-white/40;
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .glass-submit-button:hover::before {
+    opacity: 1.5;
   }
 
   .glass-submit-button:active {
-    @apply bg-white/50;
-    transform: scale(0.96);
-    transition: all 0.1s ease-out;
+    @apply bg-white/40 border-white/45;
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transform: translateY(0px) scale(0.98);
+    transition: all 0.1s cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  .glass-submit-button:active::before {
+    opacity: 0.5;
   }
 
   .glass-submit-button:focus-visible {
-    @apply bg-white/45 border-white/60;
+    @apply bg-white/35 border-white/50;
     box-shadow:
-      0 0 0 3px rgba(255, 255, 255, 0.3),
-      0 8px 25px rgba(0, 0, 0, 0.15);
+      0 0 0 3px rgba(255, 255, 255, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    outline: none;
   }
 
   .glass-submit-button:disabled {
-    @apply opacity-50 cursor-not-allowed;
+    @apply opacity-40 cursor-not-allowed;
+    transform: none;
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-submit-button:disabled:hover {
+    transform: none;
+    @apply bg-white/25 border-white/30;
   }
 
   /* Crossfade transition animations for submit button */
