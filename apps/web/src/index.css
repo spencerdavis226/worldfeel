@@ -207,6 +207,7 @@
     border-radius: 12px;
     position: relative;
     overflow: hidden;
+    transition: all 0.15s ease-out;
   }
 
   .glass-submit-button::before {
@@ -230,8 +231,9 @@
   }
 
   .glass-submit-button:active {
-    @apply bg-white/35;
-    transform: translateY(1px);
+    @apply bg-white/50;
+    transform: scale(0.96);
+    transition: all 0.1s ease-out;
   }
 
   .glass-submit-button:focus-visible {
