@@ -21,9 +21,6 @@ type RequestOptions = {
 // Simple timeout for server requests
 const SERVER_TIMEOUT_MS = 2000; // 2 seconds
 
-// Cache for consistent mock data
-let cachedMockStats: Stats | null = null;
-
 // Track pending submissions
 let pendingSubmissions: SubmissionRequest[] = [];
 
@@ -153,8 +150,8 @@ class ApiClient {
 
       return response;
     } catch (error) {
-      // Add to pending submissions
-      pendingSubmissions.push(data);
+      // Replace pending submissions with the new one (only keep the most recent)
+      pendingSubmissions = [data];
 
       console.info(
         `🌐 [WorldFeel] Server offline - queuing submission: ${data.word} (${pendingSubmissions.length} pending)`
@@ -195,14 +192,13 @@ class ApiClient {
         `🌐 [WorldFeel] Server offline - using fallback data for /stats (yourWord: ${params.yourWord || 'none'})`
       );
 
-      // Use cached mock stats for consistency
-      if (!cachedMockStats) {
-        cachedMockStats = generateMockStats(params.yourWord);
-      }
+      // Generate new mock stats with the current yourWord parameter
+      // Don't cache when yourWord changes to ensure the "you" chip shows the correct word
+      const mockStats = generateMockStats(params.yourWord);
 
       return {
         success: true,
-        data: cachedMockStats,
+        data: mockStats,
       };
     }
   }

@@ -62,6 +62,36 @@ export function ResultsPage() {
     };
   }, []);
 
+  // Also check for localStorage changes when component mounts or when user navigates back
+  useEffect(() => {
+    const checkLocalStorage = () => {
+      try {
+        const newWord = localStorage.getItem('wf.yourWord') || undefined;
+        if (newWord !== yourWord) {
+          setYourWord(newWord);
+        }
+      } catch {
+        // Ignore localStorage errors
+      }
+    };
+
+    // Check immediately on mount
+    checkLocalStorage();
+
+    // Also check when the page becomes visible (user navigates back)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkLocalStorage();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [yourWord]);
+
   const { stats, loading, error } = useStats(
     { ...(yourWord ? { yourWord } : {}) },
     {
