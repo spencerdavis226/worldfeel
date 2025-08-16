@@ -25,7 +25,7 @@ export function ResultsPage() {
   usePageTitle('Results');
 
   const navigate = useNavigate();
-  const [isFirstMount, setIsFirstMount] = useState(true);
+  const [isContentVisible, setIsContentVisible] = useState(false);
   const [yourHexCopied, setYourHexCopied] = useState(false);
   const [topHexCopied, setTopHexCopied] = useState(false);
   const yourHexCopyTimerRef = useRef<number | null>(null);
@@ -90,7 +90,7 @@ export function ResultsPage() {
     };
   }, [yourWord]);
 
-  const { stats, loading, error } = useStats(
+  const { stats, loading, error, refresh } = useStats(
     { ...(yourWord ? { yourWord } : {}) },
     {
       autoRefresh: true,
@@ -188,12 +188,18 @@ export function ResultsPage() {
     }
   }
 
-  // Animation effects - simplified
+  // Animation state - simple and debuggable
   useEffect(() => {
-    if (!loading && isFirstMount) {
-      setTimeout(() => setIsFirstMount(false), 5000);
+    if (!loading && stats) {
+      // Small delay to ensure content is ready, then trigger animations
+      const timer = setTimeout(() => {
+        setIsContentVisible(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      setIsContentVisible(false);
     }
-  }, [loading, isFirstMount]);
+  }, [loading, stats]);
 
   useEffect(() => {
     return () => {
@@ -217,9 +223,24 @@ export function ResultsPage() {
         
         {/* Main content area */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-4xl mx-auto text-center space-y-16">
+          <div
+            className={`w-full max-w-4xl mx-auto text-center space-y-16 transition-all duration-1000 ${
+              isContentVisible
+                ? 'opacity-100 transform translate-y-0'
+                : 'opacity-0 transform translate-y-4'
+            }`}
+            style={{
+              transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+          >
             {/* Main hero section */}
-            <div className="space-y-8">
+            <div
+              className={`space-y-8 transition-all duration-1400 ease-out delay-100 ${
+                isContentVisible
+                  ? 'opacity-100 transform translate-y-0 scale-100'
+                  : 'opacity-0 transform translate-y-8 scale-95'
+              }`}
+            >
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-gray-800 leading-tight tracking-tight">
                 The world feels
               </h1>
@@ -297,7 +318,13 @@ export function ResultsPage() {
 
             {/* Results Panel */}
             {stats && !isEmpty && (
-              <div className="space-y-6 max-w-3xl mx-auto w-full">
+              <div
+                className={`space-y-6 max-w-3xl mx-auto w-full transition-all duration-1000 ease-out delay-500 ${
+                  isContentVisible
+                    ? 'opacity-100 transform translate-y-0'
+                    : 'opacity-0 transform translate-y-4'
+                }`}
+              >
                 {/* Your contribution */}
                 <div className="w-full">
                   {stats.yourWord ? (
@@ -428,7 +455,13 @@ export function ResultsPage() {
             )}
 
             {/* Footer */}
-            <div className="space-y-4">
+            <div
+              className={`space-y-4 transition-all duration-1000 ease-out delay-700 ${
+                isContentVisible
+                  ? 'opacity-100 transform translate-y-0'
+                  : 'opacity-0 transform translate-y-4'
+              }`}
+            >
               {stats?.colorHex && !isEmpty ? (
                 <div className="flex items-center justify-center">
                   <button

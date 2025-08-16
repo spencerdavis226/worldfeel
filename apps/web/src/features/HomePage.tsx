@@ -239,10 +239,10 @@ export function HomePage() {
         
         {/* Main content area */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-2xl mx-auto text-center space-y-12">
+          <div className="w-full max-w-5xl mx-auto text-center space-y-12">
             {/* Hero text */}
             <div>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium text-gray-800 leading-tight tracking-tight">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-medium text-gray-800 leading-tight tracking-tight md:whitespace-nowrap">
                 How are you feeling today?
               </h1>
             </div>
