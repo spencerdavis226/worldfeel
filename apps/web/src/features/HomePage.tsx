@@ -22,6 +22,7 @@ export function HomePage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
+  const [isContentVisible, setIsContentVisible] = useState(false);
   // Accent/background control
   const [accentHex, setAccentHex] = useState<string>('#6DCFF6');
   // Placeholder rotation
@@ -40,6 +41,15 @@ export function HomePage() {
   // No cooldown check needed
   useEffect(() => {
     // Component is ready immediately
+  }, []);
+
+  // Mount animation - simple and Apple-like
+  useEffect(() => {
+    // Small delay to ensure content is ready, then trigger animations
+    const timer = setTimeout(() => {
+      setIsContentVisible(true);
+    }, 50);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSubmit = useCallback(
@@ -239,14 +249,35 @@ export function HomePage() {
 
         {/* Main content - simple and centered */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-7xl text-center space-y-12">
+          <div
+            className={`w-full max-w-7xl text-center space-y-12 transition-all duration-1000 ${
+              isContentVisible
+                ? 'opacity-100 transform translate-y-0'
+                : 'opacity-0 transform translate-y-4'
+            }`}
+            style={{
+              transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+          >
             {/* Hero text - simple responsive sizing */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-gray-800 leading-tight tracking-tight px-4 lg:whitespace-nowrap">
+            <h1
+              className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-gray-800 leading-tight tracking-tight px-4 lg:whitespace-nowrap transition-all duration-1200 ease-out delay-100 ${
+                isContentVisible
+                  ? 'opacity-100 transform translate-y-0 scale-100'
+                  : 'opacity-0 transform translate-y-6 scale-98'
+              }`}
+            >
               How are you feeling today?
             </h1>
 
             {/* Input form - constrained width */}
-            <div className="max-w-lg mx-auto">
+            <div
+              className={`max-w-lg mx-auto transition-all duration-1000 ease-out delay-300 ${
+                isContentVisible
+                  ? 'opacity-100 transform translate-y-0'
+                  : 'opacity-0 transform translate-y-4'
+              }`}
+            >
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="relative">
                   <input
@@ -373,7 +404,7 @@ export function HomePage() {
 
                 {/* Error message */}
                 {error && (
-                  <div className="text-red-600 text-sm bg-red-50/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                  <div className="text-red-600 text-sm bg-red-50/80 backdrop-blur-sm px-4 py-2 rounded-lg animate-pop-in">
                     {error}
                   </div>
                 )}
@@ -381,7 +412,13 @@ export function HomePage() {
             </div>
 
             {/* Footer tagline */}
-            <div className="px-4">
+            <div
+              className={`px-4 transition-all duration-1000 ease-out delay-500 ${
+                isContentVisible
+                  ? 'opacity-100 transform translate-y-0'
+                  : 'opacity-0 transform translate-y-4'
+              }`}
+            >
               <p
                 className={`text-base text-gray-500 transition-opacity ${
                   showSuggestions && suggestions.length > 0
