@@ -328,21 +328,21 @@ export function UniversalBackground({
   }, []);
 
   return (
-    <div className="min-h-[100vh] min-h-[100svh] min-h-[100dvh] relative overflow-hidden">
-      {/* Fixed background container - pinned to viewport */}
-      <div className="fixed inset-0 w-full h-full z-0">
+    <div className="min-h-screen relative">
+      {/* Background container - moves with content */}
+      <div className="absolute inset-0 w-full min-h-full z-0">
         {/* Single background layer with interpolated colors */}
         <div
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full min-h-full"
           style={{
             background: currentGradient,
             ...(hueCycle
-              ? {
+              ? ({
                   animation: `wf-hue-rotate ${hueDurationMs}ms linear infinite`,
-                  ['--wf-hue-start' as any]: `${hueStartDeg}deg`,
+                  '--wf-hue-start': `${hueStartDeg}deg`,
                   filter: 'hue-rotate(var(--wf-hue-start)) saturate(1.15)',
                   willChange: 'filter',
-                }
+                } as React.CSSProperties)
               : {
                   animation: 'wf-temperature-shift 15s ease-in-out infinite',
                   willChange: 'filter',
@@ -352,14 +352,14 @@ export function UniversalBackground({
 
         {/* Animated organic shapes layer */}
         <div
-          className="absolute inset-0 w-full h-full organic-shapes"
+          className="absolute inset-0 w-full min-h-full organic-shapes"
           style={{
             animation: 'wf-breathing 8s ease-in-out infinite',
           }}
         />
 
         {/* Subtle noise texture */}
-        <div className="absolute inset-0 w-full h-full noise-overlay opacity-10" />
+        <div className="absolute inset-0 w-full min-h-full noise-overlay opacity-10" />
       </div>
 
       {/* Main content */}
