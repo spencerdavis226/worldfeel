@@ -40,12 +40,28 @@ export function ResultsPage() {
     }
   });
 
+  const { stats, loading, error, refresh } = useStats(
+    { ...(yourWord ? { yourWord } : {}) },
+    {
+      autoRefresh: true,
+      refreshInterval: 15000,
+    }
+  );
+
   // Update yourWord when pending submissions are processed (server comes back online)
   useEffect(() => {
     const handlePendingSubmissionsProcessed = () => {
       try {
         const newWord = localStorage.getItem('wf.yourWord') || undefined;
+        console.info(
+          `🌐 [WorldFeel] Updating yourWord after pending submissions processed: ${newWord}`
+        );
         setYourWord(newWord);
+
+        // Wait a bit for state to update, then refresh stats
+        setTimeout(() => {
+          refresh();
+        }, 100);
       } catch {
         // Ignore localStorage errors
       }
@@ -58,7 +74,7 @@ export function ResultsPage() {
     return () => {
       apiClient.setOnPendingSubmissionsProcessed(() => {});
     };
-  }, []);
+  }, [refresh]);
 
   // Also check for localStorage changes when component mounts or when user navigates back
   useEffect(() => {
@@ -89,14 +105,6 @@ export function ResultsPage() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [yourWord]);
-
-  const { stats, loading, error } = useStats(
-    { ...(yourWord ? { yourWord } : {}) },
-    {
-      autoRefresh: true,
-      refreshInterval: 15000,
-    }
-  );
 
   // Check if we have valid stats data (either real or fallback)
   // Only show empty state if we have no stats and there's a real error
