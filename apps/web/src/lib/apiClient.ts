@@ -27,11 +27,71 @@ let pendingSubmissions: SubmissionRequest[] = [];
 // Add callback for when pending submissions are processed
 let onPendingSubmissionsProcessed: (() => void) | null = null;
 
+// Session-based mock data storage
+const SESSION_MOCK_DATA_KEY = 'wf.sessionMockData';
+const SESSION_START_TIME_KEY = 'wf.sessionStartTime';
+
 class ApiClient {
   private baseUrl: string;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
+  }
+
+  // Get or create session-based mock data
+  private getSessionMockData(yourWord?: string): Stats {
+    try {
+      const sessionStartTime = localStorage.getItem(SESSION_START_TIME_KEY);
+      const currentTime = Date.now();
+
+      // Check if we have a valid session (less than 24 hours old)
+      const isValidSession =
+        sessionStartTime &&
+        currentTime - parseInt(sessionStartTime) < 24 * 60 * 60 * 1000;
+
+      if (isValidSession) {
+        const storedMockData = localStorage.getItem(SESSION_MOCK_DATA_KEY);
+        if (storedMockData) {
+          const mockData = JSON.parse(storedMockData) as Stats;
+
+          // If user has a word, update the yourWord stats while keeping other data consistent
+          if (yourWord) {
+            const total = mockData.total;
+            const yourWordCount =
+              Math.floor(Math.random() * Math.floor(total * 0.05)) + 1;
+            const rank = Math.floor(Math.random() * 20) + 1;
+            const percentile = Math.max(
+              1,
+              Math.min(99, 100 - (rank / 20) * 100)
+            );
+
+            return {
+              ...mockData,
+              yourWord: {
+                word: yourWord,
+                count: yourWordCount,
+                rank,
+                percentile,
+              },
+            };
+          }
+
+          return mockData;
+        }
+      }
+
+      // Create new session mock data
+      const newMockData = generateMockStats(yourWord);
+
+      // Store session start time and mock data
+      localStorage.setItem(SESSION_START_TIME_KEY, currentTime.toString());
+      localStorage.setItem(SESSION_MOCK_DATA_KEY, JSON.stringify(newMockData));
+
+      return newMockData;
+    } catch {
+      // Fallback to generating new mock data if localStorage fails
+      return generateMockStats(yourWord);
+    }
   }
 
   // Add method to get pending submissions count
@@ -55,6 +115,32 @@ class ApiClient {
       lastCheck: Date.now(),
       spinUpTime: 70000, // 70 seconds for Render free tier
     };
+  }
+
+  // Clear session mock data (useful for testing or when user wants fresh data)
+  clearSessionMockData(): void {
+    try {
+      localStorage.removeItem(SESSION_MOCK_DATA_KEY);
+      localStorage.removeItem(SESSION_START_TIME_KEY);
+    } catch {
+      // Ignore localStorage errors
+    }
+  }
+
+  // Check if we have valid session mock data
+  hasSessionMockData(): boolean {
+    try {
+      const sessionStartTime = localStorage.getItem(SESSION_START_TIME_KEY);
+      const currentTime = Date.now();
+
+      return !!(
+        sessionStartTime &&
+        currentTime - parseInt(sessionStartTime) < 24 * 60 * 60 * 1000 &&
+        localStorage.getItem(SESSION_MOCK_DATA_KEY)
+      );
+    } catch {
+      return false;
+    }
   }
 
   private async request<T>(
@@ -166,8 +252,8 @@ class ApiClient {
         console.warn('🌐 [WorldFeel] Failed to save word to localStorage');
       }
 
-      // Return mock data
-      const mockStats = generateMockStats(data.word.trim().toLowerCase());
+      // Return session-based mock data
+      const mockStats = this.getSessionMockData(data.word.trim().toLowerCase());
       return {
         success: true,
         data: mockStats,
@@ -192,9 +278,8 @@ class ApiClient {
         `🌐 [WorldFeel] Server offline - using fallback data for /stats (yourWord: ${params.yourWord || 'none'})`
       );
 
-      // Generate new mock stats with the current yourWord parameter
-      // Don't cache when yourWord changes to ensure the "you" chip shows the correct word
-      const mockStats = generateMockStats(params.yourWord);
+      // Use session-based mock data for consistency
+      const mockStats = this.getSessionMockData(params.yourWord);
 
       return {
         success: true,
