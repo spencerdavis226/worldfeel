@@ -335,10 +335,11 @@ export function UniversalBackground({
           className="absolute inset-0 w-full min-h-full"
           style={{
             background: currentGradient,
-            ...(enableHueCycle && {
-              animation: `wf-gentle-hue-cycle ${hueCycleDurationMs}ms linear infinite`,
-              '--wf-hue-start': `${randomStartHue}deg`,
-            } as React.CSSProperties),
+            ...(enableHueCycle &&
+              ({
+                animation: `wf-gentle-hue-cycle ${hueCycleDurationMs}ms linear infinite`,
+                '--wf-hue-start': `${randomStartHue}deg`,
+              } as React.CSSProperties)),
           }}
         />
 

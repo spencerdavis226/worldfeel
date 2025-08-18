@@ -55,16 +55,18 @@ export function HomePage() {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      // Only allow submit when a dropdown selection has been made (valid emotion)
-      if (!selectedKey) return;
+
+      // Check if the typed word resolves to a valid emotion (either selected from dropdown or typed directly)
+      const resolvedEmotion = selectedKey || resolveEmotionKey(word);
+      if (!resolvedEmotion) return;
 
       setLoading(true);
       setError('');
 
       try {
         const response = await apiClient.submitWord({
-          // Submit the selected emotion; keep the visible input in sync when selecting
-          word: word.trim().toLowerCase(),
+          // Submit the resolved canonical emotion key, but keep the visible input as typed
+          word: resolvedEmotion,
         });
 
         if (response.success) {
@@ -205,8 +207,15 @@ export function HomePage() {
             setAccentHex(hex);
           }
         } else {
-          // Prevent free-enter submission unless a selection was made
-          e.preventDefault();
+          // Allow submission if the typed word resolves to a valid emotion
+          const resolvedEmotion = resolveEmotionKey(word);
+          if (resolvedEmotion) {
+            // Don't prevent default - let the form submit
+            setSelectedKey(resolvedEmotion);
+          } else {
+            // Prevent submission if no valid emotion
+            e.preventDefault();
+          }
         }
       } else if (e.key === 'Escape') {
         setShowSuggestions(false);
@@ -311,7 +320,7 @@ export function HomePage() {
                   )}
 
                   {/* Submit button */}
-                  {selectedKey && (
+                  {(selectedKey || resolveEmotionKey(word)) && (
                     <button
                       type="submit"
                       disabled={loading}
