@@ -207,7 +207,7 @@
       );
   }
 
-  /* Apple-inspired glass submit button */
+  /* Apple-inspired glass submit button - simplified and elegant */
   .glass-submit-button {
     @apply backdrop-blur-xl bg-white/25 border border-white/30;
     border-radius: 12px;
@@ -216,7 +216,7 @@
     box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    transition: all 0.15s cubic-bezier(0.2, 0, 0, 1);
     cursor: pointer;
   }
 
@@ -232,7 +232,7 @@
     border-radius: 12px;
     pointer-events: none;
     opacity: 1;
-    transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+    transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .glass-submit-button:hover {
@@ -253,8 +253,8 @@
       0 1px 3px rgba(0, 0, 0, 0.2),
       inset 0 1px 2px rgba(0, 0, 0, 0.1);
     filter: brightness(1.1);
-    transform: scale(0.96);
-    transition: all 0.1s cubic-bezier(0.4, 0, 1, 1);
+    transform: translateY(-50%) scale(0.98);
+    transition: all 0.08s cubic-bezier(0.4, 0, 1, 1);
   }
 
   .glass-submit-button:active::before {
@@ -272,46 +272,39 @@
 
   .glass-submit-button:disabled {
     @apply opacity-40 cursor-not-allowed;
-    transform: none;
+    transform: translateY(-50%);
     box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .glass-submit-button:disabled:hover {
-    transform: none;
+    transform: translateY(-50%);
     @apply bg-white/25 border-white/30;
   }
 
-  /* Crossfade transition animations for submit button */
-  @keyframes submit-button-enter {
+  /* Simple fade animation for submit button appearance */
+  @keyframes submit-button-fade-in {
     from {
       opacity: 0;
-      transform: translateY(-50%) scale(0.9);
     }
     to {
       opacity: 1;
-      transform: translateY(-50%) scale(1);
     }
   }
 
-  @keyframes submit-button-exit {
-    from {
-      opacity: 1;
-      transform: translateY(-50%) scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(-50%) scale(0.9);
-    }
+  .submit-button-fade-in {
+    animation: submit-button-fade-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  .submit-button-enter {
-    animation: submit-button-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* Prevent text overlap with submit button */
+  .input-with-button {
+    text-align: center;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
   }
 
-  .submit-button-exit {
-    animation: submit-button-exit 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  .input-with-button::placeholder {
+    text-align: center;
   }
 
   /* Noise texture overlay - Used in UniversalBackground */

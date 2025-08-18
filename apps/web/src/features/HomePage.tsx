@@ -56,6 +56,9 @@ export function HomePage() {
     async (e: React.FormEvent) => {
       e.preventDefault();
 
+      // Prevent rapid clicking
+      if (loading) return;
+
       // Check if the typed word resolves to a valid emotion (either selected from dropdown or typed directly)
       const resolvedEmotion = selectedKey || resolveEmotionKey(word);
       if (!resolvedEmotion) return;
@@ -84,7 +87,7 @@ export function HomePage() {
         setLoading(false);
       }
     },
-    [selectedKey, word, navigate]
+    [selectedKey, word, navigate, loading]
   );
 
   const handleInputChange = useCallback(
@@ -298,7 +301,11 @@ export function HomePage() {
                     id="feeling"
                     name="feeling"
                     placeholder=""
-                    className="w-full px-6 py-4 text-lg text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/40 transition-all duration-200 shadow-lg"
+                    className={`w-full px-6 py-4 text-lg text-center bg-white/25 backdrop-blur-xl border border-white/30 rounded-2xl placeholder-gray-500 text-gray-800 focus:outline-none focus:ring-0 focus:border-white/40 transition-all duration-200 shadow-lg ${
+                      selectedKey || resolveEmotionKey(word)
+                        ? 'input-with-button'
+                        : ''
+                    }`}
                     disabled={loading}
                     autoComplete="off"
                     spellCheck="false"
@@ -319,12 +326,12 @@ export function HomePage() {
                     </div>
                   )}
 
-                  {/* Submit button */}
+                  {/* Submit button - positioned inside input field */}
                   {(selectedKey || resolveEmotionKey(word)) && (
                     <button
                       type="submit"
                       disabled={loading}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 glass-submit-button flex items-center justify-center focus-visible-ring"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 glass-submit-button flex items-center justify-center focus-visible-ring submit-button-fade-in"
                       aria-label="Submit emotion"
                     >
                       {loading ? (
