@@ -88,7 +88,6 @@ export const EMOTIONS = {
   bright: '#FFE66D',
   buoyant: '#FFEE58',
   glowing: '#FFD166',
-  testemotion: '#FF6B35',
 
   // —— ATTRACTION / DESIRE ——
   attracted: '#FB7185',
@@ -983,7 +982,6 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   expansion: 'sore',
   inflation: 'sore',
   enlargement: 'sore',
-  test: 'testemotion',
 };
 
 /** Normalize and look up a color. */
