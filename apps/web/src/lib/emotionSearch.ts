@@ -1,6 +1,7 @@
 import {
   getSearchTerms,
   resolveEmotionKey,
+  EMOTION_ALIASES,
 } from '@worldfeel/shared/emotion-color-map';
 
 // Get all available emotion words from the emotion system (canonical + aliases for search)
@@ -41,15 +42,19 @@ function levenshteinDistance(a: string, b: string): number {
 /**
  * Search for emotions based on a query string.
  * Returns up to 12 matching canonical emotions, prioritized by:
- * 1. Exact matches first
- * 2. Prefix matches
- * 3. Substring matches
- * 4. Fuzzy matches (typos/misspellings)
+ * 1. Exact matches first (including canonical word if alias is typed)
+ * 2. Canonical words for partial alias matches
+ * 3. Prefix matches
+ * 4. Substring matches
+ * 5. Fuzzy matches (typos/misspellings)
  * Aliases help with search matching but are resolved to their canonical forms.
  */
 export function searchEmotions(query: string): string[] {
   const results: string[] = [];
   const queryLower = query.toLowerCase();
+
+  // Check if the query resolves to a canonical emotion (could be an alias)
+  const resolvedCanonical = resolveEmotionKey(query);
 
   // Resolve all terms to canonical emotions and deduplicate
   const canonicalMatches = new Set<string>();
@@ -69,27 +74,53 @@ export function searchEmotions(query: string): string[] {
     (word) => word.toLowerCase() === queryLower
   );
 
-  // 2. Prefix matches
+  // 2. If query resolves to a canonical word, prioritize it
+  const resolvedMatches: string[] = [];
+  if (resolvedCanonical && !exactMatches.includes(resolvedCanonical)) {
+    resolvedMatches.push(resolvedCanonical);
+  }
+
+  // 3. Canonical words for partial alias matches
+  const partialAliasMatches: string[] = [];
+  for (const [alias, canonical] of Object.entries(EMOTION_ALIASES)) {
+    if (
+      alias.toLowerCase().startsWith(queryLower) &&
+      !exactMatches.includes(canonical) &&
+      !resolvedMatches.includes(canonical) &&
+      !partialAliasMatches.includes(canonical)
+    ) {
+      partialAliasMatches.push(canonical);
+    }
+  }
+
+  // 4. Prefix matches
   const prefixMatches = allMatches.filter(
     (word) =>
-      word.toLowerCase().startsWith(queryLower) && !exactMatches.includes(word)
+      word.toLowerCase().startsWith(queryLower) &&
+      !exactMatches.includes(word) &&
+      !resolvedMatches.includes(word) &&
+      !partialAliasMatches.includes(word)
   );
 
-  // 3. Substring matches
+  // 5. Substring matches
   const substringMatches = allMatches.filter(
     (word) =>
       word.toLowerCase().includes(queryLower) &&
       !exactMatches.includes(word) &&
+      !resolvedMatches.includes(word) &&
+      !partialAliasMatches.includes(word) &&
       !prefixMatches.includes(word)
   );
 
-  // 4. Fuzzy matches (for typos/misspellings)
+  // 6. Fuzzy matches (for typos/misspellings)
   const fuzzyMatches: Array<{ word: string; distance: number }> = [];
   const maxDistance = Math.max(2, Math.floor(queryLower.length / 3)); // Adaptive threshold
 
   for (const word of allMatches) {
     if (
       !exactMatches.includes(word) &&
+      !resolvedMatches.includes(word) &&
+      !partialAliasMatches.includes(word) &&
       !prefixMatches.includes(word) &&
       !substringMatches.includes(word)
     ) {
@@ -107,6 +138,8 @@ export function searchEmotions(query: string): string[] {
   // Combine all results in priority order
   results.push(
     ...exactMatches,
+    ...resolvedMatches,
+    ...partialAliasMatches,
     ...prefixMatches,
     ...substringMatches,
     ...fuzzyWords
