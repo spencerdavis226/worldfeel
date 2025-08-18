@@ -992,6 +992,13 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   letdown: 'disappointed',
   betrayed: 'hurt',
   loved: 'loving',
+  unlovable: 'worthless',
+  blessed: 'grateful',
+  lucky: 'grateful',
+  brave: 'confident',
+  courageous: 'confident',
+  determined: 'motivated',
+  creative: 'inspired',
 };
 
 /** Normalize and look up a color. */
