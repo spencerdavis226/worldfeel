@@ -982,6 +982,16 @@ export const EMOTION_ALIASES: Record<string, EmotionKey> = {
   expansion: 'sore',
   inflation: 'sore',
   enlargement: 'sore',
+
+  // Common missing feeling words
+  alone: 'lonely',
+  stuck: 'frustrated',
+  trapped: 'overwhelmed',
+  hate: 'hateful',
+  sorry: 'remorseful',
+  letdown: 'disappointed',
+  betrayed: 'hurt',
+  loved: 'loving',
 };
 
 /** Normalize and look up a color. */
